@@ -14,50 +14,6 @@ import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 
 object SeedsDb {
-  object BasicSeed {
-    fun create(source: ResultRow) = SeedsDto.BasicSeed(source[Table.name],
-        source[Table.secondary_name], source[Table.description], source[Table.image],
-        source[Table.link])
-    fun fetchAll() = transaction { with (Table) { selectAll().map { create(it) } } }
-    object Table : IntIdTable("BasicSeed") {
-      val name: Column<String> = text("name")
-
-      val secondary_name: Column<String> = text("secondary_name")
-
-      val description: Column<String?> = text("description").nullable()
-
-      val image: Column<String> = text("image")
-
-      val link: Column<String> = text("link")
-    }
-
-    class Entity(
-      id: EntityID<Int>
-    ) : IntEntity(id), generated.model.Seeds.BasicSeed {
-      override var name: String by Table.name
-
-      override var secondary_name: String by Table.secondary_name
-
-      override var description: String? by Table.description
-
-      override var image: String by Table.image
-
-      override var link: String by Table.link
-
-      companion object : IntEntityClass<Entity>(Table) {
-        fun insert(source: Seeds.BasicSeed) {
-          Entity.new {
-            name = source.name
-            secondary_name = source.secondary_name
-            description = source.description
-            image = source.image
-            link = source.link
-          }
-        }
-      }
-    }
-  }
-
   object DetailedSeed {
     fun create(source: ResultRow) = SeedsDto.DetailedSeed(source[Table.name],
         source[Table.maturity], source[Table.secondary_name], source[Table.description],
@@ -107,6 +63,44 @@ object SeedsDb {
     }
   }
 
+  object MySeeds {
+    fun create(source: ResultRow) = SeedsDto.MySeeds(source[Table.my_seed_id],
+        source[Table.seed_label], source[Table.description], source[Table.germination_test])
+    fun fetchAll() = transaction { with (Table) { selectAll().map { create(it) } } }
+    object Table : IntIdTable("MySeeds") {
+      val my_seed_id: Column<Int> = integer("my_seed_id")
+
+      val seed_label: Column<String> = text("seed_label")
+
+      val description: Column<String> = text("description")
+
+      val germination_test: Column<String> = text("germination_test")
+    }
+
+    class Entity(
+      id: EntityID<Int>
+    ) : IntEntity(id), generated.model.Seeds.MySeeds {
+      override var my_seed_id: Int by Table.my_seed_id
+
+      override var seed_label: String by Table.seed_label
+
+      override var description: String by Table.description
+
+      override var germination_test: String by Table.germination_test
+
+      companion object : IntEntityClass<Entity>(Table) {
+        fun insert(source: Seeds.MySeeds) {
+          Entity.new {
+            my_seed_id = source.my_seed_id
+            seed_label = source.seed_label
+            description = source.description
+            germination_test = source.germination_test
+          }
+        }
+      }
+    }
+  }
+
   object SeedCategory {
     fun create(source: ResultRow) = SeedsDto.SeedCategory(source[Table.name], source[Table.image],
         source[Table.link])
@@ -134,39 +128,6 @@ object SeedsDb {
             name = source.name
             image = source.image
             link = source.link
-          }
-        }
-      }
-    }
-  }
-
-  object SeedFacts {
-    fun create(source: ResultRow) = SeedsDto.SeedFacts(source[Table.name], source[Table.facts],
-        source[Table.maturity])
-    fun fetchAll() = transaction { with (Table) { selectAll().map { create(it) } } }
-    object Table : IntIdTable("SeedFacts") {
-      val name: Column<String> = text("name")
-
-      val facts: Column<String?> = text("facts").nullable()
-
-      val maturity: Column<String?> = text("maturity").nullable()
-    }
-
-    class Entity(
-      id: EntityID<Int>
-    ) : IntEntity(id), generated.model.Seeds.SeedFacts {
-      override var name: String by Table.name
-
-      override var facts: String? by Table.facts
-
-      override var maturity: String? by Table.maturity
-
-      companion object : IntEntityClass<Entity>(Table) {
-        fun insert(source: Seeds.SeedFacts) {
-          Entity.new {
-            name = source.name
-            facts = source.facts
-            maturity = source.maturity
           }
         }
       }

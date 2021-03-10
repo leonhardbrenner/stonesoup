@@ -6,7 +6,7 @@ import styled.css
 import styled.styledDiv
 
 class App : RComponent<RProps, RState>() {
-    private var tab1Value: Any = "johnny-seeds"
+    private var tab1Value: Any = "seeds-organizer"
 
     private object CustomTabStyles : StyleSheet("ComponentStyles", isStatic = true) {
         val tabsRoot by css {
@@ -50,17 +50,15 @@ class App : RComponent<RProps, RState>() {
                 css { flexGrow = 1.0; backgroundColor = Color(theme.palette.background.paper) }
                 mAppBar(position = MAppBarPosition.static) {
                     mTabs(tab1Value, onChange = { _, value -> setState { tab1Value = value } }) {
-                        mTab("DvdStore", "dvd-store")
-                        mTab("Seeds", "seeds")
-                        mTab("ShoppingList", "shopping-list")
-                        mTab("Material UI Demo", "material-ui-demo")
+                        mTab("Manifest", "seed-registry") //TODO - make these enums
+                        mTab("Seed Orginizer", "seed-organizer")
+                        mTab("Farm Priorities", "farm-priorities") //This can be personal or community
                     }
                 }
                 when (tab1Value) {
-                    "dvd-store" -> { dvdStore() }
-                    "seeds" -> { seeds() }
-                    "shopping-list" -> { shoppingList() }
-                    "material-ui-demo" -> { materialUIDemo() }
+                    "seed-registry" -> { seedRegistry() }
+                    "seed-organizer" -> { seedOrganizer() }
+                    "farm-priorities" -> { farmPriorities() }
                 }
             }
         }

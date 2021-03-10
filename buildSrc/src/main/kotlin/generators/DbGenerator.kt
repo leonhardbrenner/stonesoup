@@ -18,7 +18,8 @@ object DbGenerator: Generator {
             .addType(
                 TypeSpec.objectBuilder("${namespace.name}Db").apply {
                     namespace.types.forEach { complexType ->
-                        val typeSpec = TypeSpec.objectBuilder(complexType.name)
+                        addType(
+                            TypeSpec.objectBuilder(complexType.name)
                             .addType(complexType.table)
                             .addType(complexType.entity)
                             .addFunction(complexType.create)
@@ -26,10 +27,9 @@ object DbGenerator: Generator {
                                 FunSpec.builder("fetchAll")
                                     .addCode(
                                         "return transaction { with (Table) { selectAll().map { create(it) } } }"
-                                    )
-                                    .build()
-                            )
-                        addType(typeSpec.build())
+                                    ).build()
+                            ).build()
+                        )
                     }
                 }.build()
             ).build()

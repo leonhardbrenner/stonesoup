@@ -33,14 +33,12 @@ open class ModelGenerator : DefaultTask() {
         //XXX - BuilderGenerator.generate(fancy)
 
         val seeds = Namespace(Seeds::class)
-        val dvdRentalsNew = Namespace(DvdRental::class)
-        listOf(seeds, dvdRentalsNew).forEach { namespace ->
+        listOf(seeds).forEach { namespace ->
             InterfaceGenerator.generate(namespace)
             DtoGenerator.generate(namespace)
             DbGenerator.generate(namespace)
             BuilderGenerator.generate(namespace)
         }
 
-        CsvLoaderGenerator.generate(dvdRentalsNew)
     }
 }

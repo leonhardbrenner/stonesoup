@@ -1,23 +1,9 @@
 package generated.model
 
+import kotlin.Int
 import kotlin.String
 
 interface SeedsBuilder {
-  class BasicSeed(
-    var name: String?,
-    var secondary_name: String?,
-    var description: String?,
-    var image: String?,
-    var link: String?
-  ) {
-    fun build(): Seeds.BasicSeed = SeedsDto.BasicSeed(
-    name ?: throw IllegalArgumentException("name is not nullable"),
-    secondary_name ?: throw IllegalArgumentException("secondary_name is not nullable"),
-    description,
-    image ?: throw IllegalArgumentException("image is not nullable"),
-    link ?: throw IllegalArgumentException("link is not nullable")
-    )}
-
   class DetailedSeed(
     var name: String?,
     var maturity: String?,
@@ -35,6 +21,19 @@ interface SeedsBuilder {
     link
     )}
 
+  class MySeeds(
+    var my_seed_id: Int?,
+    var seed_label: String?,
+    var description: String?,
+    var germination_test: String?
+  ) {
+    fun build(): Seeds.MySeeds = SeedsDto.MySeeds(
+    my_seed_id ?: throw IllegalArgumentException("my_seed_id is not nullable"),
+    seed_label ?: throw IllegalArgumentException("seed_label is not nullable"),
+    description ?: throw IllegalArgumentException("description is not nullable"),
+    germination_test ?: throw IllegalArgumentException("germination_test is not nullable")
+    )}
+
   class SeedCategory(
     var name: String?,
     var image: String?,
@@ -44,16 +43,5 @@ interface SeedsBuilder {
     name ?: throw IllegalArgumentException("name is not nullable"),
     image ?: throw IllegalArgumentException("image is not nullable"),
     link ?: throw IllegalArgumentException("link is not nullable")
-    )}
-
-  class SeedFacts(
-    var name: String?,
-    var facts: String?,
-    var maturity: String?
-  ) {
-    fun build(): Seeds.SeedFacts = SeedsDto.SeedFacts(
-    name ?: throw IllegalArgumentException("name is not nullable"),
-    facts,
-    maturity
     )}
 }

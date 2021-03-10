@@ -1,20 +1,9 @@
 package generated.model
 
+import kotlin.Int
 import kotlin.String
 
 interface Seeds {
-  interface BasicSeed {
-    val name: String
-
-    val secondary_name: String
-
-    val description: String?
-
-    val image: String
-
-    val link: String
-  }
-
   interface DetailedSeed {
     val name: String
 
@@ -29,19 +18,21 @@ interface Seeds {
     val link: String?
   }
 
+  interface MySeeds {
+    val my_seed_id: Int
+
+    val seed_label: String
+
+    val description: String
+
+    val germination_test: String
+  }
+
   interface SeedCategory {
     val name: String
 
     val image: String
 
     val link: String
-  }
-
-  interface SeedFacts {
-    val name: String
-
-    val facts: String?
-
-    val maturity: String?
   }
 }

@@ -1,14 +1,12 @@
 package models
 
-import schema.Manifest
-
 interface Seeds {
-    class BasicSeed(
-        val name: String,
-        val secondary_name: String,
-        val description: String?,
-        val image: String,
-        val link: String
+
+    class MySeeds(
+        val my_seed_id: Int,
+        val seed_label: String,
+        val description: String,
+        val germination_test: String
     )
 
     class SeedCategory(
@@ -26,10 +24,4 @@ interface Seeds {
         val link: String?
     )
 
-    class SeedFacts(
-        val name: String,
-        //TODO - This should be a list
-        val facts: String?,
-        val maturity: String?
-    )
 }

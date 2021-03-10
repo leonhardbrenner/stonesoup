@@ -1,24 +1,10 @@
 package generated.model
 
+import kotlin.Int
 import kotlin.String
 import kotlinx.serialization.Serializable
 
 interface SeedsDto {
-  @Serializable
-  data class BasicSeed(
-    override val name: String,
-    override val secondary_name: String,
-    override val description: String?,
-    override val image: String,
-    override val link: String
-  ) : Seeds.BasicSeed {
-    companion object {
-      const val path: String = "/Seeds/BasicSeed"
-
-      fun create(source: Seeds.BasicSeed) = SeedsDto.BasicSeed(source.name, source.secondary_name,
-          source.description, source.image, source.link)}
-  }
-
   @Serializable
   data class DetailedSeed(
     override val name: String,
@@ -36,6 +22,20 @@ interface SeedsDto {
   }
 
   @Serializable
+  data class MySeeds(
+    override val my_seed_id: Int,
+    override val seed_label: String,
+    override val description: String,
+    override val germination_test: String
+  ) : Seeds.MySeeds {
+    companion object {
+      const val path: String = "/Seeds/MySeeds"
+
+      fun create(source: Seeds.MySeeds) = SeedsDto.MySeeds(source.my_seed_id, source.seed_label,
+          source.description, source.germination_test)}
+  }
+
+  @Serializable
   data class SeedCategory(
     override val name: String,
     override val image: String,
@@ -46,18 +46,5 @@ interface SeedsDto {
 
       fun create(source: Seeds.SeedCategory) = SeedsDto.SeedCategory(source.name, source.image,
           source.link)}
-  }
-
-  @Serializable
-  data class SeedFacts(
-    override val name: String,
-    override val facts: String?,
-    override val maturity: String?
-  ) : Seeds.SeedFacts {
-    companion object {
-      const val path: String = "/Seeds/SeedFacts"
-
-      fun create(source: Seeds.SeedFacts) = SeedsDto.SeedFacts(source.name, source.facts,
-          source.maturity)}
   }
 }
