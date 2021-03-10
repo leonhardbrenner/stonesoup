@@ -7,7 +7,7 @@ interface Generator {
     fun generate(namespace: Manifest.Namespace)
 
     val path
-        get() = "/home/lbrenner/projects/kitchensink/src"
+        get() = "/home/lbrenner/projects/life_orginizer/src"
 
 }
 

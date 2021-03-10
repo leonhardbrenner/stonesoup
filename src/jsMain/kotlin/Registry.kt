@@ -1,5 +1,5 @@
-import SeedsWindow.DisplayComponent.ComponentStyles.inline
-import SeedsWindow.DisplayComponent.ComponentStyles.listDiv
+import Registry.DisplayComponent.ComponentStyles.inline
+import Registry.DisplayComponent.ComponentStyles.listDiv
 import com.ccfraser.muirwik.components.*
 import com.ccfraser.muirwik.components.list.*
 import com.ccfraser.muirwik.components.menu.mMenuItem
@@ -10,34 +10,34 @@ import react.*
 import react.dom.*
 import kotlinx.coroutines.*
 import kotlinx.css.*
+import models.Resources
 import styled.StyleSheet
 import styled.css
 import styled.styledDiv
 
 private val scope = MainScope()
 
-fun RBuilder.seeds() = child(SeedsWindow.Component) {}
+fun RBuilder.seedRegistry() = child(Registry.Component) {}
 
-object SeedsWindow {
+//Registry is for creating categories and to add, update, and delete items from category
+object Registry {
 
-    val Component = functionalComponent<RProps> { _ ->
-        val (age, setAge) = useState<Any>(SeedsDto.DetailedSeed.path)
+    val Component = functionalComponent<RProps> {
+        val (type, setType) = useState<Any>(SeedsDto.DetailedSeed.path)
 
         val inputProps: RProps = jsObject { }
-        inputProps.asDynamic().name = "age"
-        inputProps.asDynamic().id = "age-simple"
-        mSelect(age, name = "age", onChange = { event, _ -> setAge(event.targetValue) }) {
+        inputProps.asDynamic().name = "type"
+        inputProps.asDynamic().id = "type-simple"
+        mSelect(type, name = "type", onChange = { event, _ -> setType(event.targetValue) }) {
             attrs.inputProps = inputProps
-            mMenuItem("Detailed Seed", value = SeedsDto.DetailedSeed.path)
+            mMenuItem("My Seeds", value = SeedsDto.MySeeds.path)
+            mMenuItem("Available Seeds", value = SeedsDto.DetailedSeed.path)
             mMenuItem("Category", value = SeedsDto.SeedCategory.path)
-            mMenuItem("Basic Seed", value = SeedsDto.BasicSeed.path)
-            mMenuItem("Seed Fact", value = SeedsDto.SeedFacts.path)
         }
-        when (age) {
+        when (type) {
+            SeedsDto.MySeeds.path -> mySeeds {}
             SeedsDto.DetailedSeed.path -> detailedSeed {}
             SeedsDto.SeedCategory.path -> category {}
-            SeedsDto.BasicSeed.path -> basicSeed {}
-            SeedsDto.SeedFacts.path -> seedFacts {}
         }
 
     }
@@ -49,16 +49,6 @@ object SeedsWindow {
     }
 
     private abstract class DisplayComponent<T> (props: Props) : RComponent<Props, State<T>>() {
-        private object ComponentStyles : StyleSheet("ComponentStyles", isStatic = true) {
-            val listDiv by css {
-                display = Display.inlineFlex
-                padding(1.spacingUnits)
-            }
-
-            val inline by css {
-                display = Display.inlineBlock
-            }
-        }
 
         override fun State<T>.init() {
             items = listOf()
@@ -67,6 +57,17 @@ object SeedsWindow {
                 setState {
                     items = seeds.map { it.label() to it }
                 }
+            }
+        }
+
+        private object ComponentStyles : StyleSheet("ComponentStyles", isStatic = true) {
+            val listDiv by css {
+                display = Display.inlineFlex
+                padding(1.spacingUnits)
+            }
+
+            val inline by css {
+                display = Display.inlineBlock
             }
         }
 
@@ -108,31 +109,24 @@ object SeedsWindow {
 
     }
 
+    private class MySeeds(props: Props): DisplayComponent<Resources.MySeeds>(props) {
+        override suspend fun get() = SeedsApi.getMySeeds()
+        override fun Resources.MySeeds.label() = description //I don't think extension function is a good choice
+        override fun Resources.MySeeds.transform() = detailedSeed?.image?:"No image found"
+    }
+    fun RBuilder.mySeeds(handler: Props.() -> Unit) = child(MySeeds::class) { attrs { handler() } }
+
     private class DetailedSeed(props: Props): DisplayComponent<Seeds.DetailedSeed>(props) {
-        override suspend fun get(): List<Seeds.DetailedSeed> = SeedsApi.getDetailedSeed()
+        override suspend fun get() = SeedsApi.getDetailedSeed()
         override fun Seeds.DetailedSeed.label() = name
         override fun Seeds.DetailedSeed.transform() = name
     }
     fun RBuilder.detailedSeed(handler: Props.() -> Unit) = child(DetailedSeed::class) { attrs { handler() } }
 
     private class Category(props: Props): DisplayComponent<Seeds.SeedCategory>(props) {
-        override suspend fun get(): List<Seeds.SeedCategory> = SeedsApi.getCategory()
+        override suspend fun get() = SeedsApi.getCategory()
         override fun Seeds.SeedCategory.label() = name
         override fun Seeds.SeedCategory.transform() = image
     }
     fun RBuilder.category(handler: Props.() -> Unit) = child(Category::class) { attrs { handler() } }
-
-    private class BasicSeed(props: Props): DisplayComponent<Seeds.BasicSeed>(props) {
-        override suspend fun get(): List<Seeds.BasicSeed> = SeedsApi.getBasicSeed()
-        override fun Seeds.BasicSeed.label() = name
-        override fun Seeds.BasicSeed.transform() = image
-    }
-    fun RBuilder.basicSeed(handler: Props.() -> Unit) = child(BasicSeed::class) { attrs { handler() } }
-
-    private class SeedFacts(props: Props): DisplayComponent<Seeds.SeedFacts>(props) {
-        override suspend fun get(): List<Seeds.SeedFacts> = SeedsApi.getSeedFacts()
-        override fun Seeds.SeedFacts.label() = name
-        override fun Seeds.SeedFacts.transform() = maturity!!
-    }
-    fun RBuilder.seedFacts(handler: Props.() -> Unit) = child(SeedFacts::class) { attrs { handler() } }
 }

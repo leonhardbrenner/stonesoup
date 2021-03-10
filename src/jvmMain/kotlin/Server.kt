@@ -1,4 +1,3 @@
-import applications.DvdRentalApplication
 import applications.SeedsApplication
 import applications.ShoppingListApplication
 import com.authzee.kotlinguice4.getInstance
@@ -19,8 +18,6 @@ fun main() {
         .getInstance<ShoppingListApplication>()
     val johnnySeedsApplication = Guice.createInjector(SeedsApplication.Module)
         .getInstance<SeedsApplication>()
-    val dvdRentalApplication = Guice.createInjector(DvdRentalApplication.Module)
-        .getInstance<DvdRentalApplication>()
 
     val port = System.getenv("PORT")?.toInt() ?: 9090
     embeddedServer(Netty, port) {
@@ -55,7 +52,6 @@ fun main() {
 
             shoppingListApplication.routesFrom(this)
             johnnySeedsApplication.routesFrom(this)
-            dvdRentalApplication.routesFrom(this)
 
         }
     }.start(wait = true)

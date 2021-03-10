@@ -18,8 +18,8 @@ object DatabaseFactory {
 
     fun init() {
         Database.connect(hikari())
-        dbManagers.SeedsDBManager.apply { drop(); create(); populate() }
-        dbManagers.DvdRentalDBManager.apply { drop(); create(); populate() }
+        //dbManagers.SeedsDBManager.apply { drop(); create(); populate() }
+        //dbManagers.DvdRentalDBManager.apply { drop(); create(); populate() }
     }
 
     private fun hikari(): HikariDataSource {
