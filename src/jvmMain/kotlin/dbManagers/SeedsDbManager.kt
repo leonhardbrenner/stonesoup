@@ -38,6 +38,5 @@ object SeedsDBManager {
             SeedsDb.SeedCategory.Entity.insert(source)
             println("Creating ${source.name}")
         }
-
     }
 }

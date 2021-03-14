@@ -2,7 +2,7 @@ import react.*
 import react.dom.*
 import kotlinx.coroutines.*
 import kotlinx.html.js.onClickFunction
-import models.ShoppingListItem
+import models.Chore
 import kotlinx.html.js.*
 import kotlinx.html.InputType
 import org.w3c.dom.events.Event
@@ -16,7 +16,7 @@ private val scope = MainScope()
  * volunteers and task leaders. Don't worry we'll get there:)
  */
 val FarmPriorities = functionalComponent<RProps> { _ ->
-    val (shoppingList, setShoppingList) = useState(emptyList<ShoppingListItem>())
+    val (shoppingList, setShoppingList) = useState(emptyList<Chore>())
 
     useEffect(dependencies = listOf()) {
         scope.launch {
@@ -25,7 +25,7 @@ val FarmPriorities = functionalComponent<RProps> { _ ->
     }
 
     ul {
-        shoppingList.sortedByDescending(ShoppingListItem::priority).forEach { item ->
+        shoppingList.sortedByDescending(Chore::priority).forEach { item ->
             li {
                 key = item.toString()
                 attrs.onClickFunction = {
@@ -41,7 +41,7 @@ val FarmPriorities = functionalComponent<RProps> { _ ->
 
     inputComponent {
         onSubmit = { input ->
-            val cartItem = ShoppingListItem(input.replace("!", ""), input.count { it == '!' })
+            val cartItem = Chore(input.replace("!", ""), input.count { it == '!' })
             scope.launch {
                 ShoppingListApi.addItem(cartItem)
                 setShoppingList(ShoppingListApi.get())

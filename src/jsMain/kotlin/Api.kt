@@ -7,7 +7,7 @@ import io.ktor.client.features.json.serializer.KotlinxSerializer
 
 import kotlinx.browser.window
 import models.Resources
-import models.ShoppingListItem
+import models.Chore
 
 val endpoint = window.location.origin // only needed until https://github.com/ktorio/ktor/issues/1695 is resolved
 
@@ -16,19 +16,19 @@ val jsonClient = HttpClient {
 }
 
 object ShoppingListApi {
-    suspend fun get(): List<ShoppingListItem> {
-        return jsonClient.get(endpoint + ShoppingListItem.path)
+    suspend fun get(): List<Chore> {
+        return jsonClient.get(endpoint + Chore.path)
     }
 
-    suspend fun addItem(shoppingListItem: ShoppingListItem) {
-        jsonClient.post<Unit>(endpoint + ShoppingListItem.path) {
+    suspend fun addItem(chore: Chore) {
+        jsonClient.post<Unit>(endpoint + Chore.path) {
             contentType(ContentType.Application.Json)
-            body = shoppingListItem
+            body = chore
         }
     }
 
-    suspend fun delete(shoppingListItem: ShoppingListItem) {
-        jsonClient.delete<Unit>(endpoint + ShoppingListItem.path + "/${shoppingListItem.id}")
+    suspend fun delete(chore: Chore) {
+        jsonClient.delete<Unit>(endpoint + Chore.path + "/${chore.id}")
     }
 
 }

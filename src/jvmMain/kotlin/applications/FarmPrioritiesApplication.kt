@@ -5,7 +5,7 @@ import com.mongodb.ConnectionString
 import org.litote.kmongo.coroutine.CoroutineDatabase
 import org.litote.kmongo.coroutine.coroutine
 import org.litote.kmongo.reactivestreams.KMongo
-import models.ShoppingListItem
+import models.Chore
 import org.litote.kmongo.eq
 import javax.inject.Inject
 import io.ktor.application.*
@@ -14,17 +14,17 @@ import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
 
-class ShoppingListApplication @Inject constructor(val service: Service) {
+class FarmPrioritiesApplication @Inject constructor(val service: Service) {
 
     fun routesFrom(routing: Routing) = routing.apply {
-        route(ShoppingListItem.path) {
+        route(Chore.path) {
 
             get {
                 call.respond(service.get())
             }
 
             post {
-                val item = call.receive<ShoppingListItem>()
+                val item = call.receive<Chore>()
                 service.post(item)
                 call.respond(HttpStatusCode.OK)
             }
@@ -57,10 +57,10 @@ class ShoppingListApplication @Inject constructor(val service: Service) {
 
     class Service @Inject constructor(val database: CoroutineDatabase) {
         val collection
-            get() = database.getCollection<ShoppingListItem>()
+            get() = database.getCollection<Chore>()
 
         suspend fun get() = collection.find().toList()
-        suspend fun post(item: ShoppingListItem) = collection.insertOne(item)
-        suspend fun delete(id: Int) = collection.deleteOne(ShoppingListItem::id eq id)
+        suspend fun post(item: Chore) = collection.insertOne(item)
+        suspend fun delete(id: Int) = collection.deleteOne(Chore::id eq id)
     }
 }

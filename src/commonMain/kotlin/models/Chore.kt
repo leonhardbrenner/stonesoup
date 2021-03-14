@@ -3,10 +3,10 @@ package models
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class ShoppingListItem(val desc: String, val priority: Int) {
+data class Chore(val desc: String, val priority: Int) {
     val id: Int = desc.hashCode()
 
     companion object {
-        const val path = "/shoppingList"
+        const val path = "/chores"
     }
 }
