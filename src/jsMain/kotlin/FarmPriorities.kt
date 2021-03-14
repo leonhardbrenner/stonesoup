@@ -15,6 +15,7 @@ private val scope = MainScope()
  * to create task. We will need other things like skills and teacher level. This will help us associate chores with
  * volunteers and task leaders. Don't worry we'll get there:)
  */
+//https://litote.org/kmongo/dokka/kmongo/org.litote.kmongo/graph-lookup.html
 val FarmPriorities = functionalComponent<RProps> { _ ->
     val (shoppingList, setShoppingList) = useState(emptyList<Chore>())
 
@@ -34,14 +35,26 @@ val FarmPriorities = functionalComponent<RProps> { _ ->
                         setShoppingList(ShoppingListApi.get())
                     }
                 }
-                +"[${item.priority}] ${item.desc} "
+                +"$item"
             }
         }
     }
-
+    //Let's make this into a CLI later it can be a form:
+    //    create A             #parent is root
+    //    create A/B           #parent is A
+    //    create A/B/C         #
+    //    move A/B/C to A/B/D  #Here C is deleted from B and added to D
+    //    create F             #
+    //    link F to A/B        #Unlike move F remains
+    //    delete A/B/D/C       #
+    //    show F               #Show F as it's parts(A/B/F)
+    //    show A/B/F           #Show part A/B/F as part of F
+    //Also we want auto-complete.
     inputComponent {
         onSubmit = { input ->
-            val cartItem = Chore(input.replace("!", ""), input.count { it == '!' })
+            val cartItem = Chore(
+                name = input.replace("!", ""),
+                priority = input.count { it == '!' })
             scope.launch {
                 ShoppingListApi.addItem(cartItem)
                 setShoppingList(ShoppingListApi.get())
