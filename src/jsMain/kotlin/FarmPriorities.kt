@@ -5,7 +5,9 @@ import kotlinx.html.js.onClickFunction
 import models.Chore
 import kotlinx.html.js.*
 import kotlinx.html.InputType
+import kotlinx.serialization.Serializable
 import models.ChoreUpdate
+import models.TreeView
 import org.w3c.dom.events.Event
 import org.w3c.dom.HTMLInputElement
 
@@ -18,22 +20,21 @@ private val scope = MainScope()
  */
 //https://litote.org/kmongo/dokka/kmongo/org.litote.kmongo/graph-lookup.html
 val FarmPriorities = functionalComponent<RProps> { _ ->
-    val (shoppingList, setShoppingList) = useState(emptyList<Chore>())
-
+    val (chores, setChores) = useState(emptyList<Chore>())
     useEffect(dependencies = listOf()) {
         scope.launch {
-            setShoppingList(FarmPrioritiesApi.get())
+            setChores(FarmPrioritiesApi.get())
         }
     }
 
     ul {
-        shoppingList.sortedByDescending(Chore::priority).forEach { item ->
+        chores.sortedByDescending(Chore::priority).forEach { item ->
             li {
                 key = item.toString()
                 attrs.onClickFunction = {
                     scope.launch {
-                        FarmPrioritiesApi.delete(item.id)
-                        setShoppingList(FarmPrioritiesApi.get())
+                        FarmPrioritiesApi.delete(item.id!!)
+                        setChores(FarmPrioritiesApi.get())
                     }
                 }
                 +"$item"
@@ -81,7 +82,7 @@ val FarmPriorities = functionalComponent<RProps> { _ ->
                 } else if (parts[0] == "delete") {
                     FarmPrioritiesApi.delete(parts[1].toInt())
                 }
-                setShoppingList(FarmPrioritiesApi.get())
+                setChores(FarmPrioritiesApi.get())
             }
         }
     }

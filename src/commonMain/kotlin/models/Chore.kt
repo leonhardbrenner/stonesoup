@@ -8,13 +8,16 @@ typealias ChoreId = Int
 data class Chore(
     val name: String = "",
     val description: String? = null,
+    var id: Int? = null,
     var parentId: Int = -1,
     var childrenIds: LinkedHashMap<String, Int> = linkedMapOf(),
     var priority: Int? = null,
     var estimateInHours: Int? = null
 ) {
-    val id: Int = name.hashCode()
-
+    init {
+        if (id ==null)
+            id = name.hashCode()
+    }
     companion object {
         val root = Chore("<root>")
         const val path = "/chores"
