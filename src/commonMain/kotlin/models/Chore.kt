@@ -18,3 +18,11 @@ data class Chore(
         const val path = "/chores"
     }
 }
+
+//Make this a sealed class with Move and Link as base classes.
+@Serializable
+data class ChoreUpdate(
+    val path: String,
+    val move: String? = null,
+    val link: String? = null
+)

@@ -13,6 +13,7 @@ import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
+import models.ChoreUpdate
 
 class FarmPrioritiesApplication @Inject constructor(val service: Service) {
 
@@ -25,7 +26,13 @@ class FarmPrioritiesApplication @Inject constructor(val service: Service) {
 
             post {
                 val item = call.receive<Chore>()
-                service.post(item)
+                service.add(item)
+                call.respond(HttpStatusCode.OK)
+            }
+
+            put("/{id}") {
+                val item = call.receive<ChoreUpdate>()
+                service.update(item)
                 call.respond(HttpStatusCode.OK)
             }
 
@@ -60,7 +67,20 @@ class FarmPrioritiesApplication @Inject constructor(val service: Service) {
             get() = database.getCollection<Chore>()
 
         suspend fun get() = collection.find().toList()
-        suspend fun post(item: Chore) = collection.insertOne(item)
+        suspend fun add(item: Chore) = collection.insertOne(item)
+
+        /**
+         * Tomorrow you should do the following:
+         *     item.path should be used to lookup our node
+         *     the node id should then be used for our update
+         *     let's start with move then do link
+         *     display on the front end more like a graph
+         *     create a link routine something as simple as little x(es) that connect
+         *     make a routine do delete as well
+         *     make a priority widget something like a +/-
+         *     make a box for real description
+         */
+        suspend fun update(item: ChoreUpdate) = collection.updateOneById(item.path, item)
         suspend fun delete(id: Int) = collection.deleteOne(Chore::id eq id)
     }
 }

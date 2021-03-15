@@ -8,6 +8,7 @@ import io.ktor.client.features.json.serializer.KotlinxSerializer
 import kotlinx.browser.window
 import models.Resources
 import models.Chore
+import models.ChoreUpdate
 
 val endpoint = window.location.origin // only needed until https://github.com/ktorio/ktor/issues/1695 is resolved
 
@@ -15,13 +16,21 @@ val jsonClient = HttpClient {
     install(JsonFeature) { serializer = KotlinxSerializer() }
 }
 
-object ShoppingListApi {
-    suspend fun get(): List<Chore> {
-        return jsonClient.get(endpoint + Chore.path)
+//Todo - move these Apis to separate files
+object FarmPrioritiesApi {
+
+    suspend fun get(): List<Chore>
+        = jsonClient.get(endpoint + Chore.path)
+
+    suspend fun add(chore: Chore) {
+        jsonClient.post<Unit>(endpoint + Chore.path) {
+            contentType(ContentType.Application.Json)
+            body = chore
+        }
     }
 
-    suspend fun addItem(chore: Chore) {
-        jsonClient.post<Unit>(endpoint + Chore.path) {
+    suspend fun update(chore: ChoreUpdate) {
+        jsonClient.put<Unit>(endpoint + Chore.path) {
             contentType(ContentType.Application.Json)
             body = chore
         }
