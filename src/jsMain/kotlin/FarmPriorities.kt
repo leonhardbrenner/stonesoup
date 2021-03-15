@@ -21,6 +21,8 @@ private val scope = MainScope()
 //https://litote.org/kmongo/dokka/kmongo/org.litote.kmongo/graph-lookup.html
 val FarmPriorities = functionalComponent<RProps> { _ ->
     val (chores, setChores) = useState(emptyList<Chore>())
+    val view = TreeView<Chore>()
+    chores.forEach { view[it.name] = it }
     useEffect(dependencies = listOf()) {
         scope.launch {
             setChores(FarmPrioritiesApi.get())
@@ -40,6 +42,18 @@ val FarmPriorities = functionalComponent<RProps> { _ ->
                 +"$item"
             }
         }
+        //view.walk { item ->
+        //    li {
+        //        key = item.toString()
+        //        attrs.onClickFunction = {
+        //            scope.launch {
+        //                FarmPrioritiesApi.delete(item.id!!)
+        //                setChores(FarmPrioritiesApi.get())
+        //            }
+        //        }
+        //        +"${"--".repeat(item.path.size + 1)}$item"
+        //    }
+        //}
     }
     //Let's make this into a CLI later it can be a form:
     //    create A             #parent is root

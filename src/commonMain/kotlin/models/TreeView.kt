@@ -12,10 +12,11 @@ class TreeView<T> {
         }
     }
 
-    fun walk(node: Node<T> = root) {
-        println("  ".repeat(node.path.size) + node.name)
+    fun walk(node: Node<T> = root, block: (Node<T>) -> Unit) {
+        //println("  ".repeat(node.path.size) + node.name)
+        block(node)
         node.children.values.map {
-            walk(node.collection[it]!!)
+            walk(node.collection[it]!!, block)
         }
     }
 

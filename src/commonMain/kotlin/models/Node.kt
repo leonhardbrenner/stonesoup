@@ -9,10 +9,11 @@ data class Node<T>(
     val children: LinkedHashMap<String, Int> = linkedMapOf(),
     var value: T? = null,
     var depth: Int = 0,
-    val id: Int = name.hashCode(),
-    //Todo - unchecked cast
-    val collection: LinkedHashMap<Int, Node<T>> = pool as LinkedHashMap<Int, Node<T>>
 ) {
+    val id: Int = name.hashCode()
+
+    val collection: LinkedHashMap<Int, Node<T>> = pool as LinkedHashMap<Int, Node<T>>
+
     companion object {
         val pool = linkedMapOf<Int, Node<*>>()
     }
@@ -53,4 +54,9 @@ data class Node<T>(
         }
         return path
     }
+
+    override fun toString(): String {
+        return "$name($id, $parentId)"
+    }
+
 }
