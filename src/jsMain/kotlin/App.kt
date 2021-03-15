@@ -6,7 +6,7 @@ import styled.css
 import styled.styledDiv
 
 class App : RComponent<RProps, RState>() {
-    private var tab1Value: Any = "seeds-organizer"
+    private var tab1Value: Any = "seed-organizer"
 
     private object CustomTabStyles : StyleSheet("ComponentStyles", isStatic = true) {
         val tabsRoot by css {
@@ -50,8 +50,9 @@ class App : RComponent<RProps, RState>() {
                 css { flexGrow = 1.0; backgroundColor = Color(theme.palette.background.paper) }
                 mAppBar(position = MAppBarPosition.static) {
                     mTabs(tab1Value, onChange = { _, value -> setState { tab1Value = value } }) {
-                        mTab("Manifest", "seed-registry") //TODO - make these enums
-                        mTab("Seed Orginizer", "seed-organizer")
+                        //Todo - register, organize, prioritize
+                        mTab("Registry", "seed-registry") //TODO - make these enums
+                        mTab("Seed Organizer", "seed-organizer")
                         mTab("Farm Priorities", "farm-priorities") //This can be personal or community
                     }
                 }

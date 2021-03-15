@@ -32,7 +32,7 @@ val FarmPriorities = functionalComponent<RProps> { _ ->
                 key = item.toString()
                 attrs.onClickFunction = {
                     scope.launch {
-                        FarmPrioritiesApi.delete(item)
+                        FarmPrioritiesApi.delete(item.id)
                         setShoppingList(FarmPrioritiesApi.get())
                     }
                 }
@@ -59,6 +59,7 @@ val FarmPriorities = functionalComponent<RProps> { _ ->
                     val chore = Chore(
                         name = parts[1].replace("!", ""),
                         priority = parts[1].count { it == '!' })
+                    FarmPrioritiesApi.add(chore)
                 } else if (parts[0] == "show") {
                     val chore = Chore(
                         name = input.replace("!", ""),
@@ -67,21 +68,18 @@ val FarmPriorities = functionalComponent<RProps> { _ ->
                 //https://github.com/Litote/kmongo/blob/master/kmongo-kdoc/docs/extensions-overview.md
                 } else if (parts[0] == "move") {
                     val chore = ChoreUpdate(
-                        path = parts[1],
-                        move = parts[3]
+                        id = parts[1].toInt(),
+                        moveTo = parts[3].toInt()
                         )
                     FarmPrioritiesApi.update(chore)
                 } else if (parts[0] == "link") {
                     val chore = ChoreUpdate(
-                        path = parts[1],
-                        link = parts[3]
+                        id = parts[1].toInt(),
+                        linkTo = parts[3].toInt()
                     )
                     FarmPrioritiesApi.update(chore)
                 } else if (parts[0] == "delete") {
-                    val chore = Chore(
-                        name = input.replace("!", ""),
-                        priority = input.count { it == '!' })
-                    FarmPrioritiesApi.add(chore)
+                    FarmPrioritiesApi.delete(parts[1].toInt())
                 }
                 setShoppingList(FarmPrioritiesApi.get())
             }

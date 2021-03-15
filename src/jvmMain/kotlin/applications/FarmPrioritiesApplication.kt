@@ -14,6 +14,7 @@ import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import models.ChoreUpdate
+import org.litote.kmongo.setValue
 
 class FarmPrioritiesApplication @Inject constructor(val service: Service) {
 
@@ -70,6 +71,7 @@ class FarmPrioritiesApplication @Inject constructor(val service: Service) {
         suspend fun add(item: Chore) = collection.insertOne(item)
 
         /**
+         * Todo
          * Tomorrow you should do the following:
          *     item.path should be used to lookup our node
          *     the node id should then be used for our update
@@ -79,8 +81,22 @@ class FarmPrioritiesApplication @Inject constructor(val service: Service) {
          *     make a routine do delete as well
          *     make a priority widget something like a +/-
          *     make a box for real description
+         *     we need a field for time estimates
+         *     move to tornadoFx
          */
-        suspend fun update(item: ChoreUpdate) = collection.updateOneById(item.path, item)
+        suspend fun update(item: ChoreUpdate) {
+            collection.updateOne(
+                Chore::id eq item.id,
+                setValue(Chore::parentId, item.moveTo!!)
+            )
+            /**
+             * Find our path by looking for our name then comparing the paths.
+             *     build a name to nodes map
+             *     build path in MongoDb
+             *     nodes[name].mapIndexed { (i, node) -> if (node.path) }
+             */
+
+        }
         suspend fun delete(id: Int) = collection.deleteOne(Chore::id eq id)
     }
 }

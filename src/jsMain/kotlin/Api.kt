@@ -8,6 +8,7 @@ import io.ktor.client.features.json.serializer.KotlinxSerializer
 import kotlinx.browser.window
 import models.Resources
 import models.Chore
+import models.ChoreId
 import models.ChoreUpdate
 
 val endpoint = window.location.origin // only needed until https://github.com/ktorio/ktor/issues/1695 is resolved
@@ -30,14 +31,14 @@ object FarmPrioritiesApi {
     }
 
     suspend fun update(chore: ChoreUpdate) {
-        jsonClient.put<Unit>(endpoint + Chore.path) {
+        jsonClient.put<Unit>(endpoint + Chore.path + "/${chore.id}") {
             contentType(ContentType.Application.Json)
             body = chore
         }
     }
 
-    suspend fun delete(chore: Chore) {
-        jsonClient.delete<Unit>(endpoint + Chore.path + "/${chore.id}")
+    suspend fun delete(choreId: ChoreId) {
+        jsonClient.delete<Unit>(endpoint + Chore.path + "/${choreId}")
     }
 
 }
