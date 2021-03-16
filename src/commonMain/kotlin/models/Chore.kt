@@ -9,15 +9,17 @@ data class Chore(
     val name: String = "",
     val description: String? = null,
     var id: Int? = null,
-    var parentId: Int = -1,
+    var parentId: Int = 0,
     var childrenIds: List<Int> = listOf(),
     var priority: Int? = null,
     var estimateInHours: Int? = null
 ) {
+
     init {
         if (id ==null)
             id = name.hashCode()
     }
+
     companion object {
         const val path = "/chores"
     }
@@ -25,6 +27,7 @@ data class Chore(
     override fun toString(): String {
         return "$name($id, $parentId)"//super.toString()
     }
+
 }
 
 //Make this a sealed class with Move and Link as base classes.

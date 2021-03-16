@@ -18,6 +18,7 @@ import org.litote.kmongo.addToSet
 import org.litote.kmongo.pullByFilter
 import org.litote.kmongo.setValue
 
+//Moving on I need to fix my id. I will move to name=path. This gives me assigned vs unassigned.
 class FarmPrioritiesApplication @Inject constructor(val service: Service) {
 
     fun routesFrom(routing: Routing) = routing.apply {
@@ -78,7 +79,7 @@ class FarmPrioritiesApplication @Inject constructor(val service: Service) {
         suspend fun add(item: Chore) {
             //collection.insertOne(Chore("<root>", id = 0)) //XXX - This need to be made upon creation of collection
             collection.updateOne(
-                Chore::id eq 0, //XXX
+                Chore::id eq item.parentId,
                 addToSet(Chore::childrenIds, item.id!!)
             )
             collection.insertOne(item)
@@ -87,21 +88,18 @@ class FarmPrioritiesApplication @Inject constructor(val service: Service) {
         /**
          * Todo
          * Tomorrow you should do the following:
-         *     item.path should be used to lookup our node
          *     the node id should then be used for our update
          *     let's start with move then do link
          *     display on the front end more like a graph
          *     create a link routine something as simple as little x(es) that connect
-         *     make a routine do delete as well
          *     make a priority widget something like a +/-
          *     make a box for real description
          *     we need a field for time estimates
          *     move to tornadoFx
          */
         suspend fun update(item: ChoreUpdate) {
-            val formerParent = collection.findOne(Chore::id eq item.id)!!.parentId
             collection.updateOne(
-                Chore::id eq formerParent,
+                Chore::id eq parent(item.id),
                 pullByFilter(Chore::childrenIds eq item.id!!)
             )
             collection.updateOne(
@@ -120,6 +118,15 @@ class FarmPrioritiesApplication @Inject constructor(val service: Service) {
              */
 
         }
-        suspend fun delete(id: Int) = collection.deleteOne(Chore::id eq id)
+        suspend fun parent(id: Int) =
+            collection.findOne(Chore::id eq id)!!.parentId
+
+        suspend fun delete(id: Int) {
+            collection.updateOne(
+                Chore::id eq parent(id),
+                pullByFilter(Chore::childrenIds eq id!!)
+            )
+            collection.deleteOne(Chore::id eq id)
+        }
     }
 }

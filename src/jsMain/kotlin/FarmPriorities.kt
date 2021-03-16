@@ -28,6 +28,22 @@ class TreeView(val rootId: Int, val collection: List<Chore>, val builder: RDOMBu
             }
         }
     }
+
+    fun find(id: Int): Chore {
+        return collection.find { it.id == id }!!
+    }
+    fun path(id: Int): List<Chore> {
+        var nodeId = id
+        val path = mutableListOf<Chore>()
+        while (nodeId!=-1) {
+            find(nodeId).let { node ->
+                path.add(node)
+                nodeId = node.parentId
+            }
+        }
+        return path
+    }
+
     //operator fun get(pointer: String): Node<T> = path(pointer).last()
     //operator fun set(path: String, value: T): Node<T> {
     //    return get(path).set(value)
@@ -54,9 +70,10 @@ val FarmPriorities = functionalComponent<RProps> { _ ->
     //val choreMap = chores.toList().map { it.id!! to it }.toMap()
     //val view = chores)
 
-    ul {
-        TreeView(0, chores, this).walk { item ->
-            li {
+    div {
+        val view = TreeView(0, chores, this)
+        view.walk { item ->
+            div {
                 key = item.id!!.toString()//toString()
                 attrs.onClickFunction = {
                     scope.launch {
@@ -64,8 +81,10 @@ val FarmPriorities = functionalComponent<RProps> { _ ->
                         setChores(FarmPrioritiesApi.get())
                     }
                 }
-                //+"${"--".repeat(item.path.size + 1)}$item"
-                +"--$item ${item.childrenIds}"
+                //It would be neat to draw <root> as actual roots.
+                //${"--".repeat(view.path(item.id!!).size + 1)}
+                //${item.childrenIds}
+                +"${"____".repeat(view.path(item.id!!).size - 1)} $item"
             }
         }
 
