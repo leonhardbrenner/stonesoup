@@ -5,11 +5,35 @@ import kotlinx.html.js.onClickFunction
 import models.Chore
 import kotlinx.html.js.*
 import kotlinx.html.InputType
-import kotlinx.serialization.Serializable
 import models.ChoreUpdate
-import models.TreeView
 import org.w3c.dom.events.Event
 import org.w3c.dom.HTMLInputElement
+
+class TreeView(val rootId: Int, val collection: List<Chore>, val builder: RDOMBuilder<*>) {
+
+    //fun path(pointer: String): List<Chore> {
+    //    var node = root
+    //    return pointer.split("/").map { name ->
+    //        node = node[name]
+    //        node
+    //    }
+    //}
+
+    fun walk(id: Int = rootId, block: RDOMBuilder<*>.(Chore) -> Unit) {
+        val node = collection.find { it.id == id }
+        if (node != null) {
+            builder.block(node!!)
+            node!!.childrenIds.map {
+                walk(it, block)
+            }
+        }
+    }
+    //operator fun get(pointer: String): Node<T> = path(pointer).last()
+    //operator fun set(path: String, value: T): Node<T> {
+    //    return get(path).set(value)
+    //}
+
+}
 
 private val scope = MainScope()
 
@@ -20,40 +44,31 @@ private val scope = MainScope()
  */
 //https://litote.org/kmongo/dokka/kmongo/org.litote.kmongo/graph-lookup.html
 val FarmPriorities = functionalComponent<RProps> { _ ->
-    val (chores, setChores) = useState(emptyList<Chore>())
-    val view = TreeView<Chore>()
-    chores.forEach { view[it.name] = it }
+    val (chores, setChores) = useState(listOf<Chore>())
     useEffect(dependencies = listOf()) {
         scope.launch {
             setChores(FarmPrioritiesApi.get())
         }
     }
 
+    //val choreMap = chores.toList().map { it.id!! to it }.toMap()
+    //val view = chores)
+
     ul {
-        chores.sortedByDescending(Chore::priority).forEach { item ->
+        TreeView(0, chores, this).walk { item ->
             li {
-                key = item.toString()
+                key = item.id!!.toString()//toString()
                 attrs.onClickFunction = {
                     scope.launch {
                         FarmPrioritiesApi.delete(item.id!!)
                         setChores(FarmPrioritiesApi.get())
                     }
                 }
-                +"$item"
+                //+"${"--".repeat(item.path.size + 1)}$item"
+                +"--$item ${item.childrenIds}"
             }
         }
-        //view.walk { item ->
-        //    li {
-        //        key = item.toString()
-        //        attrs.onClickFunction = {
-        //            scope.launch {
-        //                FarmPrioritiesApi.delete(item.id!!)
-        //                setChores(FarmPrioritiesApi.get())
-        //            }
-        //        }
-        //        +"${"--".repeat(item.path.size + 1)}$item"
-        //    }
-        //}
+
     }
     //Let's make this into a CLI later it can be a form:
     //    create A             #parent is root

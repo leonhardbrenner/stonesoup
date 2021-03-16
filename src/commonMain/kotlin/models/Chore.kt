@@ -10,7 +10,7 @@ data class Chore(
     val description: String? = null,
     var id: Int? = null,
     var parentId: Int = -1,
-    var childrenIds: LinkedHashMap<String, Int> = linkedMapOf(),
+    var childrenIds: List<Int> = listOf(),
     var priority: Int? = null,
     var estimateInHours: Int? = null
 ) {
@@ -19,7 +19,6 @@ data class Chore(
             id = name.hashCode()
     }
     companion object {
-        val root = Chore("<root>")
         const val path = "/chores"
     }
 

@@ -14,6 +14,7 @@ import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import models.ChoreUpdate
+import org.litote.kmongo.addToSet
 import org.litote.kmongo.setValue
 
 class FarmPrioritiesApplication @Inject constructor(val service: Service) {
@@ -67,8 +68,20 @@ class FarmPrioritiesApplication @Inject constructor(val service: Service) {
         val collection
             get() = database.getCollection<Chore>()
 
-        suspend fun get() = collection.find().toList()
-        suspend fun add(item: Chore) = collection.insertOne(item)
+        suspend fun get(): List<Chore> {
+            val chores = collection.find().toList()
+            //val view = TreeView(0, chores.map {it.id!! to it }.toMap())
+            return chores
+        }
+
+        suspend fun add(item: Chore) {
+            //collection.insertOne(Chore("<root>", id = 0)) //XXX - This need to be made upon creation of collection
+            collection.updateOne(
+                Chore::id eq 0, //XXX
+                addToSet(Chore::childrenIds, item.id!!)
+            )
+            collection.insertOne(item)
+        }
 
         /**
          * Todo
@@ -85,6 +98,10 @@ class FarmPrioritiesApplication @Inject constructor(val service: Service) {
          *     move to tornadoFx
          */
         suspend fun update(item: ChoreUpdate) {
+            collection.updateOne(
+                Chore::id eq item.moveTo,
+                addToSet(Chore::childrenIds, item.id!!)
+            )
             collection.updateOne(
                 Chore::id eq item.id,
                 setValue(Chore::parentId, item.moveTo!!)
