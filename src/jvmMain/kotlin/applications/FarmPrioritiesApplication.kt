@@ -15,6 +15,7 @@ import io.ktor.response.*
 import io.ktor.routing.*
 import models.ChoreUpdate
 import org.litote.kmongo.addToSet
+import org.litote.kmongo.pullByFilter
 import org.litote.kmongo.setValue
 
 class FarmPrioritiesApplication @Inject constructor(val service: Service) {
@@ -98,6 +99,11 @@ class FarmPrioritiesApplication @Inject constructor(val service: Service) {
          *     move to tornadoFx
          */
         suspend fun update(item: ChoreUpdate) {
+            val formerParent = collection.findOne(Chore::id eq item.id)!!.parentId
+            collection.updateOne(
+                Chore::id eq formerParent,
+                pullByFilter(Chore::childrenIds eq item.id!!)
+            )
             collection.updateOne(
                 Chore::id eq item.moveTo,
                 addToSet(Chore::childrenIds, item.id!!)
