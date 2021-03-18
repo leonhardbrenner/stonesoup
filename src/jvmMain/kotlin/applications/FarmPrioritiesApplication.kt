@@ -67,17 +67,17 @@ class FarmPrioritiesApplication @Inject constructor(val service: Service) {
     }
 
     class Service @Inject constructor(val database: CoroutineDatabase) {
+
         val collection
             get() = database.getCollection<Chore>()
 
         suspend fun get(): List<Chore> {
-            val chores = collection.find().toList()
-            //val view = TreeView(0, chores.map {it.id!! to it }.toMap())
-            return chores
+            //collection.insertOne(Chore(name = "<root>", id = 0, parentId = -1))
+            return collection.find().toList()
         }
 
         suspend fun add(item: Chore) {
-            //collection.insertOne(Chore("<root>", id = 0)) //XXX - This need to be made upon creation of collection
+            //Todo - move this into collection init.
             collection.updateOne(
                 Chore::id eq item.parentId,
                 addToSet(Chore::childrenIds, item.id!!)
@@ -87,15 +87,14 @@ class FarmPrioritiesApplication @Inject constructor(val service: Service) {
 
         /**
          * Todo
-         * Tomorrow you should do the following:
-         *     the node id should then be used for our update
-         *     let's start with move then do link
-         *     display on the front end more like a graph
-         *     create a link routine something as simple as little x(es) that connect
-         *     make a priority widget something like a +/-
-         *     make a box for real description
-         *     we need a field for time estimates
-         *     move to tornadoFx
+         *   the node id should then be used for our update
+         *   let's start with move then do link
+         *   display on the front end more like a graph
+         *   create a link routine something as simple as little x(es) that connect
+         *   make a priority widget something like a +/-
+         *   make a box for real description
+         *   we need a field for time estimates
+         *   move to tornadoFx
          */
         suspend fun update(item: ChoreUpdate) {
             collection.updateOne(
@@ -118,15 +117,19 @@ class FarmPrioritiesApplication @Inject constructor(val service: Service) {
              */
 
         }
+        //Todo - make this non-nullable
+        suspend fun element(id: Int) =
+            collection.findOne(Chore::id eq id)
+
         suspend fun parent(id: Int) =
-            collection.findOne(Chore::id eq id)!!.parentId
+            element(id)!!.parentId
 
         suspend fun delete(id: Int) {
             collection.updateOne(
                 Chore::id eq parent(id),
                 pullByFilter(Chore::childrenIds eq id!!)
             )
-            collection.deleteOne(Chore::id eq id)
+            collection.deleteMany(Chore::id eq id)
         }
     }
 }

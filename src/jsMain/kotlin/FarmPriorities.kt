@@ -79,8 +79,6 @@ val FarmPriorities = functionalComponent<RProps> { _ ->
         }
     }
 
-    //val choreMap = chores.toList().map { it.id!! to it }.toMap()
-    //val view = chores)
 
     div {
         val view = TreeView(0, chores, this)
