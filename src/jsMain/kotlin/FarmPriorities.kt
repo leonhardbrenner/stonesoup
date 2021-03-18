@@ -9,6 +9,18 @@ import models.ChoreUpdate
 import org.w3c.dom.events.Event
 import org.w3c.dom.HTMLInputElement
 
+/*
+  Todo
+    introduce material list.
+    move and delete should use paths instead of ids?
+    display leaf to root order
+    render in material list
+    add controls I mention them elsewhere
+    move TreeView out
+    maybe TreeView can provide and abstraction around our API?
+    Implement a walker for Infix and Postfix.
+    Implement path which is just a walk back up the tree.
+ */
 class TreeView(val rootId: Int, val collection: List<Chore>, val builder: RDOMBuilder<*>) {
 
     //fun path(pointer: String): List<Chore> {
@@ -84,7 +96,9 @@ val FarmPriorities = functionalComponent<RProps> { _ ->
                 //It would be neat to draw <root> as actual roots.
                 //${"--".repeat(view.path(item.id!!).size + 1)}
                 //${item.childrenIds}
-                +"${"____".repeat(view.path(item.id!!).size - 1)} $item"
+                val path = view.path(item.id!!).reversed()
+                val pathString = path.drop(1).map { it.name }.joinToString("/")
+                +"${"__".repeat(path.size - 1)}$pathString - (${item.parentId}, ${item.id})"
             }
         }
 
