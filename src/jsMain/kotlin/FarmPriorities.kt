@@ -116,37 +116,35 @@ val FarmPriorities = functionalComponent<RProps> { _ ->
     //Also we want auto-complete.
     inputComponent {
         onSubmit = { input ->
-            val parts = input.split(" ")
             scope.launch {
-                if (parts[0] == "create") {
-                    val chore = Chore(
-                        name = parts[1].replace("!", ""),
-                        priority = parts[1].count { it == '!' })
-                    FarmPrioritiesApi.add(chore)
-                } else if (parts[0] == "show") {
-                    val chore = Chore(
-                        name = input.replace("!", ""),
-                        priority = input.count { it == '!' })
-                    FarmPrioritiesApi.add(chore)
-                //https://github.com/Litote/kmongo/blob/master/kmongo-kdoc/docs/extensions-overview.md
-                } else if (parts[0] == "move") {
-                    val chore = ChoreUpdate(
-                        id = parts[1].toInt(),
-                        moveTo = parts[3].toInt()
-                        )
-                    FarmPrioritiesApi.update(chore)
-                } else if (parts[0] == "link") {
-                    val chore = ChoreUpdate(
-                        id = parts[1].toInt(),
-                        linkTo = parts[3].toInt()
-                    )
-                    FarmPrioritiesApi.update(chore)
-                } else if (parts[0] == "delete") {
-                    FarmPrioritiesApi.delete(parts[1].toInt())
-                }
+                x(input)
                 setChores(FarmPrioritiesApi.get())
             }
         }
+    }
+}
+
+suspend fun x(input: String) {
+    val parts = input.split(" ")
+    if (parts[0] == "create") {
+        val chore = Chore(
+            name = parts[1].replace("!", ""),
+            priority = parts[1].count { it == '!' })
+        FarmPrioritiesApi.add(chore)
+    } else if (parts[0] == "move") {
+        val chore = ChoreUpdate(
+            id = parts[1].toInt(),
+            moveTo = parts[3].toInt()
+        )
+        FarmPrioritiesApi.update(chore)
+    } else if (parts[0] == "link") {
+        val chore = ChoreUpdate(
+            id = parts[1].toInt(),
+            linkTo = parts[3].toInt()
+        )
+        FarmPrioritiesApi.update(chore)
+    } else if (parts[0] == "delete") {
+        FarmPrioritiesApi.delete(parts[1].toInt())
     }
 }
 

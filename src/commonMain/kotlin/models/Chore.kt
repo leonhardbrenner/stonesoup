@@ -10,19 +10,25 @@ typealias ChoreId = Int
     Make a symbol that is 8 characters and encoded.
         https://stackoverflow.com/questions/53225190/produce-a-hash-string-of-fixed-length
     Build a nicer printer.
-    Add and operation to the node which may take advantage of DSL visiting a graph.
+    Add an operation to the node which may take advantage of DSL visiting a graph.
     Try Node and Node.Dto out
  */
+interface Node {
+    var id: Int?
+    var parentId: Int
+    var childrenIds: List<Int>
+}
+
 @Serializable
 data class Chore(
-    val name: String = "",
+    override var id: Int? = null,
+    override var parentId: Int = 0,
+    override var childrenIds: List<Int> = listOf(),
+    val name: String,
     val description: String? = null,
-    var id: Int? = null,
-    var parentId: Int = 0,
-    var childrenIds: List<Int> = listOf(),
     var priority: Int? = null,
     var estimateInHours: Int? = null
-) {
+): Node {
 
     init {
         if (id ==null)
@@ -34,7 +40,7 @@ data class Chore(
     }
 
     override fun toString(): String {
-        return "$name($id, $parentId)}" //super.toString()
+        return "Chore($name, $id, $parentId)}" //super.toString()
     }
 
 }

@@ -54,12 +54,14 @@ class App : RComponent<RProps, RState>() {
                         mTab("Registry", "seed-registry") //TODO - make these enums
                         mTab("Seed Organizer", "seed-organizer")
                         mTab("Farm Priorities", "farm-priorities") //This can be personal or community
+                        mTab("Farm Priorities2", "farm-priorities2") //This can be personal or community
                     }
                 }
                 when (tab1Value) {
                     "seed-registry" -> { seedRegistry() }
                     "seed-organizer" -> { seedOrganizer() }
                     "farm-priorities" -> { farmPriorities() }
+                    "farm-priorities2" -> { farmPriorities2() }
                 }
             }
         }
