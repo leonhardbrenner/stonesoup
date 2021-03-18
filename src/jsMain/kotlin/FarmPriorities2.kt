@@ -18,7 +18,7 @@ import kotlin.math.min
 
 private val scope = MainScope()
 
-fun RBuilder.farmPriorities2() = child(Orginizer.Component) {}
+fun RBuilder.farmPriorities2() = child(FarmPriorities2.Component) {}
 /**
  * This can be used with anything that can be labeled with a number.
  */
@@ -41,51 +41,45 @@ object FarmPriorities2 {
 
     }
 
-    private class AvailableSeeds(props: Props): FarmPriorities2.Table<Resources.MySeeds, AvailableSeeds.ColumnId>(props) {
+    private class Chores(props: Props): FarmPriorities2.Table<models.Chore, Chores.ColumnId>(props) {
 
-        override suspend fun get() = SeedsApi.getMySeeds()
+        override suspend fun get() = FarmPrioritiesApi.get()
 
-        override fun Resources.MySeeds.label() = description
+        override fun models.Chore.label() = name
 
-        enum class ColumnId { Description, Id, SeedLabel, Name, Germination, Maturity }
+        enum class ColumnId { Name, Description, Id, ParentId }
 
         override var orderByColumn: ColumnId = ColumnId.Description
 
-        override fun StyledElementBuilder<*>.buildRow(source: Resources.MySeeds, isSelected: Boolean) {
+        override fun StyledElementBuilder<*>.buildRow(source: models.Chore, isSelected: Boolean) {
             mTableCell(padding = MTableCellPadding.checkbox) {
                 mCheckbox(isSelected)
             }
-            mTableCell(align = MTableCellAlign.left, padding = MTableCellPadding.none) { +source.description }
-            mTableCell(align = MTableCellAlign.right) { +source.my_seed_id.toString() }
-            mTableCell(align = MTableCellAlign.right) { +source.seed_label }
-            mTableCell(align = MTableCellAlign.right) { +(source.detailedSeed?.name?:"") }
-            mTableCell(align = MTableCellAlign.right) { +source.germination_test }
-            mTableCell(align = MTableCellAlign.right) { +(source.detailedSeed?.maturity?:"") }
+            mTableCell(align = MTableCellAlign.left, padding = MTableCellPadding.none) { +source.name }
+            mTableCell(align = MTableCellAlign.right) { +"" } //description
+            mTableCell(align = MTableCellAlign.right) { +source.id!!.toString() }
+            mTableCell(align = MTableCellAlign.right) { +source.parentId!!.toString() }
         }
 
-        override fun ColumnId.comparator(a: Resources.MySeeds, b: Resources.MySeeds) = when (this) {
-            ColumnId.Description -> (a.description).compareTo(b.description)
-            ColumnId.Id -> a.my_seed_id.compareTo(b.my_seed_id)
-            ColumnId.SeedLabel -> (a.seed_label).compareTo(b.seed_label)
-            ColumnId.Name -> (a.detailedSeed?.name?:"").compareTo(b.detailedSeed?.name?:"")
-            ColumnId.Germination -> a.germination_test.compareTo(b.germination_test)
-            ColumnId.Maturity -> (a.detailedSeed?.maturity?:"").compareTo(b.detailedSeed?.maturity?:"")
+        override fun ColumnId.comparator(a: models.Chore, b: models.Chore) = when (this) {
+            ColumnId.Name -> (a.name?:"").compareTo(b.name?:"")
+            ColumnId.Description -> 0
+            ColumnId.Id -> a.id!!.compareTo(b.id!!)
+            ColumnId.ParentId -> a.parentId!!.compareTo(b.parentId!!)
         }
 
-        override val Resources.MySeeds.id get() = my_seed_id
+        override val models.Chore._id get() = id!!
 
         override val columnData = listOf(
-            ColumnData(ColumnId.Description, false, true, "Description"),
+            ColumnData(ColumnId.Name, false, true, "Name"),
+            ColumnData(ColumnId.Description, true, false, "Description"),
             ColumnData(ColumnId.Id, true, false, "Id"),
-            ColumnData(ColumnId.SeedLabel, true, false, "Label"),
-            ColumnData(ColumnId.Name, true, false, "Name"),
-            ColumnData(ColumnId.Germination, true, false, "Germination"),
-            ColumnData(ColumnId.Maturity, true, false, "Maturity")
+            ColumnData(ColumnId.Name, true, false, "Name")
         )
 
     }
 
-    fun RBuilder.seeds(handler: Props.() -> Unit) = child(AvailableSeeds::class) { attrs { handler() } }
+    fun RBuilder.seeds(handler: Props.() -> Unit) = child(Chores::class) { attrs { handler() } }
 
     interface Props : RProps
 
@@ -108,7 +102,7 @@ object FarmPriorities2 {
             scope.launch {
                 val seeds: List<T> = get()
                 setState {
-                    seeds.forEach { items.add(it.id to it) }
+                    seeds.forEach { items.add(it._id to it) }
                     order = MTableCellSortDirection.asc
                 }
             }
@@ -132,7 +126,7 @@ object FarmPriorities2 {
 
         abstract fun StyledElementBuilder<*>.buildRow(source: T, isSelected: Boolean)
 
-        abstract val T.id: Int
+        abstract val T._id: Int
 
         override fun RBuilder.render() {
             mTypography("Simple Table ${orderByColumn} ${state.order}")

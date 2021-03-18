@@ -63,6 +63,8 @@ class TreeView(val rootId: Int, val collection: List<Chore>, val builder: RDOMBu
 
 }
 
+fun RBuilder.farmPriorities() = child(FarmPriorities) {}
+
 private val scope = MainScope()
 
 /**
@@ -99,8 +101,8 @@ val FarmPriorities = functionalComponent<RProps> { _ ->
                 +"${"__".repeat(path.size - 1)}$pathString - (${item.parentId}, ${item.id})"
             }
         }
-
     }
+
     //Let's make this into a CLI later it can be a form:
     //    create A             #parent is root
     //    create A/B           #parent is A
@@ -115,16 +117,17 @@ val FarmPriorities = functionalComponent<RProps> { _ ->
     inputComponent {
         onSubmit = { input ->
             scope.launch {
-                x(input)
+                handleInput(input)
                 setChores(FarmPrioritiesApi.get())
             }
         }
     }
 }
 
-suspend fun x(input: String) {
+suspend fun handleInput(input: String) {
     val parts = input.split(" ")
     if (parts[0] == "create") {
+        console.log("Creating ${parts[1]}")
         val chore = Chore(
             name = parts[1].replace("!", ""),
             priority = parts[1].count { it == '!' })
@@ -145,8 +148,6 @@ suspend fun x(input: String) {
         FarmPrioritiesApi.delete(parts[1].toInt())
     }
 }
-
-fun RBuilder.farmPriorities() = child(FarmPriorities) {}
 
 external interface InputProps : RProps {
     var onSubmit: (String) -> Unit
