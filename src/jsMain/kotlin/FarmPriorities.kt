@@ -6,6 +6,7 @@ import models.Chore
 import kotlinx.html.js.*
 import kotlinx.html.InputType
 import models.ChoreUpdate
+import models.Node
 import org.w3c.dom.events.Event
 import org.w3c.dom.HTMLInputElement
 
@@ -21,9 +22,9 @@ import org.w3c.dom.HTMLInputElement
     Implement a walker for Infix and Postfix.
     Implement path which is just a walk back up the tree.
  */
-private class TreeView(val rootId: Int, val collection: List<Chore>) {
+class TreeView<T: Node>(val rootId: Int, val collection: List<T>) {
 
-    fun walk(id: Int = rootId, block: (Chore) -> Unit) {
+    fun walk(id: Int = rootId, block: (T) -> Unit) {
         val node = collection.find { it.id == id }
         if (node != null) {
             block(node!!)
@@ -33,13 +34,13 @@ private class TreeView(val rootId: Int, val collection: List<Chore>) {
         }
     }
 
-    fun find(id: Int): Chore {
+    fun find(id: Int): T {
         return collection.find { it.id == id }!!
     }
 
-    fun path(id: Int): List<Chore> {
+    fun path(id: Int): List<T> {
         var nodeId = id
-        val path = mutableListOf<Chore>()
+        val path = mutableListOf<T>()
         while (nodeId!=-1) {
             find(nodeId).let { node ->
                 path.add(node)

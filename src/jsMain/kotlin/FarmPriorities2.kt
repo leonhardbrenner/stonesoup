@@ -3,6 +3,7 @@ import com.ccfraser.muirwik.components.menu.mMenuItem
 import com.ccfraser.muirwik.components.table.*
 import generated.model.SeedsDto
 import kotlinext.js.jsObject
+import kotlinx.coroutines.yield
 import kotlinx.html.Entities
 import models.Chore
 import react.*
@@ -44,7 +45,11 @@ object FarmPriorities2 {
             val path = Chores::class.simpleName.toString()
         }
 
-        override suspend fun get() = FarmPrioritiesApi.get()
+        override suspend fun get(): List<Chore> {
+            val list = mutableListOf<Chore>()
+            TreeView(0, FarmPrioritiesApi.get()).walk { list.add(it) }
+            return list
+        }
 
         override fun Chore.label() = name
 
@@ -59,7 +64,7 @@ object FarmPriorities2 {
         //    }
         //}
 
-        override fun StyledElementBuilder<*>.buildRow(source: models.Chore, isSelected: Boolean) {
+        override fun StyledElementBuilder<*>.buildRow(source: Chore, isSelected: Boolean) {
             mTableCell(padding = MTableCellPadding.checkbox) {
                 mCheckbox(isSelected)
             }
