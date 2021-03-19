@@ -21,20 +21,12 @@ import org.w3c.dom.HTMLInputElement
     Implement a walker for Infix and Postfix.
     Implement path which is just a walk back up the tree.
  */
-private class TreeView(val rootId: Int, val collection: List<Chore>, val builder: RDOMBuilder<*>) {
+private class TreeView(val rootId: Int, val collection: List<Chore>) {
 
-    //fun path(pointer: String): List<Chore> {
-    //    var node = root
-    //    return pointer.split("/").map { name ->
-    //        node = node[name]
-    //        node
-    //    }
-    //}
-
-    fun walk(id: Int = rootId, block: RDOMBuilder<*>.(Chore) -> Unit) {
+    fun walk(id: Int = rootId, block: (Chore) -> Unit) {
         val node = collection.find { it.id == id }
         if (node != null) {
-            builder.block(node!!)
+            block(node!!)
             node!!.childrenIds.map {
                 walk(it, block)
             }
@@ -76,6 +68,7 @@ private val scope = MainScope()
 //https://litote.org/kmongo/dokka/kmongo/org.litote.kmongo/graph-lookup.html
 val FarmPriorities = functionalComponent<RProps> { _ ->
     val (chores, setChores) = useState(listOf<Chore>())
+
     useEffect(dependencies = listOf()) {
         scope.launch {
             setChores(FarmPrioritiesApi.get())
@@ -84,7 +77,7 @@ val FarmPriorities = functionalComponent<RProps> { _ ->
 
 
     div {
-        val view = TreeView(0, chores, this)
+        val view = TreeView(0, chores)
         view.walk { item ->
             div {
                 key = item.id!!.toString()//toString()
