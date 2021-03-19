@@ -3,6 +3,8 @@ import com.ccfraser.muirwik.components.menu.mMenuItem
 import com.ccfraser.muirwik.components.table.*
 import generated.model.SeedsDto
 import kotlinext.js.jsObject
+import kotlinx.html.Entities
+import models.Chore
 import react.*
 import styled.StyledElementBuilder
 
@@ -14,36 +16,55 @@ object FarmPriorities2 {
 
     val Component = functionalComponent<RProps> {
 
-        val (thing, setThing) = useState<Any>(SeedsDto.MySeeds.path)
+        val (thing, setThing) = useState<Any>(Chores.path)
 
         val inputProps: RProps = jsObject { }
         inputProps.asDynamic().name = "thing"
         inputProps.asDynamic().id = "thing-simple"
         mSelect(thing, name = "thing", onChange = { event, _ -> setThing(event.targetValue) }) {
             attrs.inputProps = inputProps
-            mMenuItem("Seeds", value = SeedsDto.MySeeds.path)
+            mMenuItem("Chores", value = Chores.path)
         }
         when (thing) {
-            SeedsDto.MySeeds.path -> seeds {} //TODO - this should point to SeedsOrganizer
+            Chores.path -> chores {
+                title = "Priorities in terms of Chores"
+                sortTemplate = { col: Chores.ColumnId, direction: MTableCellSortDirection ->
+                    "Chores ordered by $col $direction"}
+            }
         }
 
     }
 
-    private class Chores(props: Props): Table<models.Chore, Chores.ColumnId>(props) {
+    fun RBuilder.chores(handler: Props<Chores.ColumnId>.() -> Unit) =
+        child(Chores::class) { attrs { handler() } }
+
+    class Chores(props: Props<ColumnId>): Table<Chore, Chores.ColumnId>(props) {
+
+        companion object {
+            val path = Chores::class.simpleName.toString()
+        }
 
         override suspend fun get() = FarmPrioritiesApi.get()
 
-        override fun models.Chore.label() = name
+        override fun Chore.label() = name
 
         enum class ColumnId { Name, Description, Id, ParentId }
 
         override var orderByColumn: ColumnId = ColumnId.Description
 
+        //fun tabs(source: Chore) {
+        //    var node = source.id
+        //    while (node!=null) {
+        //        node = node.parentI
+        //    }
+        //}
+
         override fun StyledElementBuilder<*>.buildRow(source: models.Chore, isSelected: Boolean) {
             mTableCell(padding = MTableCellPadding.checkbox) {
                 mCheckbox(isSelected)
             }
-            mTableCell(align = MTableCellAlign.left, padding = MTableCellPadding.none) { +source.name }
+            val tabs = 2
+            mTableCell(align = MTableCellAlign.left, padding = MTableCellPadding.none) { +"${"__".repeat(tabs)}${source.name}" }
             mTableCell(align = MTableCellAlign.right) { +"" } //description
             mTableCell(align = MTableCellAlign.right) { +source.id!!.toString() }
             mTableCell(align = MTableCellAlign.right) { +source.parentId!!.toString() }
@@ -59,14 +80,12 @@ object FarmPriorities2 {
         override val models.Chore._id get() = id!!
 
         override val columnData = listOf(
-            ColumnData(ColumnId.Name, false, true, "Name"),
+            ColumnData(ColumnId.Name, false, false, "Name"),
             ColumnData(ColumnId.Description, true, false, "Description"),
             ColumnData(ColumnId.Id, true, false, "Id"),
             ColumnData(ColumnId.Name, true, false, "Name")
         )
 
     }
-
-    fun RBuilder.seeds(handler: Props.() -> Unit) = child(Chores::class) { attrs { handler() } }
 
 }

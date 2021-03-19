@@ -26,13 +26,21 @@ object Orginizer {
             mMenuItem("Deserts", value = DessertOrganizer.path)
         }
         when (thing) {
-            SeedsDto.MySeeds.path -> seeds {} //TODO - this should point to SeedsOrganizer
-            DessertOrganizer.path -> dessertOrganizer {}
+            SeedsDto.MySeeds.path -> seeds {
+                title = "These are your seeds."
+                sortTemplate = { col: AvailableSeeds.ColumnId, direction: MTableCellSortDirection ->
+                    "Your seeds ordered by $col $direction"}
+            } //TODO - this should point to SeedsOrganizer
+            DessertOrganizer.path -> dessertOrganizer {
+                title = "How about a dessert?"
+                sortTemplate = { col: DessertOrganizer.ColumnId, direction: MTableCellSortDirection ->
+                    "Desserts ordered by $col $direction"}
+            }
         }
 
     }
 
-    private class AvailableSeeds(props: Props): Table<Resources.MySeeds, AvailableSeeds.ColumnId>(props) {
+    class AvailableSeeds(props: Props<ColumnId>): Table<Resources.MySeeds, AvailableSeeds.ColumnId>(props) {
 
         override suspend fun get() = SeedsApi.getMySeeds()
 
@@ -76,7 +84,7 @@ object Orginizer {
 
     }
 
-    fun RBuilder.seeds(handler: Props.() -> Unit) = child(AvailableSeeds::class) { attrs { handler() } }
+    fun RBuilder.seeds(handler: Props<AvailableSeeds.ColumnId>.() -> Unit) = child(AvailableSeeds::class) { attrs { handler() } }
 
     data class Dessert(
         val id: Int,
@@ -87,7 +95,7 @@ object Orginizer {
         val protein: Double
     )
 
-    private class DessertOrganizer(props: Props): Table<Dessert, DessertOrganizer.ColumnId>(props) {
+    class DessertOrganizer(props: Props<ColumnId>): Table<Dessert, DessertOrganizer.ColumnId>(props) {
 
         companion object {
             val path = "dessert"
@@ -147,6 +155,6 @@ object Orginizer {
 
     }
 
-    fun RBuilder.dessertOrganizer(handler: Props.() -> Unit) = child(DessertOrganizer::class) { attrs { handler() } }
+    fun RBuilder.dessertOrganizer(handler: Props<DessertOrganizer.ColumnId>.() -> Unit) = child(DessertOrganizer::class) { attrs { handler() } }
 
 }

@@ -21,7 +21,7 @@ import org.w3c.dom.HTMLInputElement
     Implement a walker for Infix and Postfix.
     Implement path which is just a walk back up the tree.
  */
-class TreeView(val rootId: Int, val collection: List<Chore>, val builder: RDOMBuilder<*>) {
+private class TreeView(val rootId: Int, val collection: List<Chore>, val builder: RDOMBuilder<*>) {
 
     //fun path(pointer: String): List<Chore> {
     //    var node = root
@@ -44,6 +44,7 @@ class TreeView(val rootId: Int, val collection: List<Chore>, val builder: RDOMBu
     fun find(id: Int): Chore {
         return collection.find { it.id == id }!!
     }
+
     fun path(id: Int): List<Chore> {
         var nodeId = id
         val path = mutableListOf<Chore>()

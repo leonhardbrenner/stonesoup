@@ -14,7 +14,10 @@ import kotlin.math.min
 
 private val scope = MainScope()
 
-interface Props : RProps
+interface Props<ColumnId> : RProps {
+    var title: String
+    var sortTemplate: (ColumnId, MTableCellSortDirection) -> String
+}
 
 interface State<T> : RState {
     var items: MutableList<Pair<Int, T>>
@@ -28,14 +31,14 @@ data class ColumnData<T>(
     val label: String
 )
 
-abstract class Table<T, ColumnId>(props: Props) : RComponent<Props, State<T>>() {
+abstract class Table<T, ColumnId>(props: Props<ColumnId>) : RComponent<Props<ColumnId>, State<T>>() {
 
     override fun State<T>.init() {
         items = mutableListOf()
         scope.launch {
-            val seeds: List<T> = get()
+            val items: List<T> = get()
             setState {
-                seeds.forEach { items.add(it._id to it) }
+                items.forEach { this.items.add(it._id to it) }
                 order = MTableCellSortDirection.asc
             }
         }
@@ -62,10 +65,9 @@ abstract class Table<T, ColumnId>(props: Props) : RComponent<Props, State<T>>() 
     abstract val T._id: Int
 
     override fun RBuilder.render() {
-        mTypography("Simple Table ${orderByColumn} ${state.order}")
+        mTypography("${props.title}")
         br { }
-        br { }
-        mTypography("Sorting and Selecting")
+        mTypography(props.sortTemplate(orderByColumn, state.order))
         sortingAndSelecting()
     }
 
