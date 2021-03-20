@@ -4,6 +4,7 @@ import com.ccfraser.muirwik.components.table.*
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlinx.css.*
+import models.Node
 import react.*
 import react.dom.br
 import styled.StyleSheet
@@ -14,15 +15,16 @@ import kotlin.math.min
 
 private val scope = MainScope()
 
-abstract class Table<T, ColumnId>(props: Props<ColumnId>) : RComponent<Table.Props<ColumnId>, Table.State<T>>() {
+abstract class TreeTable<T: Node, ColumnId>(props: Props<ColumnId>) : RComponent<TreeTable.Props<ColumnId>, TreeTable.State<T>>() {
 
     interface Props<ColumnId> : RProps {
         var title: String
         var sortTemplate: (ColumnId, MTableCellSortDirection) -> String
     }
 
-    interface State<T> : RState {
+    interface State<T: Node> : RState {
         var items: MutableList<Pair<Int, T>>
+        var treeView: TreeView<T>
         var order: MTableCellSortDirection
     }
 
@@ -39,6 +41,7 @@ abstract class Table<T, ColumnId>(props: Props<ColumnId>) : RComponent<Table.Pro
             val items: List<T> = get()
             setState {
                 items.forEach { this.items.add(it._id to it) }
+                treeView = TreeView(0, this.items.map { it.second })
                 order = MTableCellSortDirection.asc
             }
         }
@@ -47,7 +50,9 @@ abstract class Table<T, ColumnId>(props: Props<ColumnId>) : RComponent<Table.Pro
     // State for sort and select example
 
     protected val selectedIds = mutableSetOf<Int>()
+
     protected var page = 0
+
     protected var rowsPerPage = 10
 
     abstract suspend fun get(): List<T>
@@ -89,12 +94,14 @@ abstract class Table<T, ColumnId>(props: Props<ColumnId>) : RComponent<Table.Pro
                         ::handleSelectAllClick, ::handleRequestSort
                     )
                     mTableBody {
-                        state.items.subList(page * rowsPerPage, min((page + 1) * rowsPerPage, size)).forEach {
-                            val isSelected = selectedIds.contains(it.id)
-                            mTableRow(it.id, isSelected, true, onClick = { _ -> handleClick(it.id) }) {
+                        //state.items.subList(page * rowsPerPage, min((page + 1) * rowsPerPage, size)).forEach {
+                        val treeView = TreeView(0, state.items.map { it.second } ) //Yuck
+                        treeView.walk { node ->
+                            val isSelected = selectedIds.contains(node.id)
+                            mTableRow(node.id, isSelected, true, onClick = { _ -> handleClick(node.id!!) }) {
                                 attrs.asDynamic().tabIndex = -1
                                 attrs.asDynamic().role = "checkbox"
-                                buildRow(it.second, isSelected)
+                                buildRow(node, isSelected)
                             }
                         }
                         val emptyRows = rowsPerPage - min(rowsPerPage, state.items.size - page * rowsPerPage)

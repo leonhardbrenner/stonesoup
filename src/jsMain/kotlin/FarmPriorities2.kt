@@ -1,10 +1,7 @@
 import com.ccfraser.muirwik.components.*
 import com.ccfraser.muirwik.components.menu.mMenuItem
 import com.ccfraser.muirwik.components.table.*
-import generated.model.SeedsDto
 import kotlinext.js.jsObject
-import kotlinx.coroutines.yield
-import kotlinx.html.Entities
 import models.Chore
 import react.*
 import styled.StyledElementBuilder
@@ -36,20 +33,16 @@ object FarmPriorities2 {
 
     }
 
-    fun RBuilder.chores(handler: Props<Chores.ColumnId>.() -> Unit) =
+    fun RBuilder.chores(handler: TreeTable.Props<Chores.ColumnId>.() -> Unit) =
         child(Chores::class) { attrs { handler() } }
 
-    class Chores(props: Props<ColumnId>): Table<Chore, Chores.ColumnId>(props) {
+    class Chores(props: Props<ColumnId>): TreeTable<Chore, Chores.ColumnId>(props) {
 
         companion object {
             val path = Chores::class.simpleName.toString()
         }
 
-        override suspend fun get(): List<Chore> {
-            val list = mutableListOf<Chore>()
-            TreeView(0, FarmPrioritiesApi.get()).walk { list.add(it) }
-            return list
-        }
+        override suspend fun get() = FarmPrioritiesApi.get()
 
         override fun Chore.label() = name
 
@@ -68,21 +61,21 @@ object FarmPriorities2 {
             mTableCell(padding = MTableCellPadding.checkbox) {
                 mCheckbox(isSelected)
             }
-            val tabs = 2
+            val tabs = state.treeView.path(source.id!!).size - 1
             mTableCell(align = MTableCellAlign.left, padding = MTableCellPadding.none) { +"${"__".repeat(tabs)}${source.name}" }
             mTableCell(align = MTableCellAlign.right) { +"" } //description
             mTableCell(align = MTableCellAlign.right) { +source.id!!.toString() }
             mTableCell(align = MTableCellAlign.right) { +source.parentId!!.toString() }
         }
 
-        override fun ColumnId.comparator(a: models.Chore, b: models.Chore) = when (this) {
+        override fun ColumnId.comparator(a: Chore, b: Chore) = when (this) {
             ColumnId.Name -> (a.name?:"").compareTo(b.name?:"")
             ColumnId.Description -> 0
             ColumnId.Id -> a.id!!.compareTo(b.id!!)
             ColumnId.ParentId -> a.parentId!!.compareTo(b.parentId!!)
         }
 
-        override val models.Chore._id get() = id!!
+        override val Chore._id get() = id!!
 
         override val columnData = listOf(
             ColumnData(ColumnId.Name, false, false, "Name"),

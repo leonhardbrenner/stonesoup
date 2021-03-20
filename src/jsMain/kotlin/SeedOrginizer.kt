@@ -84,7 +84,7 @@ object Orginizer {
 
     }
 
-    fun RBuilder.seeds(handler: Props<AvailableSeeds.ColumnId>.() -> Unit) = child(AvailableSeeds::class) { attrs { handler() } }
+    fun RBuilder.seeds(handler: Table.Props<AvailableSeeds.ColumnId>.() -> Unit) = child(AvailableSeeds::class) { attrs { handler() } }
 
     data class Dessert(
         val id: Int,
@@ -155,6 +155,6 @@ object Orginizer {
 
     }
 
-    fun RBuilder.dessertOrganizer(handler: Props<DessertOrganizer.ColumnId>.() -> Unit) = child(DessertOrganizer::class) { attrs { handler() } }
+    fun RBuilder.dessertOrganizer(handler: Table.Props<DessertOrganizer.ColumnId>.() -> Unit) = child(DessertOrganizer::class) { attrs { handler() } }
 
 }
