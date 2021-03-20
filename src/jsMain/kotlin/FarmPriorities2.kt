@@ -61,7 +61,7 @@ object FarmPriorities2 {
             mTableCell(padding = MTableCellPadding.checkbox) {
                 mCheckbox(isSelected)
             }
-            val tabs = state.treeView.path(source.id!!).size - 1
+            val tabs = treeView.path(source.id!!).size - 1
             mTableCell(align = MTableCellAlign.left, padding = MTableCellPadding.none) { +"${"__".repeat(tabs)}${source.name}" }
             mTableCell(align = MTableCellAlign.right) { +"" } //description
             mTableCell(align = MTableCellAlign.right) { +source.id!!.toString() }

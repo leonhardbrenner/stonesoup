@@ -24,7 +24,6 @@ abstract class TreeTable<T: Node, ColumnId>(props: Props<ColumnId>) : RComponent
 
     interface State<T: Node> : RState {
         var items: MutableList<Pair<Int, T>>
-        var treeView: TreeView<T>
         var order: MTableCellSortDirection
     }
 
@@ -41,7 +40,6 @@ abstract class TreeTable<T: Node, ColumnId>(props: Props<ColumnId>) : RComponent
             val items: List<T> = get()
             setState {
                 items.forEach { this.items.add(it._id to it) }
-                treeView = TreeView(0, this.items.map { it.second })
                 order = MTableCellSortDirection.asc
             }
         }
@@ -76,6 +74,8 @@ abstract class TreeTable<T: Node, ColumnId>(props: Props<ColumnId>) : RComponent
         sortingAndSelecting()
     }
 
+    val treeView get() = TreeView(0, state.items.map { it.second } )
+
     val size get() = state.items.size
     val Pair<Int, T>.id get() = first
     fun RBuilder.sortingAndSelecting() {
@@ -95,7 +95,6 @@ abstract class TreeTable<T: Node, ColumnId>(props: Props<ColumnId>) : RComponent
                     )
                     mTableBody {
                         //state.items.subList(page * rowsPerPage, min((page + 1) * rowsPerPage, size)).forEach {
-                        val treeView = TreeView(0, state.items.map { it.second } ) //Yuck
                         treeView.walk { node ->
                             val isSelected = selectedIds.contains(node.id)
                             mTableRow(node.id, isSelected, true, onClick = { _ -> handleClick(node.id!!) }) {
