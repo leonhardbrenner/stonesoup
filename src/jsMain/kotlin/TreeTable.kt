@@ -96,6 +96,7 @@ abstract class TreeTable<T: Node, ColumnId>(props: Props<ColumnId>) : RComponent
                     mTableBody {
                         //state.items.subList(page * rowsPerPage, min((page + 1) * rowsPerPage, size)).forEach {
                         treeView.walk { node ->
+                            if (node.id==0) return@walk
                             val isSelected = selectedIds.contains(node.id)
                             mTableRow(node.id, isSelected, true, onClick = { _ -> handleClick(node.id!!) }) {
                                 attrs.asDynamic().tabIndex = -1

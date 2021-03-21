@@ -46,7 +46,7 @@ object FarmPriorities2 {
 
         override fun Chore.label() = name
 
-        enum class ColumnId { Name, Description, Id, ParentId }
+        enum class ColumnId { Name, Description, Id, Parent }
 
         override var orderByColumn: ColumnId = ColumnId.Description
 
@@ -61,18 +61,17 @@ object FarmPriorities2 {
             mTableCell(padding = MTableCellPadding.checkbox) {
                 mCheckbox(isSelected)
             }
-            val tabs = treeView.path(source.id!!).size - 1
-            mTableCell(align = MTableCellAlign.left, padding = MTableCellPadding.none) { +"${"__".repeat(tabs)}${source.name}" }
+            mTableCell(align = MTableCellAlign.left, padding = MTableCellPadding.none) { +treeView.pathString(source.id!!) }
             mTableCell(align = MTableCellAlign.right) { +"" } //description
             mTableCell(align = MTableCellAlign.right) { +source.id!!.toString() }
-            mTableCell(align = MTableCellAlign.right) { +source.parentId!!.toString() }
+            mTableCell(align = MTableCellAlign.right) { +treeView.pathString(source.parentId) }
         }
 
         override fun ColumnId.comparator(a: Chore, b: Chore) = when (this) {
             ColumnId.Name -> (a.name?:"").compareTo(b.name?:"")
             ColumnId.Description -> 0
             ColumnId.Id -> a.id!!.compareTo(b.id!!)
-            ColumnId.ParentId -> a.parentId!!.compareTo(b.parentId!!)
+            ColumnId.Parent -> a.parentId!!.compareTo(b.parentId!!)
         }
 
         override val Chore._id get() = id!!
@@ -81,7 +80,7 @@ object FarmPriorities2 {
             ColumnData(ColumnId.Name, false, false, "Name"),
             ColumnData(ColumnId.Description, true, false, "Description"),
             ColumnData(ColumnId.Id, true, false, "Id"),
-            ColumnData(ColumnId.Name, true, false, "Name")
+            ColumnData(ColumnId.Parent, true, false, "Parent")
         )
 
     }

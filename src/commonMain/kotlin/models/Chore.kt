@@ -17,6 +17,7 @@ interface Node {
     var id: Int?
     var parentId: Int
     var childrenIds: List<Int>
+    val name: String //TODO - I think this is optional and I need symbol instead.
 }
 
 @Serializable
@@ -24,7 +25,7 @@ data class Chore(
     override var id: Int? = null,
     override var parentId: Int = 0,
     override var childrenIds: List<Int> = listOf(),
-    val name: String,
+    override val name: String,
     val description: String? = null,
     var priority: Int? = null,
     var estimateInHours: Int? = null

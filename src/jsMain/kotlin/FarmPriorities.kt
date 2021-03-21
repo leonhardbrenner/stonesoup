@@ -47,8 +47,9 @@ class TreeView<T: Node>(val rootId: Int, val collection: List<T>) {
                 nodeId = node.parentId
             }
         }
-        return path
+        return path.reversed()
     }
+    fun pathString(id: Int) = path(id).drop(1).joinToString("/") { it.name }
 
     //operator fun get(pointer: String): Node<T> = path(pointer).last()
     //operator fun set(path: String, value: T): Node<T> {
@@ -91,24 +92,11 @@ val FarmPriorities = functionalComponent<RProps> { _ ->
                 //It would be neat to draw <root> as actual roots.
                 //${"--".repeat(view.path(item.id!!).size + 1)}
                 //${item.childrenIds}
-                val path = view.path(item.id!!).reversed()
-                val pathString = path.drop(1).map { it.name }.joinToString("/")
-                +"${"__".repeat(path.size - 1)}$pathString - (${item.parentId}, ${item.id})"
+                +"${"__".repeat(view.path(item.id!!).size - 1)}${view.pathString(item.id!!)} - (${item.parentId}, ${item.id})"
             }
         }
     }
 
-    //Let's make this into a CLI later it can be a form:
-    //    create A             #parent is root
-    //    create A/B           #parent is A
-    //    create A/B/C         #
-    //    move A/B/C to A/B/D  #Here C is deleted from B and added to D
-    //    create F             #
-    //    link F from A/B        #Unlike move F remains
-    //    delete A/B/D/C       #
-    //    show F               #Show F as it's parts(A/B/F)
-    //    show A/B/F           #Show part A/B/F as part of F
-    //Also we want auto-complete.
     inputComponent {
         onSubmit = { input ->
             scope.launch {
