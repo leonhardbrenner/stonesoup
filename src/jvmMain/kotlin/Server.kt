@@ -1,5 +1,5 @@
-import applications.SeedsApplication
-import applications.FarmPrioritiesApplication
+import applications.RegisterOrganizeApplication
+import applications.PlanApplication
 import com.authzee.kotlinguice4.getInstance
 import com.google.inject.Guice
 import io.ktor.application.*
@@ -14,10 +14,10 @@ import io.ktor.server.netty.*
 
 fun main() {
     DatabaseFactory.init()
-    val shoppingListApplication = Guice.createInjector(FarmPrioritiesApplication.Module)
-        .getInstance<FarmPrioritiesApplication>()
-    val johnnySeedsApplication = Guice.createInjector(SeedsApplication.Module)
-        .getInstance<SeedsApplication>()
+    val shoppingListApplication = Guice.createInjector(PlanApplication.Module)
+        .getInstance<PlanApplication>()
+    val johnnySeedsApplication = Guice.createInjector(RegisterOrganizeApplication.Module)
+        .getInstance<RegisterOrganizeApplication>()
 
     val port = System.getenv("PORT")?.toInt() ?: 9090
     embeddedServer(Netty, port) {

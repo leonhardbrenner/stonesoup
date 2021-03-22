@@ -19,7 +19,7 @@ import org.litote.kmongo.pullByFilter
 import org.litote.kmongo.setValue
 
 //Moving on I need to fix my id. I will move to name=path. This gives me assigned vs unassigned.
-class FarmPrioritiesApplication @Inject constructor(val service: Service) {
+class PlanApplication @Inject constructor(val service: Service) {
 
     fun routesFrom(routing: Routing) = routing.apply {
         route(Chore.path) {
