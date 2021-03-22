@@ -1,5 +1,7 @@
 package models
 
+import kotlinx.serialization.Serializable
+
 /*
   Todo
     Change from Chore: Node to Node(Chore).
@@ -10,8 +12,16 @@ package models
     Try Node and Node.Dto out
  */
 interface Node {
-    var id: Int?
+    var id: Int
     var parentId: Int
     var childrenIds: List<Int>
-    val name: String //TODO - I think this is optional and I need symbol instead.
+    val symbol get() = id.toString().padStart(10, '0')
 }
+
+//Make this a sealed class with Move and Link as sub classes.
+@Serializable
+data class NodeUpdate(
+    val id: Int,
+    val moveTo: Int? = null, //Todo - String -> Path
+    val linkTo: Int? = null
+)

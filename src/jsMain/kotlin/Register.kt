@@ -110,21 +110,21 @@ object Register {
     }
 
     private class MySeeds(props: Props): DisplayComponent<Resources.MySeeds>(props) {
-        override suspend fun get() = SeedsApi.getMySeeds()
+        override suspend fun get() = RegisterOrganizeApi.getMySeeds()
         override fun Resources.MySeeds.label() = description //I don't think extension function is a good choice
         override fun Resources.MySeeds.transform() = detailedSeed?.image?:"No image found"
     }
     fun RBuilder.mySeeds(handler: Props.() -> Unit) = child(MySeeds::class) { attrs { handler() } }
 
     private class DetailedSeed(props: Props): DisplayComponent<Seeds.DetailedSeed>(props) {
-        override suspend fun get() = SeedsApi.getDetailedSeed()
+        override suspend fun get() = RegisterOrganizeApi.getDetailedSeed()
         override fun Seeds.DetailedSeed.label() = name
         override fun Seeds.DetailedSeed.transform() = name
     }
     fun RBuilder.detailedSeed(handler: Props.() -> Unit) = child(DetailedSeed::class) { attrs { handler() } }
 
     private class Category(props: Props): DisplayComponent<Seeds.SeedCategory>(props) {
-        override suspend fun get() = SeedsApi.getCategory()
+        override suspend fun get() = RegisterOrganizeApi.getCategory()
         override fun Seeds.SeedCategory.label() = name
         override fun Seeds.SeedCategory.transform() = image
     }

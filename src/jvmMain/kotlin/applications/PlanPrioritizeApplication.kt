@@ -13,7 +13,7 @@ import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
-import models.ChoreUpdate
+import models.NodeUpdate
 import org.litote.kmongo.addToSet
 import org.litote.kmongo.pullByFilter
 import org.litote.kmongo.setValue
@@ -35,7 +35,7 @@ class PlanApplication @Inject constructor(val service: Service) {
             }
 
             put("/{id}") {
-                val item = call.receive<ChoreUpdate>()
+                val item = call.receive<NodeUpdate>()
                 service.update(item)
                 call.respond(HttpStatusCode.OK)
             }
@@ -96,7 +96,7 @@ class PlanApplication @Inject constructor(val service: Service) {
          *   we need a field for time estimates
          *   move to tornadoFx
          */
-        suspend fun update(item: ChoreUpdate) {
+        suspend fun update(item: NodeUpdate) {
             collection.updateOne(
                 Chore::id eq parent(item.id),
                 pullByFilter(Chore::childrenIds eq item.id!!)
@@ -109,12 +109,6 @@ class PlanApplication @Inject constructor(val service: Service) {
                 Chore::id eq item.id,
                 setValue(Chore::parentId, item.moveTo!!)
             )
-            /**
-             * Find our path by looking for our name then comparing the paths.
-             *     build a name to nodes map
-             *     build path in MongoDb
-             *     nodes[name].mapIndexed { (i, node) -> if (node.path) }
-             */
 
         }
         //Todo - make this non-nullable

@@ -61,7 +61,7 @@ class TreeView<T: Node>(val rootId: Int, val collection: List<T>) {
         }
         return path.reversed()
     }
-    fun pathString(id: Int) = path(id).drop(1).joinToString("/") { it.name }
+    fun pathString(id: Int) = path(id).drop(1).joinToString("/") { it.id.toString() }
 
     //operator fun get(pointer: String): Node<T> = path(pointer).last()
     //operator fun set(path: String, value: T): Node<T> {

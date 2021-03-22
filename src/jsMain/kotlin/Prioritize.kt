@@ -41,7 +41,7 @@ object Prioritize {
             val path = Chores::class.simpleName.toString()
         }
 
-        override suspend fun get() = FarmPrioritiesApi.get()
+        override suspend fun get() = PlanPrioritizeApi.get()
 
         override fun Chore.label() = name
 

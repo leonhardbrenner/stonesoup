@@ -5,7 +5,8 @@ import kotlinx.html.js.onClickFunction
 import models.Chore
 import kotlinx.html.js.*
 import kotlinx.html.InputType
-import models.ChoreUpdate
+import models.ChoreCreate
+import models.NodeUpdate
 import org.w3c.dom.events.Event
 import org.w3c.dom.HTMLInputElement
 
@@ -24,7 +25,7 @@ val Plan = functionalComponent<RProps> { _ ->
 
     useEffect(dependencies = listOf()) {
         scope.launch {
-            setChores(FarmPrioritiesApi.get())
+            setChores(PlanPrioritizeApi.get())
         }
     }
 
@@ -36,14 +37,15 @@ val Plan = functionalComponent<RProps> { _ ->
                 key = item.id!!.toString()//toString()
                 attrs.onClickFunction = {
                     scope.launch {
-                        FarmPrioritiesApi.delete(item.id!!)
-                        setChores(FarmPrioritiesApi.get())
+                        PlanPrioritizeApi.delete(item.id)
+                        setChores(PlanPrioritizeApi.get())
                     }
                 }
                 //It would be neat to draw <root> as actual roots.
                 //${"--".repeat(view.path(item.id!!).size + 1)}
                 //${item.childrenIds}
-                +"${"__".repeat(view.path(item.id!!).size - 1)}${view.pathString(item.id!!)} - (${item.parentId}, ${item.id})"
+
+                +"${item.symbol}${"__".repeat(view.path(item.id).size - 1)}|__${item.name}"
             }
         }
     }
@@ -52,7 +54,7 @@ val Plan = functionalComponent<RProps> { _ ->
         onSubmit = { input ->
             scope.launch {
                 handleInput(input)
-                setChores(FarmPrioritiesApi.get())
+                setChores(PlanPrioritizeApi.get())
             }
         }
     }
@@ -62,24 +64,24 @@ suspend fun handleInput(input: String) {
     val parts = input.split(" ")
     if (parts[0] == "create") {
         console.log("Creating ${parts[1]}")
-        val chore = Chore(
+        val chore = ChoreCreate(
             name = parts[1].replace("!", ""),
             priority = parts[1].count { it == '!' })
-        FarmPrioritiesApi.add(chore)
+        PlanPrioritizeApi.add(chore)
     } else if (parts[0] == "move") {
-        val chore = ChoreUpdate(
+        val chore = NodeUpdate(
             id = parts[1].toInt(),
             moveTo = parts[3].toInt()
         )
-        FarmPrioritiesApi.update(chore)
+        PlanPrioritizeApi.update(chore)
     } else if (parts[0] == "link") {
-        val chore = ChoreUpdate(
+        val chore = NodeUpdate(
             id = parts[1].toInt(),
             linkTo = parts[3].toInt()
         )
-        FarmPrioritiesApi.update(chore)
+        PlanPrioritizeApi.update(chore)
     } else if (parts[0] == "delete") {
-        FarmPrioritiesApi.delete(parts[1].toInt())
+        PlanPrioritizeApi.delete(parts[1].toInt())
     }
 }
 

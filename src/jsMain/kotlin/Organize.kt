@@ -42,7 +42,7 @@ object Organize {
 
     class AvailableSeeds(props: Props<ColumnId>): Table<Resources.MySeeds, AvailableSeeds.ColumnId>(props) {
 
-        override suspend fun get() = SeedsApi.getMySeeds()
+        override suspend fun get() = RegisterOrganizeApi.getMySeeds()
 
         override fun Resources.MySeeds.label() = description
 
