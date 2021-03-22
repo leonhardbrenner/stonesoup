@@ -4,22 +4,6 @@ import kotlinx.serialization.Serializable
 
 typealias ChoreId = Int
 
-/*
-  Todo
-    Split this into Node<T> and Chore.
-    Make a symbol that is 8 characters and encoded.
-        https://stackoverflow.com/questions/53225190/produce-a-hash-string-of-fixed-length
-    Build a nicer printer.
-    Add an operation to the node which may take advantage of DSL visiting a graph.
-    Try Node and Node.Dto out
- */
-interface Node {
-    var id: Int?
-    var parentId: Int
-    var childrenIds: List<Int>
-    val name: String //TODO - I think this is optional and I need symbol instead.
-}
-
 @Serializable
 data class Chore(
     override var id: Int? = null,

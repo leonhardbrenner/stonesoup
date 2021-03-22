@@ -7,20 +7,20 @@ import models.Resources
 import react.*
 import styled.StyledElementBuilder
 
-fun RBuilder.seedOrganizer() = child(Orginizer.Component) {}
+fun RBuilder.organize() = child(Organize.Component) {}
 /**
  * This can be used with anything that can be labeled with a number.
  */
-object Orginizer {
+object Organize {
 
     val Component = functionalComponent<RProps> {
 
         val (thing, setThing) = useState<Any>(SeedsDto.MySeeds.path)
 
         val inputProps: RProps = jsObject { }
-        inputProps.asDynamic().name = "thing"
-        inputProps.asDynamic().id = "thing-simple"
-        mSelect(thing, name = "thing", onChange = { event, _ -> setThing(event.targetValue) }) {
+        inputProps.asDynamic().name = "name"
+        inputProps.asDynamic().id = "id"
+        mSelect(thing, name = "Name", onChange = { event, _ -> setThing(event.targetValue) }) {
             attrs.inputProps = inputProps
             mMenuItem("Seeds", value = SeedsDto.MySeeds.path)
             mMenuItem("Deserts", value = DessertOrganizer.path)

@@ -46,22 +46,26 @@ class App : RComponent<RProps, RState>() {
             //        fontWeight = FontWeight(theme.typography.fontWeightMedium.toString())
             //    }
             //}
+            val Register = "Register"
+            val Organize = "Organize"
+            val Plan = "Plan"
+            val Prioritize = "Prioritize"
             styledDiv {
                 css { flexGrow = 1.0; backgroundColor = Color(theme.palette.background.paper) }
                 mAppBar(position = MAppBarPosition.static) {
                     mTabs(tab1Value, onChange = { _, value -> setState { tab1Value = value } }) {
                         //Todo - register, organize, prioritize
-                        mTab("Registry", "seed-registry") //TODO - make these enums
-                        mTab("Seed Organizer", "seed-organizer")
-                        mTab("Farm Priorities", "farm-priorities") //This can be personal or community
-                        mTab("Farm Priorities2", "farm-priorities2") //This can be personal or community
+                        mTab(Register, Register) //TODO - make these enums
+                        mTab(Organize, Organize)
+                        mTab(Plan, Plan) //This can be personal or community
+                        mTab(Prioritize, Prioritize) //This can be personal or community
                     }
                 }
                 when (tab1Value) {
-                    "seed-registry" -> { seedRegistry() }
-                    "seed-organizer" -> { seedOrganizer() }
-                    "farm-priorities" -> { farmPriorities() }
-                    "farm-priorities2" -> { farmPriorities2() }
+                    Register -> { register() }
+                    Organize -> { organize() }
+                    Plan -> { plan() }
+                    Prioritize -> { prioritize() }
                 }
             }
         }

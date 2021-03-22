@@ -47,7 +47,9 @@ abstract class Table<T, ColumnId>(props: Props<ColumnId>) : RComponent<Table.Pro
     // State for sort and select example
 
     protected val selectedIds = mutableSetOf<Int>()
+
     protected var page = 0
+
     protected var rowsPerPage = 10
 
     abstract suspend fun get(): List<T>

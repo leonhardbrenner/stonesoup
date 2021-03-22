@@ -6,20 +6,19 @@ import models.Chore
 import react.*
 import styled.StyledElementBuilder
 
-fun RBuilder.farmPriorities2() = child(FarmPriorities2.Component) {}
 /**
  * This can be used with anything that can be labeled with a number.
  */
-object FarmPriorities2 {
+object Prioritize {
 
     val Component = functionalComponent<RProps> {
 
         val (thing, setThing) = useState<Any>(Chores.path)
 
         val inputProps: RProps = jsObject { }
-        inputProps.asDynamic().name = "thing"
-        inputProps.asDynamic().id = "thing-simple"
-        mSelect(thing, name = "thing", onChange = { event, _ -> setThing(event.targetValue) }) {
+        inputProps.asDynamic().name = "name"
+        inputProps.asDynamic().id = "id"
+        mSelect(thing, name = "name", onChange = { event, _ -> setThing(event.targetValue) }) {
             attrs.inputProps = inputProps
             mMenuItem("Chores", value = Chores.path)
         }
@@ -62,7 +61,7 @@ object FarmPriorities2 {
                 mCheckbox(isSelected)
             }
             mTableCell(align = MTableCellAlign.left, padding = MTableCellPadding.none) { +treeView.pathString(source.id!!) }
-            mTableCell(align = MTableCellAlign.right) { +"" } //description
+            mTableCell(align = MTableCellAlign.right) { +(source.description?:"") } //description
             mTableCell(align = MTableCellAlign.right) { +source.id!!.toString() }
             mTableCell(align = MTableCellAlign.right) { +treeView.pathString(source.parentId) }
         }
@@ -86,3 +85,5 @@ object FarmPriorities2 {
     }
 
 }
+
+fun RBuilder.prioritize() = child(Prioritize.Component) {}

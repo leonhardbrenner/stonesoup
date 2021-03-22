@@ -6,59 +6,10 @@ import models.Chore
 import kotlinx.html.js.*
 import kotlinx.html.InputType
 import models.ChoreUpdate
-import models.Node
 import org.w3c.dom.events.Event
 import org.w3c.dom.HTMLInputElement
 
-/*
-  Todo
-    introduce material list.
-    move and delete should use paths instead of ids?
-    display leaf to root order
-    render in material list
-    add controls I mention them elsewhere
-    move TreeView out
-    maybe TreeView can provide and abstraction around our API?
-    Implement a walker for Infix and Postfix.
-    Implement path which is just a walk back up the tree.
- */
-class TreeView<T: Node>(val rootId: Int, val collection: List<T>) {
-
-    fun walk(id: Int = rootId, block: (T) -> Unit) {
-        val node = collection.find { it.id == id }
-        if (node != null) {
-            block(node!!)
-            node!!.childrenIds.map {
-                walk(it, block)
-            }
-        }
-    }
-
-    fun find(id: Int): T {
-        return collection.find { it.id == id }!!
-    }
-
-    fun path(id: Int): List<T> {
-        var nodeId = id
-        val path = mutableListOf<T>()
-        while (nodeId!=-1) {
-            find(nodeId).let { node ->
-                path.add(node)
-                nodeId = node.parentId
-            }
-        }
-        return path.reversed()
-    }
-    fun pathString(id: Int) = path(id).drop(1).joinToString("/") { it.name }
-
-    //operator fun get(pointer: String): Node<T> = path(pointer).last()
-    //operator fun set(path: String, value: T): Node<T> {
-    //    return get(path).set(value)
-    //}
-
-}
-
-fun RBuilder.farmPriorities() = child(FarmPriorities) {}
+fun RBuilder.plan() = child(Plan) {}
 
 private val scope = MainScope()
 
@@ -68,7 +19,7 @@ private val scope = MainScope()
  * volunteers and task leaders. Don't worry we'll get there:)
  */
 //https://litote.org/kmongo/dokka/kmongo/org.litote.kmongo/graph-lookup.html
-val FarmPriorities = functionalComponent<RProps> { _ ->
+val Plan = functionalComponent<RProps> { _ ->
     val (chores, setChores) = useState(listOf<Chore>())
 
     useEffect(dependencies = listOf()) {

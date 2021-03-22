@@ -95,8 +95,15 @@ abstract class TreeTable<T: Node, ColumnId>(props: Props<ColumnId>) : RComponent
                     )
                     mTableBody {
                         //state.items.subList(page * rowsPerPage, min((page + 1) * rowsPerPage, size)).forEach {
-                        treeView.walk { node ->
-                            if (node.id==0) return@walk
+                        /*Todo - toggle between walk and walk2 for chores. This will allow us to see how chores fit into
+                             the larger plan. We should be able to select a few item in chore view then see switch to
+                             plan view and only see the task that depend on these chores all the way up to the projects.
+                             It may make sense to add a narrow feature here.
+                          Todo - bring back sorting of the other columns.
+                          Todo - create a permalink from the path(id).map { it.symbol }.hashCode().encodeSHA()
+                         */
+                        treeView.depthFirstWalk { node ->
+                            if (node.id==0) return@depthFirstWalk
                             val isSelected = selectedIds.contains(node.id)
                             mTableRow(node.id, isSelected, true, onClick = { _ -> handleClick(node.id!!) }) {
                                 attrs.asDynamic().tabIndex = -1
