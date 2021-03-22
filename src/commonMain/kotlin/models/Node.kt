@@ -15,7 +15,7 @@ interface Node {
     var id: Int
     var parentId: Int
     var childrenIds: List<Int>
-    val symbol get() = id.toString().padStart(10, '0')
+    val symbol get() = id.toString().padStart(4, '0')
 }
 
 //Make this a sealed class with Move and Link as sub classes.

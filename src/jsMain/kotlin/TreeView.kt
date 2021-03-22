@@ -49,6 +49,7 @@ class TreeView<T: Node>(val rootId: Int, val collection: List<T>) {
     fun find(id: Int): T {
         return collection.find { it.id == id }!!
     }
+    operator fun get(id: Int) = collection.find { it.id == id }!!
 
     fun path(id: Int): List<T> {
         var nodeId = id

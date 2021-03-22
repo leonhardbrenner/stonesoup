@@ -18,6 +18,7 @@ object Prioritize {
         val inputProps: RProps = jsObject { }
         inputProps.asDynamic().name = "name"
         inputProps.asDynamic().id = "id"
+
         mSelect(thing, name = "name", onChange = { event, _ -> setThing(event.targetValue) }) {
             attrs.inputProps = inputProps
             mMenuItem("Chores", value = Chores.path)
@@ -45,41 +46,34 @@ object Prioritize {
 
         override fun Chore.label() = name
 
-        enum class ColumnId { Name, Description, Id, Parent }
+        enum class ColumnId { Id, Description, Priority, RequiredBy }
 
         override var orderByColumn: ColumnId = ColumnId.Description
-
-        //fun tabs(source: Chore) {
-        //    var node = source.id
-        //    while (node!=null) {
-        //        node = node.parentI
-        //    }
-        //}
 
         override fun StyledElementBuilder<*>.buildRow(source: Chore, isSelected: Boolean) {
             mTableCell(padding = MTableCellPadding.checkbox) {
                 mCheckbox(isSelected)
             }
-            mTableCell(align = MTableCellAlign.left, padding = MTableCellPadding.none) { +treeView.pathString(source.id!!) }
-            mTableCell(align = MTableCellAlign.right) { +(source.description?:"") } //description
-            mTableCell(align = MTableCellAlign.right) { +source.id!!.toString() }
-            mTableCell(align = MTableCellAlign.right) { +treeView.pathString(source.parentId) }
+            mTableCell(align = MTableCellAlign.left, padding = MTableCellPadding.checkbox) { +source.id.toString().padStart(4) }
+            mTableCell(align = MTableCellAlign.left) { +(source.name) }
+            mTableCell(align = MTableCellAlign.left) { +(source.priority?.toString()?:"") }
+            mTableCell(align = MTableCellAlign.left) { +(if (source.parentId==0) "" else treeView[source.parentId].name) }
         }
 
         override fun ColumnId.comparator(a: Chore, b: Chore) = when (this) {
-            ColumnId.Name -> (a.name?:"").compareTo(b.name?:"")
-            ColumnId.Description -> 0
-            ColumnId.Id -> a.id!!.compareTo(b.id!!)
-            ColumnId.Parent -> a.parentId!!.compareTo(b.parentId!!)
+            ColumnId.Id -> (a.id).compareTo(b.id)
+            ColumnId.Description -> (a.name).compareTo(b.name)
+            ColumnId.Priority -> a.priority!!.compareTo(b.priority!!)
+            ColumnId.RequiredBy -> treeView[a.parentId].name.compareTo(treeView[b.parentId].name)
         }
 
         override val Chore._id get() = id!!
 
         override val columnData = listOf(
-            ColumnData(ColumnId.Name, false, false, "Name"),
-            ColumnData(ColumnId.Description, true, false, "Description"),
-            ColumnData(ColumnId.Id, true, false, "Id"),
-            ColumnData(ColumnId.Parent, true, false, "Parent")
+            ColumnData(ColumnId.Id, false, false, "Id"),
+            ColumnData(ColumnId.Description, false, false, "Description"),
+            ColumnData(ColumnId.Priority, false, false, "Priority"),
+            ColumnData(ColumnId.RequiredBy, false, false, "Required By")
         )
 
     }
