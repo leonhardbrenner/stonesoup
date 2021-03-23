@@ -33,6 +33,7 @@ val Plan = functionalComponent<RProps> { _ ->
     div {
         val view = TreeView(0, chores)
         view.walk { item ->
+        //chores.forEach { item ->
             div {
                 key = item.id!!.toString()//toString()
                 attrs.onClickFunction = {
@@ -44,6 +45,7 @@ val Plan = functionalComponent<RProps> { _ ->
                 //It would be neat to draw <root> as actual roots.
                 //${"--".repeat(view.path(item.id!!).size + 1)}
                 //${item.childrenIds}
+                //+"${item.symbol}| ${item.parentId}__${item.name}"
 
                 +"${item.symbol}${"__".repeat(view.path(item.id).size - 1)}|__${item.name}"
             }
@@ -61,27 +63,34 @@ val Plan = functionalComponent<RProps> { _ ->
 }
 
 suspend fun handleInput(input: String) {
-    val parts = input.split(" ")
-    if (parts[0] == "create") {
-        console.log("Creating ${parts[1]}")
-        val chore = ChoreCreate(
-            name = parts[1].replace("!", ""),
-            priority = parts[1].count { it == '!' })
-        PlanPrioritizeApi.add(chore)
-    } else if (parts[0] == "move") {
-        val chore = NodeUpdate(
-            id = parts[1].toInt(),
-            moveTo = parts[3].toInt()
-        )
-        PlanPrioritizeApi.update(chore)
-    } else if (parts[0] == "link") {
-        val chore = NodeUpdate(
-            id = parts[1].toInt(),
-            linkTo = parts[3].toInt()
-        )
-        PlanPrioritizeApi.update(chore)
-    } else if (parts[0] == "delete") {
-        PlanPrioritizeApi.delete(parts[1].toInt())
+    val (action, subject) = input.split(" ", limit = 2)
+    when (action) {
+        "create" -> {
+            console.log("Creating ${subject[1]}")
+            val chore = ChoreCreate(
+                name = subject.replace("!", ""),
+                priority = subject.count { it == '!' })
+            PlanPrioritizeApi.add(chore)
+        }
+        "move" -> {
+            val subjectParts = subject.split(" ")
+            val chore = NodeUpdate(
+                id = subjectParts[0].toInt(),
+                moveTo = subjectParts[2].toInt()
+            )
+            PlanPrioritizeApi.update(chore)
+        }
+        "link" -> {
+            val subjectParts = subject.split(" ")
+            val chore = NodeUpdate(
+                id = subjectParts[0].toInt(),
+                linkTo = subjectParts[2].toInt()
+            )
+            PlanPrioritizeApi.update(chore)
+        }
+        "delete" -> {
+            PlanPrioritizeApi.delete(subject[1].toInt())
+        }
     }
 }
 

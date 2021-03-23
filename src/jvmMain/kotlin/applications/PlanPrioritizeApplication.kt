@@ -13,10 +13,12 @@ import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
+import models.ChoreCreate
 import models.NodeUpdate
 import org.litote.kmongo.addToSet
 import org.litote.kmongo.pullByFilter
 import org.litote.kmongo.setValue
+import java.util.*
 
 //Moving on I need to fix my id. I will move to name=path. This gives me assigned vs unassigned.
 class PlanApplication @Inject constructor(val service: Service) {
@@ -29,7 +31,7 @@ class PlanApplication @Inject constructor(val service: Service) {
             }
 
             post {
-                val item = call.receive<Chore>()
+                val item = call.receive<ChoreCreate>()
                 service.add(item)
                 call.respond(HttpStatusCode.OK)
             }
@@ -76,13 +78,13 @@ class PlanApplication @Inject constructor(val service: Service) {
             return collection.find().toList()
         }
 
-        suspend fun add(item: Chore) {
-            //Todo - move this into collection init.
+        suspend fun add(item: ChoreCreate) {
+            val chore = Chore((Date().time/1000).toInt(), parentId = 0, listOf(), item.name, item.description, item.priority, item.estimateInHours)
             collection.updateOne(
-                Chore::id eq item.parentId,
-                addToSet(Chore::childrenIds, item.id!!)
+                Chore::id eq chore.parentId,
+                addToSet(Chore::childrenIds, chore.id)
             )
-            collection.insertOne(item)
+            collection.insertOne(chore)
         }
 
         /**
