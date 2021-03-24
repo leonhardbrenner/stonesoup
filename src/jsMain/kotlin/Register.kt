@@ -1,5 +1,5 @@
-import Registry.DisplayComponent.ComponentStyles.inline
-import Registry.DisplayComponent.ComponentStyles.listDiv
+import Register.DisplayComponent.ComponentStyles.inline
+import Register.DisplayComponent.ComponentStyles.listDiv
 import com.ccfraser.muirwik.components.*
 import com.ccfraser.muirwik.components.list.*
 import com.ccfraser.muirwik.components.menu.mMenuItem
@@ -17,14 +17,20 @@ import styled.styledDiv
 
 private val scope = MainScope()
 
-fun RBuilder.seedRegistry() = child(Registry.Component) {}
+fun RBuilder.register() = child(Register.Component) {}
 
 //Registry is for creating categories and to add, update, and delete items from category
-object Registry {
+object Register {
+
+    interface Props : RProps
+
+    interface State<T> : RState {
+        var items: List<Pair<String, T>>
+        var currentSeed: String
+    }
 
     val Component = functionalComponent<RProps> {
         val (type, setType) = useState<Any>(SeedsDto.DetailedSeed.path)
-
         val inputProps: RProps = jsObject { }
         inputProps.asDynamic().name = "type"
         inputProps.asDynamic().id = "type-simple"
@@ -39,13 +45,6 @@ object Registry {
             SeedsDto.DetailedSeed.path -> detailedSeed {}
             SeedsDto.SeedCategory.path -> category {}
         }
-
-    }
-
-    interface Props : RProps
-    interface State<T> : RState {
-        var items: List<Pair<String, T>>
-        var currentSeed: String
     }
 
     private abstract class DisplayComponent<T> (props: Props) : RComponent<Props, State<T>>() {
@@ -72,7 +71,8 @@ object Registry {
         }
 
         override fun RBuilder.render() {
-            // For building things that we don't want to render now (e.g. the component will render it later), we need another builder
+            // For building things that we don't want to render now (e.g. the component will render it later), we need
+            // another builder.
             val builder2 = RBuilder()
             themeContext.Consumer { theme ->
                 val themeStyles = object : StyleSheet("ComponentStyles", isStatic = true) {
@@ -110,21 +110,21 @@ object Registry {
     }
 
     private class MySeeds(props: Props): DisplayComponent<Resources.MySeeds>(props) {
-        override suspend fun get() = SeedsApi.getMySeeds()
+        override suspend fun get() = RegisterOrganizeApi.getMySeeds()
         override fun Resources.MySeeds.label() = description //I don't think extension function is a good choice
         override fun Resources.MySeeds.transform() = detailedSeed?.image?:"No image found"
     }
     fun RBuilder.mySeeds(handler: Props.() -> Unit) = child(MySeeds::class) { attrs { handler() } }
 
     private class DetailedSeed(props: Props): DisplayComponent<Seeds.DetailedSeed>(props) {
-        override suspend fun get() = SeedsApi.getDetailedSeed()
+        override suspend fun get() = RegisterOrganizeApi.getDetailedSeed()
         override fun Seeds.DetailedSeed.label() = name
         override fun Seeds.DetailedSeed.transform() = name
     }
     fun RBuilder.detailedSeed(handler: Props.() -> Unit) = child(DetailedSeed::class) { attrs { handler() } }
 
     private class Category(props: Props): DisplayComponent<Seeds.SeedCategory>(props) {
-        override suspend fun get() = SeedsApi.getCategory()
+        override suspend fun get() = RegisterOrganizeApi.getCategory()
         override fun Seeds.SeedCategory.label() = name
         override fun Seeds.SeedCategory.transform() = image
     }

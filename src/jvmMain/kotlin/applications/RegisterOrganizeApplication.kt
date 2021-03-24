@@ -8,7 +8,7 @@ import io.ktor.routing.*
 import services.SeedsService
 import javax.inject.Inject
 
-class SeedsApplication @Inject constructor(val seedsService: SeedsService) {
+class RegisterOrganizeApplication @Inject constructor(val seedsService: SeedsService) {
 
     object Module : AbstractModule()
 

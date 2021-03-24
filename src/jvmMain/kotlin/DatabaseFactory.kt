@@ -8,7 +8,7 @@ import io.ktor.config.HoconApplicationConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-//https://www.thebookofjoel.com/kotlin-ktor-exposed-postgres
+//Based on https://www.thebookofjoel.com/kotlin-ktor-exposed-postgres
 object DatabaseFactory {
 
     private val appConfig = HoconApplicationConfig(ConfigFactory.load())
@@ -19,7 +19,6 @@ object DatabaseFactory {
     fun init() {
         Database.connect(hikari())
         //dbManagers.SeedsDBManager.apply { drop(); create(); populate() }
-        //dbManagers.DvdRentalDBManager.apply { drop(); create(); populate() }
     }
 
     private fun hikari(): HikariDataSource {
@@ -39,5 +38,4 @@ object DatabaseFactory {
         withContext(Dispatchers.IO) {
             transaction { block() }
         }
-
 }

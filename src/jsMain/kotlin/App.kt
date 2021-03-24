@@ -6,7 +6,7 @@ import styled.css
 import styled.styledDiv
 
 class App : RComponent<RProps, RState>() {
-    private var tab1Value: Any = "seeds-organizer"
+    private var tab1Value: Any = "seed-organizer"
 
     private object CustomTabStyles : StyleSheet("ComponentStyles", isStatic = true) {
         val tabsRoot by css {
@@ -46,19 +46,26 @@ class App : RComponent<RProps, RState>() {
             //        fontWeight = FontWeight(theme.typography.fontWeightMedium.toString())
             //    }
             //}
+            val Register = "Register"
+            val Organize = "Organize"
+            val Plan = "Plan"
+            val Prioritize = "Prioritize"
             styledDiv {
                 css { flexGrow = 1.0; backgroundColor = Color(theme.palette.background.paper) }
                 mAppBar(position = MAppBarPosition.static) {
                     mTabs(tab1Value, onChange = { _, value -> setState { tab1Value = value } }) {
-                        mTab("Manifest", "seed-registry") //TODO - make these enums
-                        mTab("Seed Orginizer", "seed-organizer")
-                        mTab("Farm Priorities", "farm-priorities") //This can be personal or community
+                        //Todo - register, organize, prioritize
+                        mTab(Register, Register) //TODO - make these enums
+                        mTab(Organize, Organize)
+                        mTab(Plan, Plan) //This can be personal or community
+                        mTab(Prioritize, Prioritize) //This can be personal or community
                     }
                 }
                 when (tab1Value) {
-                    "seed-registry" -> { seedRegistry() }
-                    "seed-organizer" -> { seedOrganizer() }
-                    "farm-priorities" -> { farmPriorities() }
+                    Register -> { register() }
+                    Organize -> { organize() }
+                    Plan -> { plan() }
+                    Prioritize -> { prioritize() }
                 }
             }
         }
