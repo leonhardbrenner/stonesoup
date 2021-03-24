@@ -14,4 +14,4 @@ Anyway, I think the name says it all. I am hoping to bridge the gap between tech
 
 It's all a little raw but one day I will delete this sentence.
 
-https://user-images.githubusercontent.com/12137736/112363149-8eeb1780-8cab-11eb-8a82-20c0fe273cf4.mp4
+[![Watch the video](https://user-images.githubusercontent.com/12137736/112363149-8eeb1780-8cab-11eb-8a82-20c0fe273cf4.mp4)
