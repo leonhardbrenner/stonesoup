@@ -13,3 +13,5 @@ I was thinking it would be nice to have dashboard that could pick a few workflow
 Anyway, I think the name says it all. I am hoping to bridge the gap between technology and community. I make no claims to be up to the task so if anyone has design suggestions or wants to fork and show me how to do something better that is part of the fun.
 
 It's all a little raw but one day I will delete this sentence.
+
+https://user-images.githubusercontent.com/12137736/112363149-8eeb1780-8cab-11eb-8a82-20c0fe273cf4.mp4
