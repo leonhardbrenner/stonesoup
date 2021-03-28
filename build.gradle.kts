@@ -142,6 +142,8 @@ application {
 
 tasks.register<ModelGenerator>("generate")
 
+tasks.register<PlanPrioritize>("prioritize")
+
 // include JS artifacts in any JAR we generate
 tasks.getByName<Jar>("jvmJar") {
     val taskName = if (project.hasProperty("isProduction")) {
