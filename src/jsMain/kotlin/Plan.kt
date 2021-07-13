@@ -10,7 +10,6 @@ import models.NodeUpdate
 import org.w3c.dom.events.Event
 import org.w3c.dom.HTMLInputElement
 
-fun RBuilder.plan() = child(Plan) {}
 
 private val scope = MainScope()
 
@@ -47,7 +46,7 @@ val Plan = functionalComponent<RProps> { _ ->
                 //${item.childrenIds}
                 //+"${item.symbol}| ${item.parentId}__${item.name}"
 
-                +"${item.symbol}${"__".repeat(view.path(item.id).size - 1)}|__${item.name}"
+                +"${item.symbol}${"__".repeat(view.path(item.id).size - 1)}|--${item.name}"
             }
         }
     }
