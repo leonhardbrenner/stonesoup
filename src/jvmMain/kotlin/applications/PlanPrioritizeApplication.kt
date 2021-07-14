@@ -21,7 +21,7 @@ import org.litote.kmongo.setValue
 import java.util.*
 
 //Moving on I need to fix my id. I will move to name=path. This gives me assigned vs unassigned.
-class PlanApplication @Inject constructor(val service: Service) {
+class PlanPrioritizeApplication @Inject constructor(val service: Service) {
 
     fun routesFrom(routing: Routing) = routing.apply {
         route(Chore.path) {
@@ -75,7 +75,8 @@ class PlanApplication @Inject constructor(val service: Service) {
             get() = database.getCollection<Chore>()
 
         suspend fun get(): List<Chore> {
-            collection.insertOne(Chore(name = "<root>", id = 0, parentId = -1))
+            //Reinsert root.
+            //collection.insertOne(Chore(name = "<root>", id = 0, parentId = -1))
             return collection.find().toList()
         }
 

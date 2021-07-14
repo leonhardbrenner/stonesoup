@@ -1,7 +1,15 @@
+import com.ccfraser.muirwik.components.MHiddenImplementation
+import com.ccfraser.muirwik.components.card.mCard
+import com.ccfraser.muirwik.components.card.mCardActionArea
+import com.ccfraser.muirwik.components.card.mCardContent
+import com.ccfraser.muirwik.components.mTypography
 import react.*
 import react.dom.*
 import kotlinx.coroutines.*
-import kotlinx.html.js.onClickFunction
+import kotlinx.css.marginLeft
+import kotlinx.css.padding
+import kotlinx.css.paddingLeft
+import kotlinx.css.px
 import models.Chore
 import kotlinx.html.js.*
 import kotlinx.html.InputType
@@ -9,7 +17,7 @@ import models.ChoreCreate
 import models.NodeUpdate
 import org.w3c.dom.events.Event
 import org.w3c.dom.HTMLInputElement
-
+import styled.css
 
 private val scope = MainScope()
 
@@ -29,13 +37,13 @@ val Plan = functionalComponent<RProps> { _ ->
     }
 
 
-    div {
+    mCard {
         val view = TreeView(0, chores)
         view.walk { item ->
         //chores.forEach { item ->
-            div {
+            mCardActionArea {
                 key = item.id!!.toString()//toString()
-                attrs.onClickFunction = {
+                attrs.onClick = {
                     scope.launch {
                         PlanPrioritizeApi.delete(item.id)
                         setChores(PlanPrioritizeApi.get())
@@ -45,8 +53,13 @@ val Plan = functionalComponent<RProps> { _ ->
                 //${"--".repeat(view.path(item.id!!).size + 1)}
                 //${item.childrenIds}
                 //+"${item.symbol}| ${item.parentId}__${item.name}"
+                mCardContent {
+                    css {
+                        marginLeft = ((view.path(item.id).size -1) * 10).px
+                    }
+                    mTypography("${item.name} - ${item.symbol}", component = "p" )
+                }
 
-                +"${item.symbol}${"__".repeat(view.path(item.id).size - 1)}|--${item.name}"
             }
         }
     }
