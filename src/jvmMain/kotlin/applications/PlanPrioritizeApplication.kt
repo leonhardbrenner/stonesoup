@@ -21,12 +21,16 @@ import org.litote.kmongo.setValue
 import java.util.*
 
 //Moving on I need to fix my id. I will move to name=path. This gives me assigned vs unassigned.
-class PlanPrioritizeApplication @Inject constructor(val service: Service) {
+class PlanPrioritizeApplication @Inject constructor(val service: Service, val database: CoroutineDatabase) {
+
+    val collection
+        get() = database.getCollection<Chore>()
 
     fun routesFrom(routing: Routing) = routing.apply {
         route(Chore.path) {
 
             get {
+                //call.respond(collection.find().toList())
                 call.respond(service.get())
             }
 
@@ -42,7 +46,7 @@ class PlanPrioritizeApplication @Inject constructor(val service: Service) {
             //    service.update(item)
             //    call.respond(HttpStatusCode.OK)
             //}
-            //
+
             //delete("/{id}") {
             //    val id = call.parameters["id"]?.toInt() ?: error("Invalid delete request")
             //    service.delete(id)
@@ -114,13 +118,13 @@ class PlanPrioritizeApplication @Inject constructor(val service: Service) {
         //        setValue(Chore::parentId, item.moveTo!!)
         //    )
         //}
-        ////Todo - make this non-nullable
-        //suspend fun element(id: Int) =
-        //    collection.findOne(Chore::id eq id)
-        //
-        //suspend fun parent(id: Int) =
-        //    element(id)!!.parentId
-        //
+        //Todo - make this non-nullable
+        suspend fun element(id: Int) =
+            collection.findOne(Chore::id eq id)
+
+        suspend fun parent(id: Int) =
+            element(id)!!.parentId
+
         //suspend fun delete(id: Int) {
         //    collection.updateOne(
         //        Chore::id eq parent(id),
