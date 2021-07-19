@@ -75,7 +75,7 @@ class PlanApplication @Inject constructor(val service: Service) {
             get() = database.getCollection<Chore>()
 
         suspend fun get(): List<Chore> {
-            //collection.insertOne(Chore(name = "<root>", id = 0, parentId = -1))
+            collection.insertOne(Chore(name = "<root>", id = 0, parentId = -1))
             return collection.find().toList()
         }
 

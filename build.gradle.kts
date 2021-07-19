@@ -14,19 +14,17 @@ version = "1.0-SNAPSHOT"
 
 repositories {
     //maven("https://dl.bintray.com/kotlin/kotlin-eap")
+    //mavenLocal()
     mavenCentral()
-    jcenter()
+    //jcenter()
     //maven("https://dl.bintray.com/kotlin-js-wrappers/") // react, styled, ...
     //maven { setUrl("https://dl.bintray.com/kotlin/kotlin-js-wrappers") }
 }
 
 plugins {
-    kotlin("multiplatform") version "1.5.20"
-    //kotlin("multiplatform") version "1.5.20"
+    kotlin("multiplatform") version "1.5.20-RC"
     application //to run JVM part
     kotlin("plugin.serialization") version "1.5.20"
-    //Not sure I enjoyed using this the last time it make me use ugly sql. Must be something more kotliny
-    //id( "org.flywaydb.flyway") version "5.2.4"
 }
 
 //apply(plugin="kotlin-kapt")
@@ -71,7 +69,7 @@ kotlin {
 
                 //https://github.com/JetBrains/Exposed/wiki/Getting-Started
                 //TODO - This belongs in gradle.properties
-                val exposed_version = "0.25.1"
+                val exposed_version = "0.31.1"
                 implementation( "org.jetbrains.exposed:exposed-core:$exposed_version")
                 implementation( "org.jetbrains.exposed:exposed-dao:$exposed_version")
                 implementation( "org.jetbrains.exposed:exposed-jdbc:$exposed_version")
@@ -79,7 +77,7 @@ kotlin {
                 // for logging (StdOutSqlLogger), see
                 // http://www.slf4j.org/codes.html#StaticLoggerBinder
                 implementation("org.slf4j:slf4j-nop:1.7.30")
-                implementation("org.jetbrains.exposed:exposed:0.12.1")
+                //implementation("org.jetbrains.exposed:exposed:0.17.13")
                 implementation("com.zaxxer:HikariCP:2.7.8")
                 implementation("org.postgresql:postgresql:42.2.2")
                 //implementation("org.flywaydb:flyway-core:5.2.4")
@@ -88,9 +86,8 @@ kotlin {
                 implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
                 implementation("com.squareup:kotlinpoet:1.5.0")
 
-                implementation("com.github.doyaaaaaken:kotlin-csv-jvm:0.15.0")
-                implementation("com.github.doyaaaaaken:kotlin-csv-jvm:0.10.4")
-                implementation("com.vhl.blackmo:kotlin-grass-jvm:0.3.0")
+                implementation("com.github.doyaaaaaken:kotlin-csv-jvm:0.15.2")
+                implementation("io.github.blackmo18:kotlin-grass-jvm:0.7.1")
 
                 //Consider removing this since we already have a json library
                 // https://mvnrepository.com/artifact/io.dropwizard/dropwizard-jackson

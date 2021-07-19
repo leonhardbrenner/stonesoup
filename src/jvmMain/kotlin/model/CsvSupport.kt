@@ -3,7 +3,7 @@ package model
 import com.github.doyaaaaaken.kotlincsv.dsl.csvReader
 import com.github.doyaaaaaken.kotlincsv.dsl.csvWriter
 import com.google.common.io.CharSource
-import com.vhl.blackmo.grass.dsl.grass
+import io.github.blackmo18.grass.dsl.grass
 import org.postgresql.util.ReaderInputStream
 import java.io.File
 import java.io.SequenceInputStream
