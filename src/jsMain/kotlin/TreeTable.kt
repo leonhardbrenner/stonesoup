@@ -105,7 +105,7 @@ abstract class TreeTable<T: Node, ColumnId>(props: Props<ColumnId>) : RComponent
                         treeView.depthFirstWalk { node ->
                             if (node.id==0) return@depthFirstWalk
                             val isSelected = selectedIds.contains(node.id)
-                            mTableRow(node.id, isSelected, true, onClick = { _ -> handleClick(node.id!!) }) {
+                            mTableRow(node.id, isSelected, true, onClick = { _ -> handleClick(node.id) }) {
                                 attrs.asDynamic().tabIndex = -1
                                 attrs.asDynamic().role = "checkbox"
                                 buildRow(node, isSelected)

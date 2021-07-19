@@ -1,6 +1,6 @@
 pluginManagement {
     repositories {
-        maven { setUrl("https://dl.bintray.com/kotlin/kotlin-eap") }
+        //maven { setUrl("https://dl.bintray.com/kotlin/kotlin-eap") }
 
         mavenCentral()
 
