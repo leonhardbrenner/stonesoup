@@ -60,7 +60,7 @@ kotlin {
                 implementation("io.ktor:ktor-server-netty:$ktorVersion")
                 implementation("ch.qos.logback:logback-classic:1.2.3")
                 implementation("io.ktor:ktor-websockets:$ktorVersion")
-                implementation("org.litote.kmongo:kmongo-coroutine-serialization:4.1.1")
+                implementation("org.litote.kmongo:kmongo-coroutine-serialization:4.2.7")
                 implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.11.0")
                 implementation("com.google.inject:guice:4.2.2")
                 implementation("com.authzee.kotlinguice4:kotlin-guice:1.3.0")
