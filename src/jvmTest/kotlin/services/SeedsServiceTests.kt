@@ -63,11 +63,11 @@ class SeedsServiceTests {
         detailedSeeds
     }
 
-    @Test
-    fun testBasicSeeds() {
-        val basicSeeds = seedsService.getBasicSeeds()
-        basicSeeds
-    }
+    //@Test
+    //fun testBasicSeeds() {
+    //    val basicSeeds = seedsService.getBasicSeeds()
+    //    basicSeeds
+    //}
 
     @Test
     fun testCategories() {
@@ -75,10 +75,10 @@ class SeedsServiceTests {
         categories
     }
 
-    @Test
-    fun testSeedFacts() {
-        val seedFacts = seedsService.getSeedFacts()
-        seedFacts
-    }
+    //@Test
+    //fun testSeedFacts() {
+    //    val seedFacts = seedsService.getSeedFacts()
+    //    seedFacts
+    //}
 
 }

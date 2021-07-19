@@ -1,27 +1,32 @@
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
 //import org.jetbrains.kotlin.kapt3.base.Kapt.kapt
 
-val kotlinVersion = "1.4.0"
-val serializationVersion = "1.0.0-RC"
-val ktorVersion = "1.4.0"
-
-plugins {
-    kotlin("multiplatform") version "1.4.0"
-    application //to run JVM part
-    kotlin("plugin.serialization") version "1.4.0"
-    //Not sure I enjoyed using this the last time it make me use ugly sql. Must be something more kotliny
-    //id( "org.flywaydb.flyway") version "5.2.4"
-}
+val kotlinVersion = "1.5.20"
+val kotlinJsVersion = "1.5.20"
+val serializationVersion = "1.2.1"
+val ktorVersion = "1.6.1"
+val logbackVersion = "1.2.3"
+val kmongoVersion = "4.2.7"
+val reactWrappersVersion = "17.0.2-pre.214-kotlin-1.5.20"
 
 group = "org.example"
 version = "1.0-SNAPSHOT"
 
 repositories {
-    maven { setUrl("https://dl.bintray.com/kotlin/kotlin-eap") }
+    //maven("https://dl.bintray.com/kotlin/kotlin-eap")
     mavenCentral()
     jcenter()
-    maven("https://kotlin.bintray.com/kotlin-js-wrappers/") // react, styled, ...
-    maven { setUrl("https://dl.bintray.com/kotlin/kotlin-js-wrappers") }
+    //maven("https://dl.bintray.com/kotlin-js-wrappers/") // react, styled, ...
+    //maven { setUrl("https://dl.bintray.com/kotlin/kotlin-js-wrappers") }
+}
+
+plugins {
+    kotlin("multiplatform") version "1.5.20"
+    //kotlin("multiplatform") version "1.5.20"
+    application //to run JVM part
+    kotlin("plugin.serialization") version "1.5.20"
+    //Not sure I enjoyed using this the last time it make me use ugly sql. Must be something more kotliny
+    //id( "org.flywaydb.flyway") version "5.2.4"
 }
 
 //apply(plugin="kotlin-kapt")
@@ -108,23 +113,25 @@ kotlin {
                 //ktor client js json
                 implementation("io.ktor:ktor-client-json-js:$ktorVersion")
                 implementation("io.ktor:ktor-client-serialization-js:$ktorVersion")
+                implementation("org.jetbrains.kotlin-wrappers:kotlin-react:$reactWrappersVersion")
+                implementation("org.jetbrains.kotlin-wrappers:kotlin-react-dom:$reactWrappersVersion")
+                implementation("org.jetbrains.kotlin-wrappers:kotlin-styled:5.3.0-pre.214-kotlin-1.5.20")
+                //implementation(npm("react-hot-loader", "^4.12.20"))
+                //implementation("org.jetbrains:kotlin-react:17.0.2-pre.204-kotlin-1.5.0")
+                //implementation("org.jetbrains:kotlin-react-dom:17.0.2-pre.204-kotlin-1.5.0")
+                //implementation(npm("react", "16.13.1"))
+                //implementation(npm("react-dom", "16.13.1"))
 
-                implementation("org.jetbrains:kotlin-react:16.13.1-pre.110-kotlin-1.4.0")
-                implementation("org.jetbrains:kotlin-react-dom:16.13.1-pre.110-kotlin-1.4.0")
-                implementation(npm("react", "16.13.1"))
-                implementation(npm("react-dom", "16.13.1"))
-
-                implementation("org.jetbrains:kotlin-styled:1.0.0-pre.110-kotlin-$kotlinVersion")
-                implementation(npm("styled-components", "~5.1.1"))
-                implementation(npm("inline-style-prefixer", "~6.0.0"))
+                //implementation(npm("styled-components", "~5.1.1"))
+                //implementation(npm("inline-style-prefixer", "~6.0.0"))
 
                 /**
                  * Material UI support:
                  *     https://github.com/cfnz/muirwik
                  *     https://github.com/cfnz/muirwik-starterapp
                  */
-                implementation("com.ccfraser.muirwik:muirwik-components:0.6.2")
-                implementation(npm("react-player", "~2.6.0"))
+                implementation("com.ccfraser.muirwik:muirwik-components:0.8.2")
+                //implementation(npm("react-player", "~2.6.0"))
             }
         }
         val jsTest by getting {

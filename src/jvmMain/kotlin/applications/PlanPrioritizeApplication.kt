@@ -36,17 +36,18 @@ class PlanApplication @Inject constructor(val service: Service) {
                 call.respond(HttpStatusCode.OK)
             }
 
-            put("/{id}") {
-                val item = call.receive<NodeUpdate>()
-                service.update(item)
-                call.respond(HttpStatusCode.OK)
-            }
-
-            delete("/{id}") {
-                val id = call.parameters["id"]?.toInt() ?: error("Invalid delete request")
-                service.delete(id)
-                call.respond(HttpStatusCode.OK)
-            }
+            //XXX -- none of this works anymore. figure out the mongo api.
+            //put("/{id}") {
+            //    val item = call.receive<NodeUpdate>()
+            //    service.update(item)
+            //    call.respond(HttpStatusCode.OK)
+            //}
+            //
+            //delete("/{id}") {
+            //    val id = call.parameters["id"]?.toInt() ?: error("Invalid delete request")
+            //    service.delete(id)
+            //    call.respond(HttpStatusCode.OK)
+            //}
         }
     }
 
@@ -98,34 +99,33 @@ class PlanApplication @Inject constructor(val service: Service) {
          *   we need a field for time estimates
          *   move to tornadoFx
          */
-        suspend fun update(item: NodeUpdate) {
-            collection.updateOne(
-                Chore::id eq parent(item.id),
-                pullByFilter(Chore::childrenIds eq item.id!!)
-            )
-            collection.updateOne(
-                Chore::id eq item.moveTo,
-                addToSet(Chore::childrenIds, item.id!!)
-            )
-            collection.updateOne(
-                Chore::id eq item.id,
-                setValue(Chore::parentId, item.moveTo!!)
-            )
-
-        }
-        //Todo - make this non-nullable
-        suspend fun element(id: Int) =
-            collection.findOne(Chore::id eq id)
-
-        suspend fun parent(id: Int) =
-            element(id)!!.parentId
-
-        suspend fun delete(id: Int) {
-            collection.updateOne(
-                Chore::id eq parent(id),
-                pullByFilter(Chore::childrenIds eq id!!)
-            )
-            collection.deleteMany(Chore::id eq id)
-        }
+        //suspend fun update(item: NodeUpdate) {
+        //    collection.updateOne(
+        //        Chore::id eq parent(item.id),
+        //        pullByFilter(Chore::childrenIds eq item.id!!)
+        //    )
+        //    collection.updateOne(
+        //        Chore::id eq item.moveTo,
+        //        addToSet(Chore::childrenIds, item.id!!)
+        //    )
+        //    collection.updateOne(
+        //        Chore::id eq item.id,
+        //        setValue(Chore::parentId, item.moveTo!!)
+        //    )
+        //}
+        ////Todo - make this non-nullable
+        //suspend fun element(id: Int) =
+        //    collection.findOne(Chore::id eq id)
+        //
+        //suspend fun parent(id: Int) =
+        //    element(id)!!.parentId
+        //
+        //suspend fun delete(id: Int) {
+        //    collection.updateOne(
+        //        Chore::id eq parent(id),
+        //        pullByFilter(Chore::childrenIds eq id!!)
+        //    )
+        //    collection.deleteMany(Chore::id eq id)
+        //}
     }
 }
