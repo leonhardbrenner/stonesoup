@@ -7,3 +7,5 @@ Create an upgrade script to keep external projects current. At a minimum we shou
 https://www.jetbrains.com/space/solutions/software-teams/#space-form
 
 Pull changes from main into our improve-plan branch.
+
+We need to get themes working in this branch.
