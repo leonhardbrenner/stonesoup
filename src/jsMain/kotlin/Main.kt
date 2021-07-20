@@ -1,5 +1,7 @@
 import react.dom.render
-import kotlinx.browser.document
+import kotlin.browser.document
+
+//import kotlinx.browser.document
 
 //TODO - https://github.com/gaearon/react-hot-loader
 //@JsModule("react-hot-loader")
