@@ -1,15 +1,17 @@
 import com.ccfraser.muirwik.components.MHiddenImplementation
+import com.ccfraser.muirwik.components.button.mIconButton
 import com.ccfraser.muirwik.components.card.mCard
 import com.ccfraser.muirwik.components.card.mCardActionArea
 import com.ccfraser.muirwik.components.card.mCardContent
+import com.ccfraser.muirwik.components.list.*
+import com.ccfraser.muirwik.components.mIcon
 import com.ccfraser.muirwik.components.mTypography
+import com.ccfraser.muirwik.components.spacingUnits
+import com.ccfraser.muirwik.components.transitions.mCollapse
 import react.*
 import react.dom.*
 import kotlinx.coroutines.*
-import kotlinx.css.marginLeft
-import kotlinx.css.padding
-import kotlinx.css.paddingLeft
-import kotlinx.css.px
+import kotlinx.css.*
 import models.Chore
 import kotlinx.html.js.*
 import kotlinx.html.InputType
@@ -17,7 +19,9 @@ import models.ChoreCreate
 import models.NodeUpdate
 import org.w3c.dom.events.Event
 import org.w3c.dom.HTMLInputElement
+import styled.StyleSheet
 import styled.css
+import styled.styledDiv
 
 private val scope = MainScope()
 
@@ -35,7 +39,6 @@ val Plan = functionalComponent<RProps> { _ ->
             setChores(PlanPrioritizeApi.get())
         }
     }
-
 
     mCard {
         val view = TreeView(0, chores)

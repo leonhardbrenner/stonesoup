@@ -9,6 +9,7 @@ enum class Label(val text: String) {
     Register("Register"),
     Organize("Organize"),
     Plan("Plan"),
+    Plan2("Plan2"),
     Prioritize("Prioritize")
 }
 
@@ -61,6 +62,7 @@ class App : RComponent<RProps, RState>() {
                         mTab(Label.Register.text, Label.Register.text)
                         mTab(Label.Organize.text, Label.Organize.text)
                         mTab(Label.Plan.text, Label.Plan.text) //This can be personal or community
+                        mTab(Label.Plan2.text, Label.Plan2.text) //This can be personal or community
                         mTab(Label.Prioritize.text, Label.Prioritize.text) //This can be personal or community
                     }
                 }
@@ -68,6 +70,7 @@ class App : RComponent<RProps, RState>() {
                     Label.Register.text -> { register() }
                     Label.Organize.text -> { organize() }
                     Label.Plan.text -> { child(Plan) {} }
+                    Label.Plan2.text -> { plan2() }
                     Label.Prioritize.text -> { prioritize() }
                 }
             }
