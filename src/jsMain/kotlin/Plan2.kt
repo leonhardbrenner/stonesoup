@@ -16,12 +16,12 @@ import styled.StyleSheet
 import styled.css
 import styled.styledDiv
 
-external interface PlanState: RState {
+external interface Plan2Props: RProps {
     var chores: List<Chore>
 }
 
 //class Plan2 : RComponent<RProps, PlanState>() {
-class Plan2 : RComponent<RProps, RState>() {
+class Plan2 : RComponent<Plan2Props, RState>() {
     private var expanded: Boolean = false
 
     private object ComponentStyles : StyleSheet("ComponentStyles", isStatic = true) {
@@ -29,18 +29,7 @@ class Plan2 : RComponent<RProps, RState>() {
             display = Display.inlineFlex
             padding(1.spacingUnits)
         }
-
     }
-
-    //override fun PlanState.init() {
-    //    val scope = MainScope()
-    //    scope.launch {
-    //        val prioritizedChores = PlanPrioritizeApi.get()
-    //        setState {
-    //            chores = prioritizedChores
-    //        }
-    //    }
-    //}
 
     override fun RBuilder.render() {
         // For building things that we don't want to render now (e.g. the component will render it later), we need another builder
@@ -88,47 +77,51 @@ class Plan2 : RComponent<RProps, RState>() {
                     }
                 }
 
-                //mCard {
-                //    val view = TreeView(0, state.chores)
-                //    view.walk { item ->
-                //        //chores.forEach { item ->
-                //        mCardActionArea {
-                //            key = item.id!!.toString()//toString()
-                //            attrs.onClick = {
-                //                //scope.launch {
-                //                    //PlanPrioritizeApi.delete(item.id)
-                //                    //val prioritizedChores = PlanPrioritizeApi.get()
-                //                    //setState { chores = prioritizedChores }
-                //                //}
-                //            }
-                //            //It would be neat to draw <root> as actual roots.
-                //            //${"--".repeat(view.path(item.id!!).size + 1)}
-                //            //${item.childrenIds}
-                //            //+"${item.symbol}| ${item.parentId}__${item.name}"
-                //            mCardContent {
-                //                css {
-                //                    marginLeft = ((view.path(item.id).size -1) * 10).px
-                //                }
-                //                mTypography("${item.name} - ${item.symbol}", component = "p" )
-                //            }
-                //
-                //        }
-                //    }
-                //}
-                //
-                //inputComponent {
-                //    onSubmit = { input ->
-                //        //scope.launch {
-                //        //    handleInput(input)
-                //        //    val prioritizedChores = PlanPrioritizeApi.get()
-                //            //setState { chores = prioritizedChores }
-                //        //}
-                //    }
-                //}
+                mCard {
+                    val view = TreeView(0, props.chores)
+                    view.walk { item ->
+                        //chores.forEach { item ->
+                        mCardActionArea {
+                            key = item.id!!.toString()//toString()
+                            attrs.onClick = {
+                                //scope.launch {
+                                    //PlanPrioritizeApi.delete(item.id)
+                                    //val prioritizedChores = PlanPrioritizeApi.get()
+                                    //setState { chores = prioritizedChores }
+                                //}
+                            }
+                            //It would be neat to draw <root> as actual roots.
+                            //${"--".repeat(view.path(item.id!!).size + 1)}
+                            //${item.childrenIds}
+                            //+"${item.symbol}| ${item.parentId}__${item.name}"
+                            mCardContent {
+                                css {
+                                    marginLeft = ((view.path(item.id).size -1) * 10).px
+                                }
+                                mTypography("${item.name} - ${item.symbol}", component = "p" )
+                            }
+
+                        }
+                    }
+                }
+
+                inputComponent {
+                    onSubmit = { input ->
+                        //scope.launch {
+                        //    handleInput(input)
+                        //    val prioritizedChores = PlanPrioritizeApi.get()
+                            //setState { chores = prioritizedChores }
+                        //}
+                    }
+                }
 
             }
         }
     }
 }
 
-fun RBuilder.plan2() = child(Plan2::class) {}
+fun RBuilder.plan2(handler: Plan2Props.() -> Unit): ReactElement {
+    return child(Plan2::class) {
+        this.attrs(handler)
+    }
+}

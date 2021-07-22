@@ -1,5 +1,8 @@
 import com.ccfraser.muirwik.components.*
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 import kotlinx.css.*
+import models.Chore
 import react.*
 import styled.StyleSheet
 import styled.css
@@ -13,8 +16,22 @@ enum class Label(val text: String) {
     Prioritize("Prioritize")
 }
 
-class App : RComponent<RProps, RState>() {
-    private var tab1Value: Any = "seed-organizer"
+external interface AppState : RState {
+    var chores: List<Chore>
+}
+
+class App : RComponent<RProps, AppState>() {
+    private var tab1Value: Any = "Organize"
+
+    override fun AppState.init() {
+        val scope = MainScope()
+        scope.launch {
+            val prioritizedChores = PlanPrioritizeApi.get()
+            setState {
+                chores = prioritizedChores
+            }
+        }
+    }
 
     private object CustomTabStyles : StyleSheet("ComponentStyles", isStatic = true) {
         val tabsRoot by css {
@@ -52,7 +69,9 @@ class App : RComponent<RProps, RState>() {
                     Label.Register.text -> { register() }
                     Label.Organize.text -> { organize() }
                     Label.Plan.text -> { child(Plan) {} }
-                    Label.Plan2.text -> { plan2() }
+                    Label.Plan2.text -> plan2 {
+                        chores = state.chores
+                    }
                     Label.Prioritize.text -> { prioritize() }
                 }
             }
@@ -61,4 +80,3 @@ class App : RComponent<RProps, RState>() {
 }
 
 fun RBuilder.app() = child(App::class) {}
-
