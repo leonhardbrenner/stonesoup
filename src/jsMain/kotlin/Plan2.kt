@@ -18,6 +18,8 @@ import styled.styledDiv
 
 external interface Plan2Props: RProps {
     var chores: List<Chore>
+    var deleteChore: (Int) -> Unit
+    var handleInput: (String) -> Unit
 }
 
 //class Plan2 : RComponent<RProps, PlanState>() {
@@ -80,20 +82,12 @@ class Plan2 : RComponent<Plan2Props, RState>() {
                 mCard {
                     val view = TreeView(0, props.chores)
                     view.walk { item ->
-                        //chores.forEach { item ->
                         mCardActionArea {
                             key = item.id!!.toString()//toString()
                             attrs.onClick = {
-                                //scope.launch {
-                                    //PlanPrioritizeApi.delete(item.id)
-                                    //val prioritizedChores = PlanPrioritizeApi.get()
-                                    //setState { chores = prioritizedChores }
-                                //}
+                                console.log("Delete ${item.id}")
+                                props.deleteChore(item.id)
                             }
-                            //It would be neat to draw <root> as actual roots.
-                            //${"--".repeat(view.path(item.id!!).size + 1)}
-                            //${item.childrenIds}
-                            //+"${item.symbol}| ${item.parentId}__${item.name}"
                             mCardContent {
                                 css {
                                     marginLeft = ((view.path(item.id).size -1) * 10).px
@@ -107,11 +101,7 @@ class Plan2 : RComponent<Plan2Props, RState>() {
 
                 inputComponent {
                     onSubmit = { input ->
-                        //scope.launch {
-                        //    handleInput(input)
-                        //    val prioritizedChores = PlanPrioritizeApi.get()
-                            //setState { chores = prioritizedChores }
-                        //}
+                        props.handleInput(input)
                     }
                 }
 

@@ -2,7 +2,7 @@ import com.ccfraser.muirwik.components.*
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlinx.css.*
-import models.Chore
+import models.*
 import react.*
 import styled.StyleSheet
 import styled.css
@@ -71,6 +71,56 @@ class App : RComponent<RProps, AppState>() {
                     Label.Plan.text -> { child(Plan) {} }
                     Label.Plan2.text -> plan2 {
                         chores = state.chores
+                        deleteChore = { id ->
+                            val scope = MainScope()
+                            scope.launch {
+                                PlanPrioritizeApi.delete(id)
+                                val prioritizedChores = PlanPrioritizeApi.get()
+                                setState {
+                                    chores = prioritizedChores
+                                }
+                            }
+                        }
+                        handleInput = { input: String ->
+                            val scope = MainScope()
+                            scope.launch {
+                                val (action, subject) = input.split(" ", limit = 2)
+                                when (action) {
+                                    "create" -> {
+                                        console.log("Creating ${subject[1]}")
+                                        val chore = ChoreCreate(
+                                            name = subject.replace("!", ""),
+                                            priority = subject.count { it == '!' })
+                                        PlanPrioritizeApi.add(chore)
+                                    }
+                                    "move" -> {
+                                        val subjectParts = subject.split(" ")
+                                        val chore = NodeUpdate(
+                                            id = subjectParts[0].toInt(),
+                                            moveTo = subjectParts[2].toInt()
+                                        )
+                                        PlanPrioritizeApi.update(chore)
+                                    }
+                                    "link" -> {
+                                        val subjectParts = subject.split(" ")
+                                        val chore = NodeUpdate(
+                                            id = subjectParts[0].toInt(),
+                                            linkTo = subjectParts[2].toInt()
+                                        )
+                                        PlanPrioritizeApi.update(chore)
+                                    }
+                                    "delete" -> {
+                                        PlanPrioritizeApi.delete(subject[1].toInt())
+                                    }
+                                }
+                            }
+                            scope.launch {
+                                val prioritizedChores = PlanPrioritizeApi.get()
+                                setState {
+                                    chores = prioritizedChores
+                                }
+                            }
+                        }
                     }
                     Label.Prioritize.text -> { prioritize() }
                 }
