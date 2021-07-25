@@ -79,20 +79,25 @@ class Plan2 : RComponent<Plan2Props, RState>() {
                     }
                 }
 
-                mCard {
+                mList {
                     val view = TreeView(0, props.chores)
                     view.walk { item ->
-                        mCardActionArea {
+                        mListItem {
                             key = item.id!!.toString()//toString()
                             attrs.onClick = {
                                 console.log("Delete ${item.id}")
                                 props.deleteChore(item.id)
                             }
-                            mCardContent {
+                            attrs.onMouseEnter = {
+                                console.log("Entering ${item.id}")
+                            }
+                            attrs.onMouseLeave = {
+                                console.log("Leaving ${item.id}")
+                            }
+                            mListItemText("${item.name} - ${item.symbol}") {
                                 css {
-                                    marginLeft = ((view.path(item.id).size -1) * 10).px
+                                    marginLeft = ((view.path(item.id).size -1) * 2).spacingUnits
                                 }
-                                mTypography("${item.name} - ${item.symbol}", component = "p" )
                             }
 
                         }
