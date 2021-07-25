@@ -16,6 +16,7 @@ enum class Label(val text: String) {
     Prioritize("Prioritize")
 }
 
+//TODO - move this back into Plan2. Then we can lift state and compose new components.
 external interface AppState : RState {
     var chores: List<Chore>
 }

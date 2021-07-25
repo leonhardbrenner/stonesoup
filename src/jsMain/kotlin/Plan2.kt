@@ -36,7 +36,6 @@ class Plan2 : RComponent<Plan2Props, RState>() {
     override fun RBuilder.render() {
         // For building things that we don't want to render now (e.g. the component will render it later), we need another builder
         val builder2 = RBuilder()
-
         themeContext.Consumer { theme ->
             val themeStyles = object : StyleSheet("ComponentStyles", isStatic = true) {
                 val list by css {
@@ -89,17 +88,29 @@ class Plan2 : RComponent<Plan2Props, RState>() {
                                 props.deleteChore(item.id)
                             }
                             attrs.onMouseEnter = {
-                                console.log("Entering ${item.id}")
+                                console.log("Entering ${item.id} $over")
+                                over.add(item.id)
                             }
                             attrs.onMouseLeave = {
-                                console.log("Leaving ${item.id}")
+                                console.log("Leaving ${item.id} $over")
+                                over.remove(item.id)
                             }
                             mListItemText("${item.name} - ${item.symbol}") {
                                 css {
                                     marginLeft = ((view.path(item.id).size -1) * 2).spacingUnits
                                 }
                             }
-
+                            + "Displaying icon for $over"
+                            if (over.contains(item.id)) {
+                                mListItemSecondaryAction {
+                                    mIconButton("comment", onClick = {})
+                                }
+                            } else {
+                                styledDiv {}
+                                //mListItemSecondaryAction {
+                                //    mIconButton("comment", onClick = {})
+                                //}
+                            }
                         }
                     }
                 }
