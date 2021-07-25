@@ -20,6 +20,9 @@ external interface Plan2Props: RProps {
     var chores: List<Chore>
     var deleteChore: (Int) -> Unit
     var handleInput: (String) -> Unit
+    var onMouseEnter: (Int) -> Unit
+    var onMouseLeave: (Int) -> Unit
+    var isMouseIn: (Int) -> Boolean
 }
 
 //class Plan2 : RComponent<RProps, PlanState>() {
@@ -45,38 +48,38 @@ class Plan2 : RComponent<Plan2Props, RState>() {
             }
             styledDiv {
                 css(listDiv)
-                mList {
-                    css(themeStyles.list)
-                    mListSubheader { +"Nested List Items" }
-                    mListItemWithIcon("send", "Sent mail")
-                    mListItemWithIcon("inbox", "Inbox", onClick = { setState { expanded = !expanded } }) {
-                        if (expanded) mIcon("expand_less") else mIcon("expand_more")
-                    }
-                    mCollapse(show = expanded) {
-                        mList(disablePadding = true) {
-                            mListItem(button = true) {
-                                css { paddingLeft = 8.spacingUnits }
-                                mIcon("star")
-                                mListItemText(builder2.span { +"Starred (v1)" }, inset = true)
-                            }
-                            mListItemWithIcon("star", "Starred (v2)") { css { paddingLeft = 8.spacingUnits } }
-                        }
-                    }
-                    mListSubheader { +"Other Type of Items" }
-                    mListItemWithIcon("add_shopping_cart", "With Primary Text", "And secondary text")
-                    mListItem(button = true) {
-                        mListItemText(primary = "With a secondary action")
-                        mListItemSecondaryAction {
-                            mIconButton("comment", onClick = {})
-                        }
-                    }
-                    mListItem(button = true) {
-                        mListItemText(primary = "With a secondary action 2")
-                        mListItemSecondaryAction {
-                            mIconButton("comment", onClick = {})
-                        }
-                    }
-                }
+                //mList {
+                //    css(themeStyles.list)
+                //    mListSubheader { +"Nested List Items" }
+                //    mListItemWithIcon("send", "Sent mail")
+                //    mListItemWithIcon("inbox", "Inbox", onClick = { setState { expanded = !expanded } }) {
+                //        if (expanded) mIcon("expand_less") else mIcon("expand_more")
+                //    }
+                //    mCollapse(show = expanded) {
+                //        mList(disablePadding = true) {
+                //            mListItem(button = true) {
+                //                css { paddingLeft = 8.spacingUnits }
+                //                mIcon("star")
+                //                mListItemText(builder2.span { +"Starred (v1)" }, inset = true)
+                //            }
+                //            mListItemWithIcon("star", "Starred (v2)") { css { paddingLeft = 8.spacingUnits } }
+                //        }
+                //    }
+                //    mListSubheader { +"Other Type of Items" }
+                //    mListItemWithIcon("add_shopping_cart", "With Primary Text", "And secondary text")
+                //    mListItem(button = true) {
+                //        mListItemText(primary = "With a secondary action")
+                //        mListItemSecondaryAction {
+                //            mIconButton("comment", onClick = {})
+                //        }
+                //    }
+                //    mListItem(button = true) {
+                //        mListItemText(primary = "With a secondary action 2")
+                //        mListItemSecondaryAction {
+                //            mIconButton("comment", onClick = {})
+                //        }
+                //    }
+                //}
 
                 mList {
                     val view = TreeView(0, props.chores)
@@ -88,28 +91,22 @@ class Plan2 : RComponent<Plan2Props, RState>() {
                                 props.deleteChore(item.id)
                             }
                             attrs.onMouseEnter = {
-                                console.log("Entering ${item.id} $over")
-                                over.add(item.id)
+                                console.log("Entering ${item.id}")
+                                props.onMouseEnter(item.id)
                             }
                             attrs.onMouseLeave = {
-                                console.log("Leaving ${item.id} $over")
-                                over.remove(item.id)
+                                console.log("Leaving ${item.id}")
+                                props.onMouseLeave(item.id)
                             }
                             mListItemText("${item.name} - ${item.symbol}") {
                                 css {
                                     marginLeft = ((view.path(item.id).size -1) * 2).spacingUnits
                                 }
                             }
-                            + "Displaying icon for $over"
-                            if (over.contains(item.id)) {
+                            if (props.isMouseIn(item.id)) {
                                 mListItemSecondaryAction {
                                     mIconButton("comment", onClick = {})
                                 }
-                            } else {
-                                styledDiv {}
-                                //mListItemSecondaryAction {
-                                //    mIconButton("comment", onClick = {})
-                                //}
                             }
                         }
                     }

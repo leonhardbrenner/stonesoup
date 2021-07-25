@@ -19,6 +19,7 @@ enum class Label(val text: String) {
 //TODO - move this back into Plan2. Then we can lift state and compose new components.
 external interface AppState : RState {
     var chores: List<Chore>
+    var over: Int?
 }
 
 class App : RComponent<RProps, AppState>() {
@@ -30,6 +31,7 @@ class App : RComponent<RProps, AppState>() {
             val prioritizedChores = PlanPrioritizeApi.get()
             setState {
                 chores = prioritizedChores
+                over = null
             }
         }
     }
@@ -67,9 +69,15 @@ class App : RComponent<RProps, AppState>() {
                     }
                 }
                 when (tab1Value) {
-                    Label.Register.text -> { register() }
-                    Label.Organize.text -> { organize() }
-                    Label.Plan.text -> { child(Plan) {} }
+                    Label.Register.text -> {
+                        register()
+                    }
+                    Label.Organize.text -> {
+                        organize()
+                    }
+                    Label.Plan.text -> {
+                        child(Plan) {}
+                    }
                     Label.Plan2.text -> plan2 {
                         chores = state.chores
                         deleteChore = { id ->
@@ -81,6 +89,19 @@ class App : RComponent<RProps, AppState>() {
                                     chores = prioritizedChores
                                 }
                             }
+                        }
+                        onMouseEnter = { id ->
+                            setState {
+                                over = id
+                            }
+                        }
+                        onMouseLeave = { id ->
+                            setState {
+                                over = null
+                            }
+                        }
+                        isMouseIn = { id ->
+                            state.over?.equals(id)?:false
                         }
                         handleInput = { input: String ->
                             val scope = MainScope()
@@ -123,7 +144,9 @@ class App : RComponent<RProps, AppState>() {
                             }
                         }
                     }
-                    Label.Prioritize.text -> { prioritize() }
+                    Label.Prioritize.text -> {
+                        prioritize()
+                    }
                 }
             }
         }
