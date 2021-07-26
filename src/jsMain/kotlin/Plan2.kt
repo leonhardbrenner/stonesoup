@@ -21,8 +21,6 @@ external interface Plan2Props: RProps {
 }
 
 class Plan2 : RComponent<Plan2Props, RState>() {
-    private var expanded: Boolean = false
-
     private object ComponentStyles : StyleSheet("ComponentStyles", isStatic = true) {
         val listDiv by css {
             display = Display.inlineFlex
@@ -32,56 +30,46 @@ class Plan2 : RComponent<Plan2Props, RState>() {
 
     override fun RBuilder.render() {
         // For building things that we don't want to render now (e.g. the component will render it later), we need another builder
-        val builder2 = RBuilder()
-        themeContext.Consumer { theme ->
-            val themeStyles = object : StyleSheet("ComponentStyles", isStatic = true) {
-                val list by css {
-                    width = 320.px
-                    backgroundColor = Color(theme.palette.background.paper)
-                }
-            }
-            styledDiv {
-                css(listDiv)
-                mList {
-                    val view = TreeView(0, props.chores)
-                    view.walk { item ->
-                        mListItem {
-                            key = item.id!!.toString()//toString()
-                            attrs.onClick = {
-                                console.log("Select item for drop ${item.id}")
-                                props.onSelect(item.id)
+        styledDiv {
+            css(listDiv)
+            mList {
+                val view = TreeView(0, props.chores)
+                view.walk { item ->
+                    mListItem {
+                        key = item.id!!.toString()//toString()
+                        attrs.onClick = {
+                            props.onSelect(item.id)
+                        }
+                        attrs.onMouseEnter = {
+                            props.onMouseEnter(item.id)
+                        }
+                        attrs.onMouseLeave = {
+                            props.onMouseLeave(item.id)
+                        }
+                        mListItemText("${item.name}") {
+                            css {
+                                marginLeft = ((view.path(item.id).size - 1) * 2).spacingUnits
                             }
-                            attrs.onMouseEnter = {
-                                console.log("Entering ${item.id}")
-                                props.onMouseEnter(item.id)
-                            }
-                            attrs.onMouseLeave = {
-                                console.log("Leaving ${item.id}")
-                                props.onMouseLeave(item.id)
-                            }
-                            mListItemText("${item.name} - ${item.symbol}") {
-                                css {
-                                    marginLeft = ((view.path(item.id).size -1) * 2).spacingUnits
-                                }
-                            }
-                            if (props.isSelected(item.id)) {
-                                mListItemSecondaryAction {
-                                    mIconButton("comment", onClick = { props.deleteChore(item.id) })
-                                }
+                        }
+                        if (props.isSelected(item.id)) {
+                            mListItemSecondaryAction {
+                                //TODO - change to edit action: to(textbox) expand an mCollapse[delete, priority, ]
+                                mIconButton("comment", onClick = { props.deleteChore(item.id) })
                             }
                         }
                     }
                 }
-
-                inputComponent {
-                    onSubmit = { input ->
-                        props.handleInput(input)
-                    }
-                }
-
             }
+
+            inputComponent {
+                onSubmit = { input ->
+                    props.handleInput(input)
+                }
+            }
+
         }
     }
+
 }
 
 fun RBuilder.plan2(handler: Plan2Props.() -> Unit): ReactElement {
