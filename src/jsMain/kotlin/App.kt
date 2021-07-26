@@ -20,6 +20,7 @@ enum class Label(val text: String) {
 external interface AppState : RState {
     var chores: List<Chore>
     var over: Int?
+    var selected: Int?
 }
 
 class App : RComponent<RProps, AppState>() {
@@ -103,6 +104,34 @@ class App : RComponent<RProps, AppState>() {
                         isMouseIn = { id ->
                             state.over?.equals(id)?:false
                         }
+                        onSelect = { id ->
+                            setState {
+                                if (selected == null)
+                                    selected = id
+                                else {
+                                    if (id == selected)
+                                        selected = null
+                                    else {
+                                        val chore = NodeUpdate(
+                                            id = selected!!,
+                                            moveTo = id
+                                        )
+                                        MainScope().launch {
+                                            PlanPrioritizeApi.update(chore)
+                                            val prioritizedChores = PlanPrioritizeApi.get()
+                                            setState {
+                                                chores = prioritizedChores
+                                                selected = null
+                                            }
+                                        }
+                                    }
+                                }
+
+                            }
+                        }
+                        isSelected = { id ->
+                            state.selected == id
+                        }
                         handleInput = { input: String ->
                             val scope = MainScope()
                             scope.launch {
@@ -135,8 +164,6 @@ class App : RComponent<RProps, AppState>() {
                                         PlanPrioritizeApi.delete(subject[1].toInt())
                                     }
                                 }
-                            }
-                            scope.launch {
                                 val prioritizedChores = PlanPrioritizeApi.get()
                                 setState {
                                     chores = prioritizedChores

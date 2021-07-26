@@ -1,13 +1,7 @@
-import com.ccfraser.muirwik.components.MHiddenImplementation
-import com.ccfraser.muirwik.components.button.mIconButton
 import com.ccfraser.muirwik.components.card.mCard
 import com.ccfraser.muirwik.components.card.mCardActionArea
 import com.ccfraser.muirwik.components.card.mCardContent
-import com.ccfraser.muirwik.components.list.*
-import com.ccfraser.muirwik.components.mIcon
 import com.ccfraser.muirwik.components.mTypography
-import com.ccfraser.muirwik.components.spacingUnits
-import com.ccfraser.muirwik.components.transitions.mCollapse
 import react.*
 import react.dom.*
 import kotlinx.coroutines.*
@@ -19,9 +13,7 @@ import models.ChoreCreate
 import models.NodeUpdate
 import org.w3c.dom.events.Event
 import org.w3c.dom.HTMLInputElement
-import styled.StyleSheet
 import styled.css
-import styled.styledDiv
 
 private val scope = MainScope()
 
@@ -43,7 +35,6 @@ val Plan = functionalComponent<RProps> { _ ->
     mCard {
         val view = TreeView(0, chores)
         view.walk { item ->
-        //chores.forEach { item ->
             mCardActionArea {
                 key = item.id!!.toString()//toString()
                 attrs.onClick = {
@@ -52,10 +43,6 @@ val Plan = functionalComponent<RProps> { _ ->
                         setChores(PlanPrioritizeApi.get())
                     }
                 }
-                //It would be neat to draw <root> as actual roots.
-                //${"--".repeat(view.path(item.id!!).size + 1)}
-                //${item.childrenIds}
-                //+"${item.symbol}| ${item.parentId}__${item.name}"
                 mCardContent {
                     css {
                         marginLeft = ((view.path(item.id).size -1) * 10).px
