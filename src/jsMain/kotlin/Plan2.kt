@@ -66,7 +66,7 @@ class Plan2 : RComponent<Plan2Props, RState>() {
                             }
                             if (props.isSelected(item.id)) {
                                 mListItemSecondaryAction {
-                                    mIconButton("comment", onClick = {})
+                                    mIconButton("comment", onClick = { props.deleteChore(item.id) })
                                 }
                             }
                         }

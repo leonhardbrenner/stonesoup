@@ -102,7 +102,7 @@ class App : RComponent<RProps, AppState>() {
                             }
                         }
                         isMouseIn = { id ->
-                            state.over?.equals(id)?:false
+                            state.over?.equals(id) ?: false
                         }
                         onSelect = { id ->
                             setState {
@@ -135,35 +135,10 @@ class App : RComponent<RProps, AppState>() {
                         handleInput = { input: String ->
                             val scope = MainScope()
                             scope.launch {
-                                val (action, subject) = input.split(" ", limit = 2)
-                                when (action) {
-                                    "create" -> {
-                                        console.log("Creating ${subject[1]}")
-                                        val chore = ChoreCreate(
-                                            name = subject.replace("!", ""),
-                                            priority = subject.count { it == '!' })
-                                        PlanPrioritizeApi.add(chore)
-                                    }
-                                    "move" -> {
-                                        val subjectParts = subject.split(" ")
-                                        val chore = NodeUpdate(
-                                            id = subjectParts[0].toInt(),
-                                            moveTo = subjectParts[2].toInt()
-                                        )
-                                        PlanPrioritizeApi.update(chore)
-                                    }
-                                    "link" -> {
-                                        val subjectParts = subject.split(" ")
-                                        val chore = NodeUpdate(
-                                            id = subjectParts[0].toInt(),
-                                            linkTo = subjectParts[2].toInt()
-                                        )
-                                        PlanPrioritizeApi.update(chore)
-                                    }
-                                    "delete" -> {
-                                        PlanPrioritizeApi.delete(subject[1].toInt())
-                                    }
-                                }
+                                val chore = ChoreCreate(
+                                    name = input.replace("!", ""),
+                                    priority = input.count { it == '!' })
+                                PlanPrioritizeApi.add(chore)
                                 val prioritizedChores = PlanPrioritizeApi.get()
                                 setState {
                                     chores = prioritizedChores
