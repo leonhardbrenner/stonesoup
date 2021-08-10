@@ -74,7 +74,7 @@ class App : RComponent<RProps, AppState>() {
                     Label.Organize.text -> {
                         organize()
                     }
-                    Label.Plan.text -> plan2 {
+                    Label.Plan.text -> plan {
                         chores = state.chores
                         deleteChore = { id ->
                             val scope = MainScope()
