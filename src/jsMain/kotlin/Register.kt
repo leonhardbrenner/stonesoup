@@ -17,50 +17,57 @@ import styled.styledDiv
 
 private val scope = MainScope()
 
-fun RBuilder.register() = child(Register.Component) {}
+fun RBuilder.register(handler: RegisterProps.() -> Unit): ReactElement {
+    return child(RegisterComponent::class) {
+        this.attrs(handler)
+    }
+}
 
-//Registry is for creating categories and to add, update, and delete items from category
-object Register {
+external interface RegisterProps : RProps {
+    var type: String
+    var setType: (String) -> Unit
+}
 
-    val Component = functionalComponent<RProps> {
-        val (type, setType) = useState<Any>(SeedsDto.DetailedSeed.path)
+class RegisterComponent : RComponent<RegisterProps, RState>() {
+
+    override fun RBuilder.render() {
         val inputProps: RProps = jsObject { }
         inputProps.asDynamic().name = "type"
         inputProps.asDynamic().id = "type-simple"
-        mSelect(type, name = "type", onChange = { event, _ -> setType(event.targetValue) }) {
+        mSelect(props.type, name = "type", onChange = { event, _ -> props.setType(event.targetValue as String) }) {
             attrs.inputProps = inputProps
             mMenuItem("My Seeds", value = SeedsDto.MySeeds.path)
             mMenuItem("Available Seeds", value = SeedsDto.DetailedSeed.path)
             mMenuItem("Category", value = SeedsDto.SeedCategory.path)
         }
-        when (type) {
+        when (props.type) {
             SeedsDto.MySeeds.path -> mySeeds {}
             SeedsDto.DetailedSeed.path -> detailedSeed {}
             SeedsDto.SeedCategory.path -> category {}
         }
     }
-
-    private class MySeeds(props: DisplayProps): DisplayComponent<Resources.MySeeds>(props) {
-        override suspend fun get() = RegisterOrganizeApi.getMySeeds()
-        override fun Resources.MySeeds.label() = description //I don't think extension function is a good choice
-        override fun Resources.MySeeds.transform() = detailedSeed?.image?:"No image found"
-    }
-    fun RBuilder.mySeeds(handler: DisplayProps.() -> Unit) = child(MySeeds::class) { attrs { handler() } }
-
-    private class DetailedSeed(props: DisplayProps): DisplayComponent<Seeds.DetailedSeed>(props) {
-        override suspend fun get() = RegisterOrganizeApi.getDetailedSeed()
-        override fun Seeds.DetailedSeed.label() = name
-        override fun Seeds.DetailedSeed.transform() = name
-    }
-    fun RBuilder.detailedSeed(handler: DisplayProps.() -> Unit) = child(DetailedSeed::class) { attrs { handler() } }
-
-    private class Category(props: DisplayProps): DisplayComponent<Seeds.SeedCategory>(props) {
-        override suspend fun get() = RegisterOrganizeApi.getCategory()
-        override fun Seeds.SeedCategory.label() = name
-        override fun Seeds.SeedCategory.transform() = image
-    }
-    fun RBuilder.category(handler: DisplayProps.() -> Unit) = child(Category::class) { attrs { handler() } }
 }
+
+private class MySeeds(props: DisplayProps): DisplayComponent<Resources.MySeeds>(props) {
+    override suspend fun get() = RegisterOrganizeApi.getMySeeds()
+    override fun Resources.MySeeds.label() = description //I don't think extension function is a good choice
+    override fun Resources.MySeeds.transform() = detailedSeed?.image?:"No image found"
+}
+fun RBuilder.mySeeds(handler: DisplayProps.() -> Unit) = child(MySeeds::class) { attrs { handler() } }
+
+private class DetailedSeed(props: DisplayProps): DisplayComponent<Seeds.DetailedSeed>(props) {
+    override suspend fun get() = RegisterOrganizeApi.getDetailedSeed()
+    override fun Seeds.DetailedSeed.label() = name
+    override fun Seeds.DetailedSeed.transform() = name
+}
+fun RBuilder.detailedSeed(handler: DisplayProps.() -> Unit) = child(DetailedSeed::class) { attrs { handler() } }
+
+private class Category(props: DisplayProps): DisplayComponent<Seeds.SeedCategory>(props) {
+    override suspend fun get() = RegisterOrganizeApi.getCategory()
+    override fun Seeds.SeedCategory.label() = name
+    override fun Seeds.SeedCategory.transform() = image
+}
+fun RBuilder.category(handler: DisplayProps.() -> Unit) = child(Category::class) { attrs { handler() } }
 
 external interface DisplayProps : RProps
 

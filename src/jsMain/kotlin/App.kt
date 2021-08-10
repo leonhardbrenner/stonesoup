@@ -17,6 +17,7 @@ enum class Label(val text: String) {
 
 //TODO - move this back into Plan2. Then we can lift state and compose new components.
 external interface AppState : RState {
+    var registerType: String
     var chores: List<Chore>
     var over: Int?
     var selected: Int?
@@ -32,6 +33,8 @@ class App : RComponent<RProps, AppState>() {
             setState {
                 chores = prioritizedChores
                 over = null
+                registerType = generated.model.SeedsDto.DetailedSeed.path
+
             }
         }
     }
@@ -68,8 +71,11 @@ class App : RComponent<RProps, AppState>() {
                     }
                 }
                 when (tab1Value) {
-                    Label.Register.text -> {
-                        register()
+                    Label.Register.text -> register {
+                        type = state.registerType
+                        setType = { type ->
+                            setState { registerType = type}
+                        }
                     }
                     Label.Organize.text -> {
                         organize()
