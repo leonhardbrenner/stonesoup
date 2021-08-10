@@ -4,9 +4,9 @@
 
 https://www.jetbrains.com/space/solutions/software-teams/#space-form
 
-Plan
-    delete item through app
-
 Prioritize
     move use items from app
 
+The purpose of this branch is to standardize on one way of doing things:
+    functionalComponent => RComponent
+    mongo -> exposed(postgres)
