@@ -1,5 +1,5 @@
-import Register.DisplayComponent.ComponentStyles.inline
-import Register.DisplayComponent.ComponentStyles.listDiv
+import DisplayComponent.ComponentStyles.inline
+import DisplayComponent.ComponentStyles.listDiv
 import com.ccfraser.muirwik.components.*
 import com.ccfraser.muirwik.components.list.*
 import com.ccfraser.muirwik.components.menu.mMenuItem
@@ -22,13 +22,6 @@ fun RBuilder.register() = child(Register.Component) {}
 //Registry is for creating categories and to add, update, and delete items from category
 object Register {
 
-    interface Props : RProps
-
-    interface State<T> : RState {
-        var items: List<Pair<String, T>>
-        var currentSeed: String
-    }
-
     val Component = functionalComponent<RProps> {
         val (type, setType) = useState<Any>(SeedsDto.DetailedSeed.path)
         val inputProps: RProps = jsObject { }
@@ -47,86 +40,93 @@ object Register {
         }
     }
 
-    private abstract class DisplayComponent<T> (props: Props) : RComponent<Props, State<T>>() {
-
-        override fun State<T>.init() {
-            items = listOf()
-            scope.launch {
-                val seeds: List<T> = get()
-                setState {
-                    items = seeds.map { it.label() to it }
-                }
-            }
-        }
-
-        private object ComponentStyles : StyleSheet("ComponentStyles", isStatic = true) {
-            val listDiv by css {
-                display = Display.inlineFlex
-                padding(1.spacingUnits)
-            }
-
-            val inline by css {
-                display = Display.inlineBlock
-            }
-        }
-
-        override fun RBuilder.render() {
-            // For building things that we don't want to render now (e.g. the component will render it later), we need
-            // another builder.
-            val builder2 = RBuilder()
-            themeContext.Consumer { theme ->
-                val themeStyles = object : StyleSheet("ComponentStyles", isStatic = true) {
-                    val list by css {
-                        width = 320.px
-                        backgroundColor = Color(theme.palette.background.paper)
-                    }
-                }
-                styledDiv {
-                    css(listDiv)
-                    mList {
-                        css(themeStyles.list)
-                        state.items.forEach { (name, callback) ->
-                            mListItem(alignItems = MListItemAlignItems.flexStart, button = true, onClick = {
-                                setState {
-                                    currentSeed = callback.transform()
-                                }
-                            }) {
-                                mListItemText(builder2.span { +name }, builder2.span {
-                                    mTypography(name + " again", component = "span", variant = MTypographyVariant.body2) { css(inline) }
-                                })
-                            }
-                        }
-                    }
-                    mContainer {
-                        mTypography(state.currentSeed, component = "span", variant = MTypographyVariant.body2) { css(inline) }
-                    }
-                }
-            }
-        }
-        abstract suspend fun get(): List<T>
-        abstract fun T.label(): String
-        abstract fun T.transform(): String
-
-    }
-
-    private class MySeeds(props: Props): DisplayComponent<Resources.MySeeds>(props) {
+    private class MySeeds(props: DisplayProps): DisplayComponent<Resources.MySeeds>(props) {
         override suspend fun get() = RegisterOrganizeApi.getMySeeds()
         override fun Resources.MySeeds.label() = description //I don't think extension function is a good choice
         override fun Resources.MySeeds.transform() = detailedSeed?.image?:"No image found"
     }
-    fun RBuilder.mySeeds(handler: Props.() -> Unit) = child(MySeeds::class) { attrs { handler() } }
+    fun RBuilder.mySeeds(handler: DisplayProps.() -> Unit) = child(MySeeds::class) { attrs { handler() } }
 
-    private class DetailedSeed(props: Props): DisplayComponent<Seeds.DetailedSeed>(props) {
+    private class DetailedSeed(props: DisplayProps): DisplayComponent<Seeds.DetailedSeed>(props) {
         override suspend fun get() = RegisterOrganizeApi.getDetailedSeed()
         override fun Seeds.DetailedSeed.label() = name
         override fun Seeds.DetailedSeed.transform() = name
     }
-    fun RBuilder.detailedSeed(handler: Props.() -> Unit) = child(DetailedSeed::class) { attrs { handler() } }
+    fun RBuilder.detailedSeed(handler: DisplayProps.() -> Unit) = child(DetailedSeed::class) { attrs { handler() } }
 
-    private class Category(props: Props): DisplayComponent<Seeds.SeedCategory>(props) {
+    private class Category(props: DisplayProps): DisplayComponent<Seeds.SeedCategory>(props) {
         override suspend fun get() = RegisterOrganizeApi.getCategory()
         override fun Seeds.SeedCategory.label() = name
         override fun Seeds.SeedCategory.transform() = image
     }
-    fun RBuilder.category(handler: Props.() -> Unit) = child(Category::class) { attrs { handler() } }
+    fun RBuilder.category(handler: DisplayProps.() -> Unit) = child(Category::class) { attrs { handler() } }
+}
+
+external interface DisplayProps : RProps
+
+external interface DisplayState<T> : RState {
+    var items: List<Pair<String, T>>
+    var currentSeed: String
+}
+
+private abstract class DisplayComponent<T> (props: DisplayProps) : RComponent<DisplayProps, DisplayState<T>>() {
+
+    override fun DisplayState<T>.init() {
+        items = listOf()
+        scope.launch {
+            val seeds: List<T> = get()
+            setState {
+                items = seeds.map { it.label() to it }
+            }
+        }
+    }
+
+    private object ComponentStyles : StyleSheet("ComponentStyles", isStatic = true) {
+        val listDiv by css {
+            display = Display.inlineFlex
+            padding(1.spacingUnits)
+        }
+
+        val inline by css {
+            display = Display.inlineBlock
+        }
+    }
+
+    override fun RBuilder.render() {
+        // For building things that we don't want to render now (e.g. the component will render it later), we need
+        // another builder.
+        val builder2 = RBuilder()
+        themeContext.Consumer { theme ->
+            val themeStyles = object : StyleSheet("ComponentStyles", isStatic = true) {
+                val list by css {
+                    width = 320.px
+                    backgroundColor = Color(theme.palette.background.paper)
+                }
+            }
+            styledDiv {
+                css(listDiv)
+                mList {
+                    css(themeStyles.list)
+                    state.items.forEach { (name, callback) ->
+                        mListItem(alignItems = MListItemAlignItems.flexStart, button = true, onClick = {
+                            setState {
+                                currentSeed = callback.transform()
+                            }
+                        }) {
+                            mListItemText(builder2.span { +name }, builder2.span {
+                                mTypography(name + " again", component = "span", variant = MTypographyVariant.body2) { css(inline) }
+                            })
+                        }
+                    }
+                }
+                mContainer {
+                    mTypography(state.currentSeed, component = "span", variant = MTypographyVariant.body2) { css(inline) }
+                }
+            }
+        }
+    }
+    abstract suspend fun get(): List<T>
+    abstract fun T.label(): String
+    abstract fun T.transform(): String
+
 }

@@ -10,6 +10,7 @@ import react.dom.input
 external interface InputProps : RProps {
     var onSubmit: (String) -> Unit
 }
+
 external interface InputState : RState {
     var text: String
 }
