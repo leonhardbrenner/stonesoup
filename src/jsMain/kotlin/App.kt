@@ -1,5 +1,8 @@
 import com.ccfraser.muirwik.components.*
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 import kotlinx.css.*
+import models.*
 import react.*
 import styled.StyleSheet
 import styled.css
@@ -13,8 +16,26 @@ enum class Label(val text: String) {
     Prioritize("Prioritize")
 }
 
-class App : RComponent<RProps, RState>() {
-    private var tab1Value: Any = "seed-organizer"
+//TODO - move this back into Plan2. Then we can lift state and compose new components.
+external interface AppState : RState {
+    var chores: List<Chore>
+    var over: Int?
+    var selected: Int?
+}
+
+class App : RComponent<RProps, AppState>() {
+    private var tab1Value: Any = "Organize"
+
+    override fun AppState.init() {
+        val scope = MainScope()
+        scope.launch {
+            val prioritizedChores = PlanPrioritizeApi.get()
+            setState {
+                chores = prioritizedChores
+                over = null
+            }
+        }
+    }
 
     private object CustomTabStyles : StyleSheet("ComponentStyles", isStatic = true) {
         val tabsRoot by css {
@@ -49,11 +70,85 @@ class App : RComponent<RProps, RState>() {
                     }
                 }
                 when (tab1Value) {
-                    Label.Register.text -> { register() }
-                    Label.Organize.text -> { organize() }
-                    Label.Plan.text -> { child(Plan) {} }
-                    Label.Plan2.text -> { plan2() }
-                    Label.Prioritize.text -> { prioritize() }
+                    Label.Register.text -> {
+                        register()
+                    }
+                    Label.Organize.text -> {
+                        organize()
+                    }
+                    Label.Plan.text -> {
+                        child(Plan) {}
+                    }
+                    Label.Plan2.text -> plan2 {
+                        chores = state.chores
+                        deleteChore = { id ->
+                            val scope = MainScope()
+                            scope.launch {
+                                PlanPrioritizeApi.delete(id)
+                                val prioritizedChores = PlanPrioritizeApi.get()
+                                setState {
+                                    chores = prioritizedChores
+                                }
+                            }
+                        }
+                        onMouseEnter = { id ->
+                            setState {
+                                over = id
+                            }
+                        }
+                        onMouseLeave = { id ->
+                            setState {
+                                over = null
+                            }
+                        }
+                        isMouseIn = { id ->
+                            state.over?.equals(id) ?: false
+                        }
+                        onSelect = { id ->
+                            setState {
+                                if (selected == null)
+                                    selected = id
+                                else {
+                                    if (id == selected)
+                                        selected = null
+                                    else {
+                                        val chore = NodeUpdate(
+                                            id = selected!!,
+                                            moveTo = id
+                                        )
+                                        MainScope().launch {
+                                            PlanPrioritizeApi.update(chore)
+                                            val prioritizedChores = PlanPrioritizeApi.get()
+                                            setState {
+                                                chores = prioritizedChores
+                                                selected = null
+                                            }
+                                        }
+                                    }
+                                }
+
+                            }
+                        }
+                        isSelected = { id ->
+                            state.selected == id
+                        }
+                        handleInput = { input: String ->
+                            val scope = MainScope()
+                            scope.launch {
+                                val chore = ChoreCreate(
+                                    name = input.replace("!", ""),
+                                    priority = input.count { it == '!' })
+                                PlanPrioritizeApi.add(chore)
+                                val prioritizedChores = PlanPrioritizeApi.get()
+                                setState {
+                                    chores = prioritizedChores
+                                }
+                            }
+                        }
+                    }
+                    Label.Prioritize.text -> {
+                        prioritize()
+                    }
                 }
             }
         }
@@ -61,4 +156,3 @@ class App : RComponent<RProps, RState>() {
 }
 
 fun RBuilder.app() = child(App::class) {}
-
