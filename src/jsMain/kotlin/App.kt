@@ -20,24 +20,28 @@ enum class Label(val text: String) {
 
 //TODO - move this back into Plan2. Then we can lift state and compose new components.
 external interface AppState : RState {
+    var tabValue: String
     var registerType: String
     var organizerThing: String
+    var prioritizeThing: String
     var chores: List<Chore>
     var over: Int?
     var selected: Int?
 }
 
 class App : RComponent<RProps, AppState>() {
-    private var tab1Value: Any = "Prioritize"
+    //private var tab1Value = Label.Plan.text
 
     override fun AppState.init() {
         scope.launch {
             val prioritizedChores = PlanPrioritizeApi.get()
             setState {
+                tabValue = Label.Plan.text
                 chores = prioritizedChores
                 over = null
                 registerType = SeedsDto.DetailedSeed.path
                 organizerThing = SeedsDto.MySeeds.path
+                prioritizeThing = Chores.path
             }
         }
     }
@@ -47,7 +51,9 @@ class App : RComponent<RProps, AppState>() {
             styledDiv {
                 css { flexGrow = 1.0; backgroundColor = Color(theme.palette.background.paper) }
                 mAppBar(position = MAppBarPosition.static) {
-                    mTabs(tab1Value, onChange = { _, value -> setState { tab1Value = value } }) {
+                    mTabs(state.tabValue,
+                        onChange = { _, value -> setState { tabValue = value as String } }
+                    ) {
                         //Todo - register, organize, prioritize
                         mTab(Label.Register.text, Label.Register.text)
                         mTab(Label.Organize.text, Label.Organize.text)
@@ -55,7 +61,7 @@ class App : RComponent<RProps, AppState>() {
                         mTab(Label.Prioritize.text, Label.Prioritize.text) //This can be personal or community
                     }
                 }
-                when (tab1Value) {
+                when (state.tabValue) {
                     Label.Register.text -> {
                         register {
                             type = state.registerType
@@ -142,7 +148,14 @@ class App : RComponent<RProps, AppState>() {
                         }
                     }
                     Label.Prioritize.text -> {
-                        prioritize()
+                        prioritize {
+                            thing = state.prioritizeThing
+                            setThing = { thing ->
+                                setState {
+                                    organizerThing = thing
+                                }
+                            }
+                        }
                     }
                 }
             }
