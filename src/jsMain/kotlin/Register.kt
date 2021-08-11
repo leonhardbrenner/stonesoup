@@ -34,7 +34,10 @@ class RegisterComponent : RComponent<RegisterProps, RState>() {
         val inputProps: RProps = jsObject { }
         inputProps.asDynamic().name = "type"
         inputProps.asDynamic().id = "type-simple"
-        mSelect(props.type, name = "type", onChange = { event, _ -> props.setType(event.targetValue as String) }) {
+        mSelect(props.type,
+            name = "type",
+            onChange = { event, _ -> props.setType(event.targetValue as String) }
+        ) {
             attrs.inputProps = inputProps
             mMenuItem("My Seeds", value = SeedsDto.MySeeds.path)
             mMenuItem("Available Seeds", value = SeedsDto.DetailedSeed.path)
