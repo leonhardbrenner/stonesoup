@@ -13,11 +13,11 @@ external interface PlanProps: RProps {
     var chores: List<Chore>
     var deleteChore: (Int) -> Unit
     var handleInput: (String) -> Unit
-    var onMouseEnter: (Int) -> Unit
-    var onMouseLeave: (Int) -> Unit
-    var isMouseIn: (Int) -> Boolean
     var onSelect: (Int) -> Unit
     var isSelected: (Int) -> Boolean
+    //var onMouseEnter: (Int) -> Unit
+    //var onMouseLeave: (Int) -> Unit
+    //var isMouseIn: (Int) -> Boolean
 }
 
 class PlanComponent : RComponent<PlanProps, RState>() {
@@ -40,12 +40,6 @@ class PlanComponent : RComponent<PlanProps, RState>() {
                         attrs.onClick = {
                             props.onSelect(item.id)
                         }
-                        attrs.onMouseEnter = {
-                            props.onMouseEnter(item.id)
-                        }
-                        attrs.onMouseLeave = {
-                            props.onMouseLeave(item.id)
-                        }
                         mListItemText("${item.name}") {
                             css {
                                 marginLeft = ((view.path(item.id).size - 1) * 2).spacingUnits
@@ -54,9 +48,18 @@ class PlanComponent : RComponent<PlanProps, RState>() {
                         if (props.isSelected(item.id)) {
                             mListItemSecondaryAction {
                                 //TODO - change to edit action: to(textbox) expand an mCollapse[delete, priority, ]
-                                mIconButton("comment", onClick = { props.deleteChore(item.id) })
+                                mIconButton("comment",
+                                    onClick = {
+                                        props.deleteChore(item.id)
+                                    })
                             }
                         }
+                        //attrs.onMouseEnter = {
+                        //    props.onMouseEnter(item.id)
+                        //}
+                        //attrs.onMouseLeave = {
+                        //    props.onMouseLeave(item.id)
+                        //}
                     }
                 }
             }

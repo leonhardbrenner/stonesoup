@@ -25,8 +25,8 @@ external interface AppState : RState {
     var organizerThing: String
     var prioritizeThing: String
     var chores: List<Chore>
-    var over: Int?
     var selected: Int?
+    //var over: Int?
 }
 
 class App : RComponent<RProps, AppState>() {
@@ -38,10 +38,10 @@ class App : RComponent<RProps, AppState>() {
             setState {
                 tabValue = Label.Plan.text
                 chores = prioritizedChores
-                over = null
                 registerType = SeedsDto.DetailedSeed.path
                 organizerThing = SeedsDto.MySeeds.path
                 prioritizeThing = Chores.path
+                //over = null
             }
         }
     }
@@ -61,6 +61,7 @@ class App : RComponent<RProps, AppState>() {
                         mTab(Label.Prioritize.text, Label.Prioritize.text) //This can be personal or community
                     }
                 }
+
                 when (state.tabValue) {
                     Label.Register.text -> {
                         register {
@@ -78,11 +79,11 @@ class App : RComponent<RProps, AppState>() {
                             }
                         }
                     }
+                    //TODO - Move the complexity into PlanComponent. Consider using an abstract base class for handling.
                     Label.Plan.text -> {
                         plan {
                             chores = state.chores
                             deleteChore = { id ->
-                                val scope = MainScope()
                                 scope.launch {
                                     PlanPrioritizeApi.delete(id)
                                     val prioritizedChores = PlanPrioritizeApi.get()
@@ -91,19 +92,6 @@ class App : RComponent<RProps, AppState>() {
                                         selected = null //TODO - Yuck this is spaghetti. This is because in order to delete we once selected.
                                     }
                                 }
-                            }
-                            onMouseEnter = { id ->
-                                setState {
-                                    over = id
-                                }
-                            }
-                            onMouseLeave = { id ->
-                                setState {
-                                    over = null
-                                }
-                            }
-                            isMouseIn = { id ->
-                                state.over?.equals(id) ?: false
                             }
                             onSelect = { id ->
                                 setState {
@@ -134,7 +122,6 @@ class App : RComponent<RProps, AppState>() {
                                 state.selected == id
                             }
                             handleInput = { input: String ->
-                                val scope = MainScope()
                                 scope.launch {
                                     val chore = ChoreCreate(
                                         name = input.replace("!", ""),
@@ -146,6 +133,19 @@ class App : RComponent<RProps, AppState>() {
                                     }
                                 }
                             }
+                            //onMouseEnter = { id ->
+                            //    setState {
+                            //        over = id
+                            //    }
+                            //}
+                            //onMouseLeave = { id ->
+                            //    setState {
+                            //        over = null
+                            //    }
+                            //}
+                            //isMouseIn = { id ->
+                            //    state.over?.equals(id) ?: false
+                            //}
                         }
                     }
                     Label.Prioritize.text -> {
