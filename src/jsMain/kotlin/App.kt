@@ -88,6 +88,7 @@ class App : RComponent<RProps, AppState>() {
                                     val prioritizedChores = PlanPrioritizeApi.get()
                                     setState {
                                         chores = prioritizedChores
+                                        selected = null //TODO - Yuck this is spaghetti. This is because in order to delete we once selected.
                                     }
                                 }
                             }
