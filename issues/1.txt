@@ -5,7 +5,7 @@ delete_mongo https://github.com/leonhardbrenner/stonesoup/pull/10
         Yes, I can run and debug.
     My hunch is FileBuilder is writing to the wrong place in *Generator.kt
        I searched for it in build file
-       I checked my run configurations.
+       I checked my run configurations
 
 ?Why is DTOGenerator not generating?
     It was not specified in: buildSrc/src/main/kotlin/ModelGenerator.kt
@@ -14,3 +14,19 @@ Brought back find_shit.py life_organizer in buildSrc/src/main/kotlin/generators/
 Confirmed that things work
 TODO: Create data for the get to retrieve.
 TODO: Retrieve the data through API and Exposed
+TODO: Checkout "Reactive Streams" in IntelliJ
+TODO: Switch model from snakecase to camelCase
+
+?Why is the chore table not created?
+    It is not loading because it breaks when loading chores.json.
+    It Now loads and looks like this:
+        exposed=> select * from chore;
+         id | parentId | childrenIds | name 
+        ----+----------+-------------+------
+          1 |       -1 | 1,3         | A
+          2 |        0 | 2           | B
+          3 |        1 |             | C
+          4 |        0 |             | D
+        (4 rows)
+    I will now disable the reloading of the tables in SeedsDbManager.
+

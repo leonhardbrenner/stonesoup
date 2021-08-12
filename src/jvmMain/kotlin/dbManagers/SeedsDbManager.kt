@@ -18,11 +18,13 @@ object SeedsDBManager {
         SchemaUtils.drop(SeedsDb.MySeeds.Table)
         SchemaUtils.drop(SeedsDb.DetailedSeed.Table)
         SchemaUtils.drop(SeedsDb.SeedCategory.Table)
+        SchemaUtils.drop(SeedsDb.Chore.Table)
     }
     fun create() = transaction {
         SchemaUtils.create(SeedsDb.MySeeds.Table)
         SchemaUtils.create(SeedsDb.DetailedSeed.Table)
         SchemaUtils.create(SeedsDb.SeedCategory.Table)
+        SchemaUtils.create(SeedsDb.Chore.Table)
     }
     fun populate() = transaction {
         val jsonLoaders = SeedsJsonLoaders(kMapper)
@@ -36,6 +38,10 @@ object SeedsDBManager {
         }
         jsonLoaders.categories.forEach { source ->
             SeedsDb.SeedCategory.Entity.insert(source)
+            println("Creating ${source.name}")
+        }
+        jsonLoaders.chores.forEach { source ->
+            SeedsDb.Chore.Entity.insert(source)
             println("Creating ${source.name}")
         }
     }
