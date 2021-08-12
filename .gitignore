@@ -7,3 +7,4 @@
 /buildSrc/.gradle/
 /buildSrc/build/
 #src/*/kotlin/generated
+/.git_threads
