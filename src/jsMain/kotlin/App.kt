@@ -11,6 +11,13 @@ import styled.styledDiv
 
 private val scope = MainScope()
 
+val noMoreChores = listOf(
+    Chore(0, -1, listOf(1, 3), "<root>"),
+    Chore(1, 0, listOf(2), "A"),
+    Chore(2, 1, emptyList(), "B"),
+    Chore(3, 0, emptyList(), "C")
+)
+
 enum class Label(val text: String) {
     Register("Register"),
     Organize("Organize"),
@@ -34,13 +41,14 @@ class App : RComponent<RProps, AppState>() {
 
     override fun AppState.init() {
         scope.launch {
-            val prioritizedChores = PlanPrioritizeApi.get()
+            val prioritizedChores = noMoreChores//PlanPrioritizeApi.get()
             setState {
-                tabValue = Label.Plan.text
+                tabValue = Label.Organize.text
                 chores = prioritizedChores
                 registerType = SeedsDto.DetailedSeed.path
                 organizerThing = SeedsDto.MySeeds.path
                 prioritizeThing = Chores.path
+                selected = null
                 //over = null
             }
         }
@@ -80,13 +88,13 @@ class App : RComponent<RProps, AppState>() {
                         }
                     }
                     //TODO - Move the complexity into PlanComponent. Consider using an abstract base class for handling.
-                    Label.Plan.text -> {
+                    Label.Plan.text ->
                         plan {
                             chores = state.chores
                             deleteChore = { id ->
                                 scope.launch {
-                                    PlanPrioritizeApi.delete(id)
-                                    val prioritizedChores = PlanPrioritizeApi.get()
+                                    //PlanPrioritizeApi.delete(id)
+                                    val prioritizedChores = noMoreChores //PlanPrioritizeApi.get()
                                     setState {
                                         chores = prioritizedChores
                                         selected = null //TODO - Yuck this is spaghetti. This is because in order to delete we once selected.
@@ -106,8 +114,8 @@ class App : RComponent<RProps, AppState>() {
                                                 moveTo = id
                                             )
                                             MainScope().launch {
-                                                PlanPrioritizeApi.update(chore)
-                                                val prioritizedChores = PlanPrioritizeApi.get()
+                                                //PlanPrioritizeApi.update(chore)
+                                                val prioritizedChores = noMoreChores //PlanPrioritizeApi.get()
                                                 setState {
                                                     chores = prioritizedChores
                                                     selected = null
@@ -126,8 +134,8 @@ class App : RComponent<RProps, AppState>() {
                                     val chore = ChoreCreate(
                                         name = input.replace("!", ""),
                                         priority = input.count { it == '!' })
-                                    PlanPrioritizeApi.add(chore)
-                                    val prioritizedChores = PlanPrioritizeApi.get()
+                                    //PlanPrioritizeApi.add(chore)
+                                    val prioritizedChores = noMoreChores //PlanPrioritizeApi.get()
                                     setState {
                                         chores = prioritizedChores
                                     }
@@ -147,7 +155,7 @@ class App : RComponent<RProps, AppState>() {
                             //    state.over?.equals(id) ?: false
                             //}
                         }
-                    }
+
                     Label.Prioritize.text -> {
                         prioritize {
                             thing = state.prioritizeThing

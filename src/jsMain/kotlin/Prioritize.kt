@@ -6,6 +6,7 @@ import models.Chore
 import react.*
 import styled.StyledElementBuilder
 
+
 fun RBuilder.prioritize(handler: PrioritizeProps.() -> Unit): ReactElement {
     return child(PrioritizeComponent::class) {
         this.attrs(handler)
@@ -23,7 +24,6 @@ class PrioritizeComponent : RComponent<PrioritizeProps, RState>() {
         val inputProps: RProps = jsObject { }
         inputProps.asDynamic().name = "name"
         inputProps.asDynamic().id = "id"
-
         mSelect(props.thing,
             name = "name",
             onChange = { event, _ -> props.setThing(event.targetValue as String) }
@@ -50,7 +50,7 @@ class Chores(props: Props<ColumnId>): TreeTable<Chore, Chores.ColumnId>(props) {
         val path = Chores::class.simpleName.toString()
     }
 
-    override suspend fun get() = PlanPrioritizeApi.get()
+    override suspend fun get() = noMoreChores//PlanPrioritizeApi.get()
 
     override fun Chore.label() = name
 
@@ -75,7 +75,7 @@ class Chores(props: Props<ColumnId>): TreeTable<Chore, Chores.ColumnId>(props) {
         ColumnId.RequiredBy -> treeView[a.parentId].name.compareTo(treeView[b.parentId].name)
     }
 
-    override val Chore._id get() = id!!
+    override val Chore._id get() = id
 
     override val columnData = listOf(
         ColumnData(ColumnId.Id, false, false, "Id"),

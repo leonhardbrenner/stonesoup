@@ -10,3 +10,10 @@ Prioritize
 The purpose of this branch is to standardize on one way of doing things:
     functionalComponent => RComponent
     mongo -> exposed(postgres)
+
+New branch - port to postgres
+    make schema changes
+    create crud
+    replace mongo shit
+    
+New branch - change to functional style
