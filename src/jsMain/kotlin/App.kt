@@ -46,6 +46,7 @@ class App : RComponent<RProps, AppState>() {
         }
     }
 
+
     override fun RBuilder.render() {
         themeContext.Consumer { theme ->
             styledDiv {
@@ -59,6 +60,57 @@ class App : RComponent<RProps, AppState>() {
                         mTab(Label.Organize.text, Label.Organize.text)
                         mTab(Label.Plan.text, Label.Plan.text) //This can be personal or community
                         mTab(Label.Prioritize.text, Label.Prioritize.text) //This can be personal or community
+                    }
+                }
+
+                fun planDeleteChore(id: Int) {
+                    scope.launch {
+                        PlanPrioritizeApi.delete(id)
+                        val prioritizedChores = PlanPrioritizeApi.get()
+                        setState {
+                            chores = prioritizedChores
+                            selected = null //TODO - Yuck this is spaghetti. This is because in order to delete we once selected.
+                        }
+                    }
+                }
+                fun planOnSelect(id: Int) {
+                    setState {
+                        if (selected == null)
+                            selected = id
+                        else {
+                            if (id == selected)
+                                selected = null
+                            else {
+                                val chore = NodeUpdate(
+                                    id = selected!!,
+                                    moveTo = id
+                                )
+                                MainScope().launch {
+                                    PlanPrioritizeApi.update(chore)
+                                    val prioritizedChores = PlanPrioritizeApi.get()
+                                    setState {
+                                        chores = prioritizedChores
+                                        selected = null
+                                    }
+                                }
+                            }
+                        }
+
+                    }
+                }
+
+                fun planIsSelected(id: Int) = state.selected == id
+
+                fun planHandleInput(input: String) {
+                    scope.launch {
+                        val chore = ChoreCreate(
+                            name = input.replace("!", ""),
+                            priority = input.count { it == '!' })
+                        PlanPrioritizeApi.add(chore)
+                        val prioritizedChores = PlanPrioritizeApi.get()
+                        setState {
+                            chores = prioritizedChores
+                        }
                     }
                 }
 
@@ -79,60 +131,14 @@ class App : RComponent<RProps, AppState>() {
                             }
                         }
                     }
-                    //TODO - Move the complexity into PlanComponent. Consider using an abstract base class for handling.
+
                     Label.Plan.text -> {
                         plan {
                             chores = state.chores
-                            deleteChore = { id ->
-                                scope.launch {
-                                    PlanPrioritizeApi.delete(id)
-                                    val prioritizedChores = PlanPrioritizeApi.get()
-                                    setState {
-                                        chores = prioritizedChores
-                                        selected = null //TODO - Yuck this is spaghetti. This is because in order to delete we once selected.
-                                    }
-                                }
-                            }
-                            onSelect = { id ->
-                                setState {
-                                    if (selected == null)
-                                        selected = id
-                                    else {
-                                        if (id == selected)
-                                            selected = null
-                                        else {
-                                            val chore = NodeUpdate(
-                                                id = selected!!,
-                                                moveTo = id
-                                            )
-                                            MainScope().launch {
-                                                PlanPrioritizeApi.update(chore)
-                                                val prioritizedChores = PlanPrioritizeApi.get()
-                                                setState {
-                                                    chores = prioritizedChores
-                                                    selected = null
-                                                }
-                                            }
-                                        }
-                                    }
-
-                                }
-                            }
-                            isSelected = { id ->
-                                state.selected == id
-                            }
-                            handleInput = { input: String ->
-                                scope.launch {
-                                    val chore = ChoreCreate(
-                                        name = input.replace("!", ""),
-                                        priority = input.count { it == '!' })
-                                    PlanPrioritizeApi.add(chore)
-                                    val prioritizedChores = PlanPrioritizeApi.get()
-                                    setState {
-                                        chores = prioritizedChores
-                                    }
-                                }
-                            }
+                            deleteChore = { id -> planDeleteChore(id) }
+                            onSelect = { id -> planOnSelect(id)}
+                            isSelected = { id -> planIsSelected(id) }
+                            handleInput = { input: String -> planHandleInput(input)}
                             //onMouseEnter = { id ->
                             //    setState {
                             //        over = id
