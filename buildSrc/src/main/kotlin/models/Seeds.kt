@@ -24,4 +24,14 @@ interface Seeds {
         val link: String?
     )
 
+    class Chore(
+        //val id: Int,
+        val parentId: Int = 0,
+        val childrenIds: String, //List<Int> = listOf(),
+        val name: String
+        //val description: String? = null,
+        //val priority: Int? = null,
+        //var estimateInHours: Int? = null
+    )
+
 }

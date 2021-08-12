@@ -6,6 +6,19 @@ import kotlinx.serialization.Serializable
 
 interface SeedsDto {
   @Serializable
+  data class Chore(
+    override val parentId: Int,
+    override val childrenIds: String,
+    override val name: String
+  ) : Seeds.Chore {
+    companion object {
+      const val path: String = "/Seeds/Chore"
+
+      fun create(source: Seeds.Chore) = SeedsDto.Chore(source.parentId, source.childrenIds,
+          source.name)}
+  }
+
+  @Serializable
   data class DetailedSeed(
     override val name: String,
     override val maturity: String?,

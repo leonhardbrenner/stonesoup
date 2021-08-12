@@ -1,0 +1,16 @@
+delete_mongo https://github.com/leonhardbrenner/stonesoup/pull/10
+
+?Why are we not seeing model.Seeds update?
+    Let's see if we are running the task in gradle.
+        Yes, I can run and debug.
+    My hunch is FileBuilder is writing to the wrong place in *Generator.kt
+       I searched for it in build file
+       I checked my run configurations.
+
+?Why is DTOGenerator not generating?
+    It was not specified in: buildSrc/src/main/kotlin/ModelGenerator.kt
+
+Brought back find_shit.py life_organizer in buildSrc/src/main/kotlin/generators/Generator.kt
+Confirmed that things work
+TODO: Create data for the get to retrieve.
+TODO: Retrieve the data through API and Exposed

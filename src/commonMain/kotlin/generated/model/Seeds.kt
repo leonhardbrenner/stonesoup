@@ -4,6 +4,14 @@ import kotlin.Int
 import kotlin.String
 
 interface Seeds {
+  interface Chore {
+    val parentId: Int
+
+    val childrenIds: String
+
+    val name: String
+  }
+
   interface DetailedSeed {
     val name: String
 

@@ -4,6 +4,17 @@ import kotlin.Int
 import kotlin.String
 
 interface SeedsBuilder {
+  class Chore(
+    var parentId: Int?,
+    var childrenIds: String?,
+    var name: String?
+  ) {
+    fun build(): Seeds.Chore = SeedsDto.Chore(
+    parentId ?: throw IllegalArgumentException("parentId is not nullable"),
+    childrenIds ?: throw IllegalArgumentException("childrenIds is not nullable"),
+    name ?: throw IllegalArgumentException("name is not nullable")
+    )}
+
   class DetailedSeed(
     var name: String?,
     var maturity: String?,

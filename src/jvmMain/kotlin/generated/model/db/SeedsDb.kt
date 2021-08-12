@@ -14,6 +14,39 @@ import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 
 object SeedsDb {
+  object Chore {
+    fun create(source: ResultRow) = SeedsDto.Chore(source[Table.parentId],
+        source[Table.childrenIds], source[Table.name])
+    fun fetchAll() = transaction { with (Table) { selectAll().map { create(it) } } }
+    object Table : IntIdTable("Chore") {
+      val parentId: Column<Int> = integer("parentId")
+
+      val childrenIds: Column<String> = text("childrenIds")
+
+      val name: Column<String> = text("name")
+    }
+
+    class Entity(
+      id: EntityID<Int>
+    ) : IntEntity(id), generated.model.Seeds.Chore {
+      override var parentId: Int by Table.parentId
+
+      override var childrenIds: String by Table.childrenIds
+
+      override var name: String by Table.name
+
+      companion object : IntEntityClass<Entity>(Table) {
+        fun insert(source: Seeds.Chore) {
+          Entity.new {
+            parentId = source.parentId
+            childrenIds = source.childrenIds
+            name = source.name
+          }
+        }
+      }
+    }
+  }
+
   object DetailedSeed {
     fun create(source: ResultRow) = SeedsDto.DetailedSeed(source[Table.name],
         source[Table.maturity], source[Table.secondary_name], source[Table.description],
