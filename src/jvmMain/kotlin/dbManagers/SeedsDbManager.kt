@@ -29,19 +29,38 @@ object SeedsDBManager {
     fun populate() = transaction {
         val jsonLoaders = SeedsJsonLoaders(kMapper)
         jsonLoaders.mySeeds.forEach { source ->
-            SeedsDb.MySeeds.Entity.insert(source)
+            SeedsDb.MySeeds.Entity.new {
+                seed_label = source.seed_label
+                description = source.description
+                germination_test = source.germination_test
+            }
             println("Creating ${source.description}")
         }
         jsonLoaders.detailedSeeds.forEach { source ->
-            SeedsDb.DetailedSeed.Entity.insert(source)
+            SeedsDb.DetailedSeed.Entity.new {
+                name = source.name
+                maturity = source.maturity
+                secondary_name = source.secondary_name
+                description = source.description
+                image = source.image
+                link = source.link
+            }
             println("Creating ${source.name}")
         }
         jsonLoaders.categories.forEach { source ->
-            SeedsDb.SeedCategory.Entity.insert(source)
+            SeedsDb.SeedCategory.Entity.new {
+                name = source.name
+                image = source.image
+                link = source.link
+            }
             println("Creating ${source.name}")
         }
         jsonLoaders.chores.forEach { source ->
-            SeedsDb.Chore.Entity.insert(source)
+            SeedsDb.Chore.Entity.new {
+                parentId = source.parentId
+                childrenIds = source.childrenIds
+                name = source.name
+            }
             println("Creating ${source.name}")
         }
     }

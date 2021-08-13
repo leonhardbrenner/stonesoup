@@ -1,6 +1,5 @@
 package generated.model.db
 
-import generated.model.Seeds
 import generated.model.SeedsDto
 import kotlin.Int
 import kotlin.String
@@ -15,8 +14,10 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 object SeedsDb {
   object Chore {
-    fun create(source: ResultRow) = SeedsDto.Chore(source[Table.parentId],
-        source[Table.childrenIds], source[Table.name])
+    fun create(source: ResultRow) = SeedsDto.Chore(
+      source[Table.id].value,
+      source[Table.parentId],
+      source[Table.childrenIds], source[Table.name])
     fun fetchAll() = transaction { with (Table) { selectAll().map { create(it) } } }
     object Table : IntIdTable("Chore") {
       val parentId: Column<Int> = integer("parentId")
@@ -28,27 +29,19 @@ object SeedsDb {
 
     class Entity(
       id: EntityID<Int>
-    ) : IntEntity(id), generated.model.Seeds.Chore {
-      override var parentId: Int by Table.parentId
+    ) : IntEntity(id) {
+      var parentId: Int by Table.parentId
 
-      override var childrenIds: String by Table.childrenIds
+      var childrenIds: String by Table.childrenIds
 
-      override var name: String by Table.name
+      var name: String by Table.name
 
-      companion object : IntEntityClass<Entity>(Table) {
-        fun insert(source: Seeds.Chore) {
-          Entity.new {
-            parentId = source.parentId
-            childrenIds = source.childrenIds
-            name = source.name
-          }
-        }
-      }
+      companion object : IntEntityClass<Entity>(Table)
     }
   }
 
   object DetailedSeed {
-    fun create(source: ResultRow) = SeedsDto.DetailedSeed(source[Table.name],
+    fun create(source: ResultRow) = SeedsDto.DetailedSeed(source[Table.id].value, source[Table.name],
         source[Table.maturity], source[Table.secondary_name], source[Table.description],
         source[Table.image], source[Table.link])
     fun fetchAll() = transaction { with (Table) { selectAll().map { create(it) } } }
@@ -68,41 +61,29 @@ object SeedsDb {
 
     class Entity(
       id: EntityID<Int>
-    ) : IntEntity(id), generated.model.Seeds.DetailedSeed {
-      override var name: String by Table.name
+    ) : IntEntity(id) {
+      var name: String by Table.name
 
-      override var maturity: String? by Table.maturity
+      var maturity: String? by Table.maturity
 
-      override var secondary_name: String? by Table.secondary_name
+      var secondary_name: String? by Table.secondary_name
 
-      override var description: String? by Table.description
+      var description: String? by Table.description
 
-      override var image: String? by Table.image
+      var image: String? by Table.image
 
-      override var link: String? by Table.link
+      var link: String? by Table.link
 
-      companion object : IntEntityClass<Entity>(Table) {
-        fun insert(source: Seeds.DetailedSeed) {
-          Entity.new {
-            name = source.name
-            maturity = source.maturity
-            secondary_name = source.secondary_name
-            description = source.description
-            image = source.image
-            link = source.link
-          }
-        }
-      }
+      companion object : IntEntityClass<Entity>(Table)
     }
   }
 
   object MySeeds {
-    fun create(source: ResultRow) = SeedsDto.MySeeds(source[Table.my_seed_id],
-        source[Table.seed_label], source[Table.description], source[Table.germination_test])
+    fun create(source: ResultRow) = SeedsDto.MySeeds(
+      source[Table.id].value,
+      source[Table.seed_label], source[Table.description], source[Table.germination_test])
     fun fetchAll() = transaction { with (Table) { selectAll().map { create(it) } } }
     object Table : IntIdTable("MySeeds") {
-      val my_seed_id: Column<Int> = integer("my_seed_id")
-
       val seed_label: Column<String> = text("seed_label")
 
       val description: Column<String> = text("description")
@@ -112,31 +93,22 @@ object SeedsDb {
 
     class Entity(
       id: EntityID<Int>
-    ) : IntEntity(id), generated.model.Seeds.MySeeds {
-      override var my_seed_id: Int by Table.my_seed_id
+    ) : IntEntity(id) {
+      var seed_label: String by Table.seed_label
 
-      override var seed_label: String by Table.seed_label
+      var description: String by Table.description
 
-      override var description: String by Table.description
+      var germination_test: String by Table.germination_test
 
-      override var germination_test: String by Table.germination_test
-
-      companion object : IntEntityClass<Entity>(Table) {
-        fun insert(source: Seeds.MySeeds) {
-          Entity.new {
-            my_seed_id = source.my_seed_id
-            seed_label = source.seed_label
-            description = source.description
-            germination_test = source.germination_test
-          }
-        }
-      }
+      companion object : IntEntityClass<Entity>(Table)
     }
   }
 
   object SeedCategory {
-    fun create(source: ResultRow) = SeedsDto.SeedCategory(source[Table.name], source[Table.image],
-        source[Table.link])
+    fun create(source: ResultRow) = SeedsDto.SeedCategory(
+      source[Table.id].value,
+      source[Table.name], source[Table.image],
+      source[Table.link])
     fun fetchAll() = transaction { with (Table) { selectAll().map { create(it) } } }
     object Table : IntIdTable("SeedCategory") {
       val name: Column<String> = text("name")
@@ -148,22 +120,14 @@ object SeedsDb {
 
     class Entity(
       id: EntityID<Int>
-    ) : IntEntity(id), generated.model.Seeds.SeedCategory {
-      override var name: String by Table.name
+    ) : IntEntity(id) {
+      var name: String by Table.name
 
-      override var image: String by Table.image
+      var image: String by Table.image
 
-      override var link: String by Table.link
+      var link: String by Table.link
 
-      companion object : IntEntityClass<Entity>(Table) {
-        fun insert(source: Seeds.SeedCategory) {
-          Entity.new {
-            name = source.name
-            image = source.image
-            link = source.link
-          }
-        }
-      }
+      companion object : IntEntityClass<Entity>(Table)
     }
   }
 }

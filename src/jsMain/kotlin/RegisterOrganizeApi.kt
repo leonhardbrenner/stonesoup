@@ -14,4 +14,8 @@ object RegisterOrganizeApi {
     suspend fun getCategory(): List<SeedsDto.SeedCategory> {
         return jsonClient.get(endpoint + SeedsDto.SeedCategory.path)
     }
+
+    suspend fun getChores(): List<SeedsDto.Chore> {
+        return jsonClient.get(endpoint + SeedsDto.Chore.path)
+    }
 }

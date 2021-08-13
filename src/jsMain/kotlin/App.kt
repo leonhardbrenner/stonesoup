@@ -45,7 +45,7 @@ class App : RComponent<RProps, AppState>() {
             setState {
                 tabValue = Label.Organize.text
                 chores = prioritizedChores
-                registerType = SeedsDto.DetailedSeed.path
+                registerType = SeedsDto.Chore.path
                 organizerThing = SeedsDto.MySeeds.path
                 prioritizeThing = Chores.path
                 selected = null

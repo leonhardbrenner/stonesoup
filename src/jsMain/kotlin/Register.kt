@@ -42,11 +42,13 @@ class RegisterComponent : RComponent<RegisterProps, RState>() {
             mMenuItem("My Seeds", value = SeedsDto.MySeeds.path)
             mMenuItem("Available Seeds", value = SeedsDto.DetailedSeed.path)
             mMenuItem("Category", value = SeedsDto.SeedCategory.path)
+            mMenuItem("Chore", value = SeedsDto.Chore.path)
         }
         when (props.type) {
             SeedsDto.MySeeds.path -> mySeeds {}
             SeedsDto.DetailedSeed.path -> detailedSeed {}
             SeedsDto.SeedCategory.path -> category {}
+            SeedsDto.Chore.path -> localChores {}
         }
     }
 }
@@ -54,23 +56,30 @@ class RegisterComponent : RComponent<RegisterProps, RState>() {
 private class MySeeds(props: DisplayProps): DisplayComponent<Resources.MySeeds>(props) {
     override suspend fun get() = RegisterOrganizeApi.getMySeeds()
     override fun Resources.MySeeds.label() = description //I don't think extension function is a good choice
-    override fun Resources.MySeeds.transform() = detailedSeed?.image?:"No image found"
+    override fun Resources.MySeeds.transform() = "$id ${detailedSeed?.image?:"No image found"}"
 }
 fun RBuilder.mySeeds(handler: DisplayProps.() -> Unit) = child(MySeeds::class) { attrs { handler() } }
 
 private class DetailedSeed(props: DisplayProps): DisplayComponent<Seeds.DetailedSeed>(props) {
     override suspend fun get() = RegisterOrganizeApi.getDetailedSeed()
     override fun Seeds.DetailedSeed.label() = name
-    override fun Seeds.DetailedSeed.transform() = name
+    override fun Seeds.DetailedSeed.transform() = "$id $name"
 }
 fun RBuilder.detailedSeed(handler: DisplayProps.() -> Unit) = child(DetailedSeed::class) { attrs { handler() } }
 
 private class Category(props: DisplayProps): DisplayComponent<Seeds.SeedCategory>(props) {
     override suspend fun get() = RegisterOrganizeApi.getCategory()
     override fun Seeds.SeedCategory.label() = name
-    override fun Seeds.SeedCategory.transform() = image
+    override fun Seeds.SeedCategory.transform() = "$id $name"
 }
 fun RBuilder.category(handler: DisplayProps.() -> Unit) = child(Category::class) { attrs { handler() } }
+
+private class Chore(props: DisplayProps): DisplayComponent<Seeds.Chore>(props) {
+    override suspend fun get() = RegisterOrganizeApi.getChores()
+    override fun Seeds.Chore.label() = name
+    override fun Seeds.Chore.transform() = "$id $name"
+}
+fun RBuilder.localChores(handler: DisplayProps.() -> Unit) = child(Chore::class) { attrs { handler() } }
 
 external interface DisplayProps : RProps
 

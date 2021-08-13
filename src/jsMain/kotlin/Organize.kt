@@ -65,7 +65,7 @@ class AvailableSeeds(props: Props<ColumnId>): Table<Resources.MySeeds, Available
             mCheckbox(isSelected)
         }
         mTableCell(align = MTableCellAlign.left, padding = MTableCellPadding.none) { +source.description }
-        mTableCell(align = MTableCellAlign.right) { +source.my_seed_id.toString() }
+        mTableCell(align = MTableCellAlign.right) { +source.id.toString() }
         mTableCell(align = MTableCellAlign.right) { +source.seed_label }
         mTableCell(align = MTableCellAlign.right) { +(source.detailedSeed?.name ?: "") }
         mTableCell(align = MTableCellAlign.right) { +source.germination_test }
@@ -74,14 +74,14 @@ class AvailableSeeds(props: Props<ColumnId>): Table<Resources.MySeeds, Available
 
     override fun ColumnId.comparator(a: Resources.MySeeds, b: Resources.MySeeds) = when (this) {
         ColumnId.Description -> (a.description).compareTo(b.description)
-        ColumnId.Id -> a.my_seed_id.compareTo(b.my_seed_id)
+        ColumnId.Id -> a.id.compareTo(b.id)
         ColumnId.SeedLabel -> (a.seed_label).compareTo(b.seed_label)
         ColumnId.Name -> (a.detailedSeed?.name ?: "").compareTo(b.detailedSeed?.name ?: "")
         ColumnId.Germination -> a.germination_test.compareTo(b.germination_test)
         ColumnId.Maturity -> (a.detailedSeed?.maturity ?: "").compareTo(b.detailedSeed?.maturity ?: "")
     }
 
-    override val Resources.MySeeds._id get() = my_seed_id
+    override val Resources.MySeeds._id get() = id
 
     override val columnData = listOf(
         ColumnData(ColumnId.Description, false, true, "Description"),

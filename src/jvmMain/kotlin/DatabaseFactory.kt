@@ -22,7 +22,7 @@ object DatabaseFactory {
     fun init() {
         Database.connect(hikari())
         //(un)comment to toggle rebuilding and reloading initial data.
-        //dbManagers.SeedsDBManager.apply { drop(); create(); populate() }
+        dbManagers.SeedsDBManager.apply { drop(); create(); populate() }
     }
 
     private fun hikari(): HikariDataSource {
