@@ -39,3 +39,5 @@ TODO: Get add, update, delete to work then delete all the old Mongo stuff.
 
 TODO: Introduce DAO tests.
 TODO: Introduce Service tests.
+
+Change git authentication: https://github.blog/2020-12-15-token-authentication-requirements-for-git-operations
