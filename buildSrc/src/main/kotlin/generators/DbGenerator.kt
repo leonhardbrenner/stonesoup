@@ -64,7 +64,8 @@ object DbGenerator: Generator {
             .addSuperclassConstructorParameter("%S", name)
             .apply {
                 elements.forEach { element ->
-                    addProperty(element.propertySpec) //XXX - bring me back.
+                    if (element.name != "id")
+                        addProperty(element.propertySpec) //XXX - bring me back.
                 }
             }.build()
 
@@ -73,14 +74,15 @@ object DbGenerator: Generator {
             .addParameter("source", ClassName("org.jetbrains.exposed.sql", "ResultRow"))
 
             .addCode("return %LDto.%L(%L)",
-                packageName, name, elements.map { "source[Table.${it.name}]" }.joinToString(", "))
+                packageName, name, elements.map { "source[Table.${it.name}]${if (it.name == "id") ".value" else ""}" }.joinToString(", "))
             .build()
 
     val Manifest.Namespace.Type.entity
         get() = com.squareup.kotlinpoet.TypeSpec.classBuilder("Entity")
             .superclass(ClassName("org.jetbrains.exposed.dao", "IntEntity"))
             .addSuperclassConstructorParameter("id")
-            .addSuperinterface(ClassName("generated.model.${namespace.name}", name))
+            //TODO: Revisit this but I was clashing on column['id']. Remarkably this also deleted the override methods.
+            //.addSuperinterface(ClassName("generated.model.${namespace.name}", name))
             .primaryConstructor(
                 com.squareup.kotlinpoet.FunSpec.constructorBuilder().apply {
                     addParameter(
@@ -97,25 +99,29 @@ object DbGenerator: Generator {
                             .parameterizedBy(ClassName("", "Entity"))
                     )
                     .addSuperclassConstructorParameter("Table")
-                    .addFunction(
-                        com.squareup.kotlinpoet.FunSpec.builder("insert")
-                            .addParameter(
-                                ParameterSpec("source", ClassName(packageName, name))
-                            )
-                            .addCode("""Entity.new {
-                            |%L
-                            |}""".trimMargin(), elements.map { "  ${it.columnName} = source.${it.name}" }.joinToString("\n"))
-                            .build()
-                    )
+                    //TODO: Delete this if we never need it. .new was good enough for now.
+                    //.addFunction(
+                    //    com.squareup.kotlinpoet.FunSpec.builder("insert")
+                    //        .addParameter(
+                    //            ParameterSpec("source", ClassName(packageName, name))
+                    //        )
+                    //        .addCode("""Entity.new {
+                    //        |%L
+                    //        |}""".trimMargin(), elements.map { "  ${it.columnName} = source.${it.name}" }.joinToString("\n"))
+                    //        .build()
+                    //)
                     .build()
             )
             .apply {
                 elements.forEach { slot ->
-                    val propertySpec = slot.asPropertySpec(true, com.squareup.kotlinpoet.KModifier.OVERRIDE)
-                        .delegate("Table.%L", slot.name)
-                        .mutable(true)
-                        .build()
-                    addProperty(propertySpec)
+                    if (slot.name != "id") {
+                        //TODO: delete comment but currently my only reference.
+                        val propertySpec = slot.asPropertySpec(true /*, com.squareup.kotlinpoet.KModifier.OVERRIDE*/)
+                            .delegate("Table.%L", slot.name)
+                            .mutable(true)
+                            .build()
+                        addProperty(propertySpec)
+                    }
                 }
             }
             .build()

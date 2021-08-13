@@ -9,6 +9,7 @@ import kotlin.String
 
 interface FlatCsvLoader {
   data class A(
+    override val id: Int,
     override val boolean: Boolean,
     override val int: Int,
     override val long: Long,
@@ -16,7 +17,7 @@ interface FlatCsvLoader {
     override val string: String
   ) : Flat.A {
     companion object {
-      val header: String = "boolean\tint\tlong\tdouble\tstring"
+      val header: String = "id\tboolean\tint\tlong\tdouble\tstring"
 
       fun loadCsv(file: File) = model.loadCsv<A>(file, header)}
   }

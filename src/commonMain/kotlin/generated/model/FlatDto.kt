@@ -10,6 +10,7 @@ import kotlinx.serialization.Serializable
 interface FlatDto {
   @Serializable
   data class A(
+    override val id: Int,
     override val boolean: Boolean,
     override val int: Int,
     override val long: Long,
@@ -19,7 +20,7 @@ interface FlatDto {
     companion object {
       const val path: String = "/Flat/A"
 
-      fun create(source: Flat.A) = FlatDto.A(source.boolean, source.int, source.long, source.double,
-          source.string)}
+      fun create(source: Flat.A) = FlatDto.A(source.id, source.boolean, source.int, source.long,
+          source.double, source.string)}
   }
 }

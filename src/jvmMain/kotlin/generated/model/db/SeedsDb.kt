@@ -1,5 +1,6 @@
 package generated.model.db
 
+import generated.model.Seeds
 import generated.model.SeedsDto
 import kotlin.Int
 import kotlin.String
@@ -14,10 +15,8 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 object SeedsDb {
   object Chore {
-    fun create(source: ResultRow) = SeedsDto.Chore(
-      source[Table.id].value,
-      source[Table.parentId],
-      source[Table.childrenIds], source[Table.name])
+    fun create(source: ResultRow) = SeedsDto.Chore(source[Table.id].value, source[Table.parentId],
+        source[Table.childrenIds], source[Table.name])
     fun fetchAll() = transaction { with (Table) { selectAll().map { create(it) } } }
     object Table : IntIdTable("Chore") {
       val parentId: Column<Int> = integer("parentId")
@@ -41,9 +40,9 @@ object SeedsDb {
   }
 
   object DetailedSeed {
-    fun create(source: ResultRow) = SeedsDto.DetailedSeed(source[Table.id].value, source[Table.name],
-        source[Table.maturity], source[Table.secondary_name], source[Table.description],
-        source[Table.image], source[Table.link])
+    fun create(source: ResultRow) = SeedsDto.DetailedSeed(source[Table.id].value,
+        source[Table.name], source[Table.maturity], source[Table.secondary_name],
+        source[Table.description], source[Table.image], source[Table.link])
     fun fetchAll() = transaction { with (Table) { selectAll().map { create(it) } } }
     object Table : IntIdTable("DetailedSeed") {
       val name: Column<String> = text("name")
@@ -79,9 +78,8 @@ object SeedsDb {
   }
 
   object MySeeds {
-    fun create(source: ResultRow) = SeedsDto.MySeeds(
-      source[Table.id].value,
-      source[Table.seed_label], source[Table.description], source[Table.germination_test])
+    fun create(source: ResultRow) = SeedsDto.MySeeds(source[Table.id].value,
+        source[Table.seed_label], source[Table.description], source[Table.germination_test])
     fun fetchAll() = transaction { with (Table) { selectAll().map { create(it) } } }
     object Table : IntIdTable("MySeeds") {
       val seed_label: Column<String> = text("seed_label")
@@ -105,10 +103,8 @@ object SeedsDb {
   }
 
   object SeedCategory {
-    fun create(source: ResultRow) = SeedsDto.SeedCategory(
-      source[Table.id].value,
-      source[Table.name], source[Table.image],
-      source[Table.link])
+    fun create(source: ResultRow) = SeedsDto.SeedCategory(source[Table.id].value,
+        source[Table.name], source[Table.image], source[Table.link])
     fun fetchAll() = transaction { with (Table) { selectAll().map { create(it) } } }
     object Table : IntIdTable("SeedCategory") {
       val name: Column<String> = text("name")

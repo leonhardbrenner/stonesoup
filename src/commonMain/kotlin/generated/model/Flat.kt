@@ -8,6 +8,8 @@ import kotlin.String
 
 interface Flat {
   interface A {
+    val id: Int
+
     val boolean: Boolean
 
     val int: Int
