@@ -30,3 +30,12 @@ TODO: Switch model from snakecase to camelCase
         (4 rows)
     I will now disable the reloading of the tables in SeedsDbManager.
 
+TODO: We need an optional id column. When provided it means update. Absent means create.
+    Our table comes with ID by default. we need to use this in create. Consider a ChoreCreate.
+    
+TODO: handle childrenIds serialization until there is a better option.
+TODO: Change the PlanPrioritizeApplication.get to get data from postgress.
+TODO: Get add, update, delete to work then delete all the old Mongo stuff.
+
+TODO: Introduce DAO tests.
+TODO: Introduce Service tests.
