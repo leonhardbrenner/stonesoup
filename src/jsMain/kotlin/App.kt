@@ -93,7 +93,7 @@ class App : RComponent<RProps, AppState>() {
                             chores = state.chores
                             deleteChore = { id ->
                                 scope.launch {
-                                    //PlanPrioritizeApi.delete(id)
+                                    PlanPrioritizeApi.delete(id)
                                     val prioritizedChores = PlanPrioritizeApi.get()
                                     setState {
                                         chores = prioritizedChores

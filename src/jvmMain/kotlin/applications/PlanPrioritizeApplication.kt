@@ -8,6 +8,7 @@ import org.litote.kmongo.reactivestreams.KMongo
 //import models.Chore
 import generated.model.Seeds.Chore
 import generated.model.SeedsDto
+import generated.model.db.SeedsDb
 import org.litote.kmongo.eq
 import javax.inject.Inject
 import io.ktor.application.*
@@ -17,6 +18,8 @@ import io.ktor.response.*
 import io.ktor.routing.*
 import models.ChoreCreate
 import models.NodeUpdate
+import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.transactions.transaction
 import org.litote.kmongo.addToSet
 import org.litote.kmongo.pull
 import org.litote.kmongo.setValue
@@ -29,32 +32,30 @@ class PlanPrioritizeApplication @Inject constructor(val service: Service, val da
     val collection
         get() = database.getCollection<Chore>()
 
-    fun routesFrom(routing: Routing) = routing.apply {
-        route(SeedsDto.Chore.path) {
+    fun routesFrom(routing: Routing) = routing.route(SeedsDto.Chore.path) {
 
-            get {
-                //call.respond(collection.find().toList())
-                call.respond(service.get())
-            }
+        get {
+            //call.respond(collection.find().toList())
+            call.respond(service.get())
+        }
 
-            //post {
-            //    val item = call.receive<ChoreCreate>()
-            //    service.add(item)
-            //    call.respond(HttpStatusCode.OK)
-            //}
-            //
-            ////XXX -- none of this works anymore. figure out the mongo api.
-            //put("/{id}") {
-            //    val item = call.receive<NodeUpdate>()
-            //    service.update(item)
-            //    call.respond(HttpStatusCode.OK)
-            //}
-            //
-            //delete("/{id}") {
-            //    val id = call.parameters["id"]?.toInt() ?: error("Invalid delete request")
-            //    service.delete(id)
-            //    call.respond(HttpStatusCode.OK)
-            //}
+        post {
+            val item = call.receive<ChoreCreate>()
+            service.add(item)
+            call.respond(HttpStatusCode.OK)
+        }
+        //
+        ////XXX -- none of this works anymore. figure out the mongo api.
+        //put("/{id}") {
+        //    val item = call.receive<NodeUpdate>()
+        //    service.update(item)
+        //    call.respond(HttpStatusCode.OK)
+        //}
+        //
+        delete("/{id}") {
+            val id = call.parameters["id"]?.toInt() ?: error("Invalid delete request")
+            service.delete(id)
+            call.respond(HttpStatusCode.OK)
         }
     }
 
@@ -76,6 +77,7 @@ class PlanPrioritizeApplication @Inject constructor(val service: Service, val da
 
     }
 
+    //Rename to CRUDService.
     class Service @Inject constructor(
         val database: CoroutineDatabase,
         val seedsService: SeedsService) {
@@ -94,14 +96,30 @@ class PlanPrioritizeApplication @Inject constructor(val service: Service, val da
             return seedsService.getChores()
         }
 
-        //suspend fun add(item: ChoreCreate) {
-        //    val chore = Chore((Date().time/1000).toInt(), parentId = 0, listOf(), item.name, item.description, item.priority, item.estimateInHours)
-        //    collection.updateOne(
-        //        Chore::id eq chore.parentId,
-        //        addToSet(Chore::childrenIds, chore.id)
-        //    )
-        //    collection.insertOne(chore)
-        //}
+        fun add(item: ChoreCreate) {
+            //val chore = Chore((Date().time/1000).toInt(), parentId = 0, listOf(), item.name)//, item.description, item.priority, item.estimateInHours)
+            //collection.updateOne(
+            //    Chore::id eq chore.parentId,
+            //    addToSet(Chore::childrenIds, chore.id)
+            //)
+            //collection.insertOne(chore)
+            //
+            /* TODO: Change to something like this.
+            val id = StarWarsFilms.insertAndGetId {
+                it[name] = "The Last Jedi"
+                it[sequelId] = 8
+                it[director] = "Rian Johnson"
+            }
+            assertEquals(1, id.value)
+            */
+            transaction {
+                SeedsDb.Chore.Entity.new {
+                    parentId = 0 //TODO => item.parentId
+                    name = item.name
+                    childrenIds = ""
+                }
+            }
+        }
         //
         ///**
         // * Todo
@@ -135,12 +153,16 @@ class PlanPrioritizeApplication @Inject constructor(val service: Service, val da
         //suspend fun parent(id: Int) =
         //    element(id)!!.parentId
         //
-        //suspend fun delete(id: Int) {
+        fun delete(id: Int) {
+            transaction {
+                SeedsDb.Chore.Table.deleteWhere { SeedsDb.Chore.Table.id eq id }
+            }
         //    collection.updateOne(
         //        Chore::id eq parent(id),
         //        pull(Chore::childrenIds, id)
         //    )
         //    collection.deleteMany(Chore::id eq id)
-        //}
+
+        }
     }
 }
