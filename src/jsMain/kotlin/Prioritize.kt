@@ -1,6 +1,7 @@
 import com.ccfraser.muirwik.components.*
 import com.ccfraser.muirwik.components.menu.mMenuItem
 import com.ccfraser.muirwik.components.table.*
+import generated.model.Seeds
 import kotlinext.js.jsObject
 import models.Chore
 import react.*
@@ -44,43 +45,43 @@ class PrioritizeComponent : RComponent<PrioritizeProps, RState>() {
 fun RBuilder.chores(handler: TreeTable.Props<Chores.ColumnId>.() -> Unit) =
     child(Chores::class) { attrs { handler() } }
 
-class Chores(props: Props<ColumnId>): TreeTable<Chore, Chores.ColumnId>(props) {
+class Chores(props: Props<ColumnId>): TreeTable<Seeds.Chore, Chores.ColumnId>(props) {
 
     companion object {
         val path = Chores::class.simpleName.toString()
     }
 
-    override suspend fun get() = noMoreChores//PlanPrioritizeApi.get()
+    override suspend fun get() = PlanPrioritizeApi.get()
 
-    override fun Chore.label() = name
+    override fun Seeds.Chore.label() = name
 
-    enum class ColumnId { Id, Description, Priority, RequiredBy }
+    enum class ColumnId { Id, Description/*, Priority*/, RequiredBy }
 
     override var orderByColumn: ColumnId = ColumnId.Description
 
-    override fun StyledElementBuilder<*>.buildRow(source: Chore, isSelected: Boolean) {
+    override fun StyledElementBuilder<*>.buildRow(source: Seeds.Chore, isSelected: Boolean) {
         mTableCell(padding = MTableCellPadding.checkbox) {
             mCheckbox(isSelected)
         }
         mTableCell(align = MTableCellAlign.left, padding = MTableCellPadding.checkbox) { +source.id.toString().padStart(4) }
         mTableCell(align = MTableCellAlign.left) { +(source.name) }
-        mTableCell(align = MTableCellAlign.left) { +(source.priority?.toString()?:"") }
+        //mTableCell(align = MTableCellAlign.left) { +(source.priority?.toString()?:"") }
         mTableCell(align = MTableCellAlign.left) { +(if (source.parentId==0) "" else treeView[source.parentId].name) }
     }
 
-    override fun ColumnId.comparator(a: Chore, b: Chore) = when (this) {
+    override fun ColumnId.comparator(a: Seeds.Chore, b: Seeds.Chore) = when (this) {
         ColumnId.Id -> (a.id).compareTo(b.id)
         ColumnId.Description -> (a.name).compareTo(b.name)
-        ColumnId.Priority -> a.priority!!.compareTo(b.priority!!)
+        //ColumnId.Priority -> a.priority!!.compareTo(b.priority!!)
         ColumnId.RequiredBy -> treeView[a.parentId].name.compareTo(treeView[b.parentId].name)
     }
 
-    override val Chore._id get() = id
+    override val Seeds.Chore._id get() = id
 
     override val columnData = listOf(
         ColumnData(ColumnId.Id, false, false, "Id"),
         ColumnData(ColumnId.Description, false, false, "Description"),
-        ColumnData(ColumnId.Priority, false, false, "Priority"),
+        //ColumnData(ColumnId.Priority, false, false, "Priority"),
         ColumnData(ColumnId.RequiredBy, false, false, "Required By")
     )
 

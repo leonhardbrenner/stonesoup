@@ -41,3 +41,6 @@ TODO: Introduce DAO tests.
 TODO: Introduce Service tests.
 
 Change git authentication: https://github.blog/2020-12-15-token-authentication-requirements-for-git-operations
+
+TODO: Although, I have added support for id I need to add support to not have it like in the example of Flat. I think
+it is as simple as changing the mixin from IntEntity to just Entity.

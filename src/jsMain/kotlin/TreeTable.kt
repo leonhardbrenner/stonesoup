@@ -1,6 +1,7 @@
 import com.ccfraser.muirwik.components.*
 import com.ccfraser.muirwik.components.button.mIconButton
 import com.ccfraser.muirwik.components.table.*
+import generated.model.Seeds
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlinx.css.*
@@ -15,15 +16,15 @@ import kotlin.math.min
 
 private val scope = MainScope()
 
-abstract class TreeTable<T: Node, ColumnId>(props: Props<ColumnId>) : RComponent<TreeTable.Props<ColumnId>, TreeTable.State<T>>() {
+abstract class TreeTable<T: Seeds.Chore, ColumnId>(props: Props<ColumnId>) : RComponent<TreeTable.Props<ColumnId>, TreeTable.State>() {
 
     interface Props<ColumnId> : RProps {
         var title: String
         var sortTemplate: (ColumnId, MTableCellSortDirection) -> String
     }
 
-    interface State<T: Node> : RState {
-        var items: MutableList<Pair<Int, T>>
+    interface State : RState {
+        var items: MutableList<Pair<Int, Seeds.Chore>>
         var order: MTableCellSortDirection
     }
 
@@ -34,12 +35,12 @@ abstract class TreeTable<T: Node, ColumnId>(props: Props<ColumnId>) : RComponent
         val label: String
     )
 
-    override fun State<T>.init() {
+    override fun State.init() {
         items = mutableListOf()
         scope.launch {
-            val items: List<T> = get()
+            val items: List<Seeds.Chore> = get()
             setState {
-                items.forEach { this.items.add(it._id to it) }
+                items.forEach { this.items.add(it._id to it) } //XXX - Fix this
                 order = MTableCellSortDirection.asc
             }
         }
@@ -55,17 +56,17 @@ abstract class TreeTable<T: Node, ColumnId>(props: Props<ColumnId>) : RComponent
 
     abstract suspend fun get(): List<T>
 
-    abstract fun T.label(): String
+    abstract fun Seeds.Chore.label(): String
 
-    abstract fun ColumnId.comparator(a: T, b: T): Int
+    abstract fun ColumnId.comparator(a: Seeds.Chore, b: Seeds.Chore): Int
 
     abstract val columnData: List<ColumnData<ColumnId>>
 
     abstract var orderByColumn: ColumnId
 
-    abstract fun StyledElementBuilder<*>.buildRow(source: T, isSelected: Boolean)
+    abstract fun StyledElementBuilder<*>.buildRow(source: Seeds.Chore, isSelected: Boolean)
 
-    abstract val T._id: Int
+    abstract val Seeds.Chore._id: Int
 
     override fun RBuilder.render() {
         mTypography("${props.title}")

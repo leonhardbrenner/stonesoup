@@ -3,7 +3,7 @@ import generated.model.SeedsDto
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlinx.css.*
-import models.*
+//import models.*
 import react.*
 import styled.StyleSheet
 import styled.css
@@ -11,12 +11,12 @@ import styled.styledDiv
 
 private val scope = MainScope()
 
-val noMoreChores = listOf(
-    Chore(0, -1, listOf(1, 3), "<root>"),
-    Chore(1, 0, listOf(2), "A"),
-    Chore(2, 1, emptyList(), "B"),
-    Chore(3, 0, emptyList(), "C")
-)
+//val noMoreChores = listOf(
+//    Chore(0, -1, listOf(1, 3), "<root>"),
+//    Chore(1, 0, listOf(2), "A"),
+//    Chore(2, 1, emptyList(), "B"),
+//    Chore(3, 0, emptyList(), "C")
+//)
 
 enum class Label(val text: String) {
     Register("Register"),
@@ -31,7 +31,7 @@ external interface AppState : RState {
     var registerType: String
     var organizerThing: String
     var prioritizeThing: String
-    var chores: List<Chore>
+    var chores: List<SeedsDto.Chore>
     var selected: Int?
     //var over: Int?
 }
@@ -41,7 +41,7 @@ class App : RComponent<RProps, AppState>() {
 
     override fun AppState.init() {
         scope.launch {
-            val prioritizedChores = noMoreChores//PlanPrioritizeApi.get()
+            val prioritizedChores = PlanPrioritizeApi.get()
             setState {
                 tabValue = Label.Organize.text
                 chores = prioritizedChores
@@ -94,7 +94,7 @@ class App : RComponent<RProps, AppState>() {
                             deleteChore = { id ->
                                 scope.launch {
                                     //PlanPrioritizeApi.delete(id)
-                                    val prioritizedChores = noMoreChores //PlanPrioritizeApi.get()
+                                    val prioritizedChores = PlanPrioritizeApi.get()
                                     setState {
                                         chores = prioritizedChores
                                         selected = null //TODO - Yuck this is spaghetti. This is because in order to delete we once selected.
@@ -109,13 +109,13 @@ class App : RComponent<RProps, AppState>() {
                                         if (id == selected)
                                             selected = null
                                         else {
-                                            val chore = NodeUpdate(
-                                                id = selected!!,
-                                                moveTo = id
-                                            )
+                                            //val chore = NodeUpdate(
+                                            ///    id = selected!!,
+                                             //   moveTo = id
+                                            //)
                                             MainScope().launch {
                                                 //PlanPrioritizeApi.update(chore)
-                                                val prioritizedChores = noMoreChores //PlanPrioritizeApi.get()
+                                                val prioritizedChores = PlanPrioritizeApi.get()
                                                 setState {
                                                     chores = prioritizedChores
                                                     selected = null
@@ -131,11 +131,11 @@ class App : RComponent<RProps, AppState>() {
                             }
                             handleInput = { input: String ->
                                 scope.launch {
-                                    val chore = ChoreCreate(
-                                        name = input.replace("!", ""),
-                                        priority = input.count { it == '!' })
+                                    //val chore = ChoreCreate(
+                                    //    name = input.replace("!", ""),
+                                    //    priority = input.count { it == '!' })
                                     //PlanPrioritizeApi.add(chore)
-                                    val prioritizedChores = noMoreChores //PlanPrioritizeApi.get()
+                                    val prioritizedChores = PlanPrioritizeApi.get()
                                     setState {
                                         chores = prioritizedChores
                                     }

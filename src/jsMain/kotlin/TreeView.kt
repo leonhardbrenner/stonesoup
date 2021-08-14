@@ -1,3 +1,4 @@
+import generated.model.Seeds
 import models.Node
 
 /*
@@ -12,14 +13,16 @@ import models.Node
     Implement a walker for Infix and Postfix.
     Implement path which is just a walk back up the tree.
  */
-class TreeView<T: Node>(val rootId: Int, val collection: List<T>) {
+class TreeView<T: Seeds.Chore>(val rootId: Int, val collection: List<T>) {
 
     fun walk(id: Int = rootId, block: (T) -> Unit) {
         val node = collection.find { it.id == id }
+        console.log("ID of node was ${id}")
         if (node != null) {
             block(node!!)
-            node!!.childrenIds.map {
-                walk(it, block)
+            node!!.childrenIds.split(",").map {
+                if (it != "")
+                    walk(it.toInt(), block)
             }
         }
     }
@@ -28,8 +31,8 @@ class TreeView<T: Node>(val rootId: Int, val collection: List<T>) {
     fun depthFirstWalk(id: Int = rootId, block: (T) -> Unit) {
         val node = collection.find { it.id == id }
         if (node != null) {
-            node!!.childrenIds.map {
-                depthFirstWalk(it, block)
+            node!!.childrenIds.split(",").map {
+                depthFirstWalk(it.toInt(), block)
             }
             block(node!!)
         }
@@ -39,8 +42,8 @@ class TreeView<T: Node>(val rootId: Int, val collection: List<T>) {
     fun dependencyWalk(id: Int = rootId, block: (T) -> Unit) {
         val node = collection.find { it.id == id }
         if (node != null) {
-            node!!.childrenIds.map {
-                depthFirstWalk(it, block)
+            node!!.childrenIds.split(",").map {
+                depthFirstWalk(it.toInt(), block)
             }
             block(node!!)
         }

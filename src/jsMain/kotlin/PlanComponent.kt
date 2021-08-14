@@ -2,15 +2,16 @@ import PlanComponent.ComponentStyles.listDiv
 import com.ccfraser.muirwik.components.*
 import com.ccfraser.muirwik.components.button.mIconButton
 import com.ccfraser.muirwik.components.list.*
+import generated.model.SeedsDto
 import kotlinx.css.*
-import models.Chore
+//import models.Chore
 import react.*
 import styled.StyleSheet
 import styled.css
 import styled.styledDiv
 
 external interface PlanProps: RProps {
-    var chores: List<Chore>
+    var chores: List<SeedsDto.Chore>
     var deleteChore: (Int) -> Unit
     var handleInput: (String) -> Unit
     var onSelect: (Int) -> Unit
@@ -33,7 +34,8 @@ class PlanComponent : RComponent<PlanProps, RState>() {
         styledDiv {
             css(listDiv)
             mList {
-                val view = TreeView(0, props.chores)
+                console.log(props.chores)
+                val view = TreeView(1, props.chores)
                 view.walk { item ->
                     mListItem {
                         key = item.id!!.toString()//toString()

@@ -1,6 +1,7 @@
 [
-  {"parentId": -1, "childrenIds": "1,3", "name": "A"},
-  {"parentId": 0, "childrenIds": "2", "name": "B"},
-  {"parentId": 1, "childrenIds": "", "name": "C"},
-  {"parentId": 0, "childrenIds": "", "name": "D"}
+  {"parentId": -1, "childrenIds": "2,4,5", "name": "A"},
+  {"parentId": 1, "childrenIds": "3", "name": "B"},
+  {"parentId": 2, "childrenIds": "", "name": "C"},
+  {"parentId": 1, "childrenIds": "", "name": "D"},
+  {"parentId": 1, "childrenIds": "", "name": "E"}
 ]
