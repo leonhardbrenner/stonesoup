@@ -3,6 +3,7 @@ import generated.model.SeedsDto
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlinx.css.*
+import models.ChoreCreate
 //import models.*
 import react.*
 import styled.StyleSheet
@@ -131,10 +132,12 @@ class App : RComponent<RProps, AppState>() {
                             }
                             handleInput = { input: String ->
                                 scope.launch {
-                                    //val chore = ChoreCreate(
-                                    //    name = input.replace("!", ""),
-                                    //    priority = input.count { it == '!' })
-                                    //PlanPrioritizeApi.add(chore)
+                                    val chore = ChoreCreate(
+                                        parentId = 0,
+                                        name = input.replace("!", "")
+                                        //, priority = input.count { it == '!' }
+                                    )
+                                    PlanPrioritizeApi.add(chore)
                                     val prioritizedChores = PlanPrioritizeApi.get()
                                     setState {
                                         chores = prioritizedChores

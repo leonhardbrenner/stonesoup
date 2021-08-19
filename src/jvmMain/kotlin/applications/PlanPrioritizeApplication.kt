@@ -5,11 +5,9 @@ import com.mongodb.ConnectionString
 import org.litote.kmongo.coroutine.CoroutineDatabase
 import org.litote.kmongo.coroutine.coroutine
 import org.litote.kmongo.reactivestreams.KMongo
-//import models.Chore
 import generated.model.Seeds.Chore
 import generated.model.SeedsDto
 import generated.model.db.SeedsDb
-import org.litote.kmongo.eq
 import javax.inject.Inject
 import io.ktor.application.*
 import io.ktor.http.*
@@ -18,11 +16,8 @@ import io.ktor.response.*
 import io.ktor.routing.*
 import models.ChoreCreate
 import models.NodeUpdate
-import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.litote.kmongo.addToSet
-import org.litote.kmongo.pull
-import org.litote.kmongo.setValue
 import services.SeedsService
 import java.util.*
 
@@ -93,59 +88,54 @@ class PlanPrioritizeApplication @Inject constructor(val service: Service, val da
         fun get(): List<Chore> {
             //Reinsert root.
             //collection.insertOne(Chore(name = "<root>", id = 0, parentId = -1))
-            return seedsService.getChores()
+            return SeedsDb.Chore.fetchAll()
         }
 
-        fun add(item: ChoreCreate) {
-            //val chore = Chore((Date().time/1000).toInt(), parentId = 0, listOf(), item.name)//, item.description, item.priority, item.estimateInHours)
-            //collection.updateOne(
-            //    Chore::id eq chore.parentId,
-            //    addToSet(Chore::childrenIds, chore.id)
-            //)
-            //collection.insertOne(chore)
-            //
-            /* TODO: Change to something like this.
-            val id = StarWarsFilms.insertAndGetId {
-                it[name] = "The Last Jedi"
-                it[sequelId] = 8
-                it[director] = "Rian Johnson"
-            }
-            assertEquals(1, id.value)
-            */
+        fun add(item: ChoreCreate): Int {
+            var id = -1
             transaction {
-                SeedsDb.Chore.Entity.new {
-                    parentId = 0 //TODO => item.parentId
-                    name = item.name
-                    childrenIds = ""
+                id = SeedsDb.Chore.Table.insertAndGetId {
+                    it[parentId] = item.parentId
+                    it[name] = item.name
+                    it[childrenIds] = ""
+                }.value
+                val childrenIds = SeedsDb.Chore.Table.select {
+                    SeedsDb.Chore.Table.id.eq(item.parentId)
+                }.single()[SeedsDb.Chore.Table.childrenIds]
+                SeedsDb.Chore.Table.update({ SeedsDb.Chore.Table.id.eq(item.parentId) }) {
+                    val newChildrenId = if (childrenIds == "") id.toString() else childrenIds + "," + id.toString()
+                    it[SeedsDb.Chore.Table.childrenIds] = childrenIds
                 }
             }
+            return id
         }
-        //
-        ///**
-        // * Todo
-        // *   the node id should then be used for our update
-        // *   let's start with move then do link
-        // *   display on the front end more like a graph
-        // *   create a link routine something as simple as little x(es) that connect
-        // *   make a priority widget something like a +/-
-        // *   make a box for real description
-        // *   we need a field for time estimates
-        // *   move to tornadoFx
-        // */
-        //suspend fun update(item: NodeUpdate) {
-        //    collection.updateOne(
-        //        Chore::id eq parent(item.id),
-        //        pull(Chore::childrenIds, item.id!!)
-        //    )
-        //    collection.updateOne(
-        //        Chore::id eq item.moveTo,
-        //        addToSet(Chore::childrenIds, item.id!!)
-        //    )
-        //    collection.updateOne(
-        //        Chore::id eq item.id,
-        //        setValue(Chore::parentId, item.moveTo!!)
-        //    )
-        //}
+
+        /**
+         * Todo
+         *   the node id should then be used for our update
+         *   let's start with move then do link
+         *   display on the front end more like a graph
+         *   create a link routine something as simple as little x(es) that connect
+         *   make a priority widget something like a +/-
+         *   make a box for real description
+         *   we need a field for time estimates
+         *   move to tornadoFx
+         */
+        fun update(item: NodeUpdate) {
+            //collection.updateOne(
+            //    Chore::id eq parent(item.id),
+            //    pull(Chore::childrenIds, item.id!!)
+            //)
+            //collection.updateOne(
+            //    Chore::id eq item.moveTo,
+            //    addToSet(Chore::childrenIds, item.id!!)
+            //)
+            //collection.updateOne(
+            //    Chore::id eq item.id,
+            //    setValue(Chore::parentId, item.moveTo!!)
+            //)
+        }
+
         ////Todo - make this non-nullable
         //suspend fun element(id: Int) =
         //    collection.findOne(Chore::id eq id)
@@ -155,14 +145,23 @@ class PlanPrioritizeApplication @Inject constructor(val service: Service, val da
         //
         fun delete(id: Int) {
             transaction {
+                val parentId = SeedsDb.Chore.Table.select {
+                    SeedsDb.Chore.Table.id.eq(id)
+                }.single()[SeedsDb.Chore.Table.parentId]
+                val childrenIds = SeedsDb.Chore.Table.select {
+                    SeedsDb.Chore.Table.id.eq(parentId)
+                }.single()[SeedsDb.Chore.Table.childrenIds]
+                SeedsDb.Chore.Table.update({ SeedsDb.Chore.Table.id.eq(parentId) }) {
+                    val newChildrenId = if (childrenIds == "") id.toString() else childrenIds + "," + id.toString()
+                    it[SeedsDb.Chore.Table.childrenIds] = newChildrenId
+                }
                 SeedsDb.Chore.Table.deleteWhere { SeedsDb.Chore.Table.id eq id }
             }
+        }
         //    collection.updateOne(
         //        Chore::id eq parent(id),
         //        pull(Chore::childrenIds, id)
         //    )
         //    collection.deleteMany(Chore::id eq id)
-
-        }
     }
 }

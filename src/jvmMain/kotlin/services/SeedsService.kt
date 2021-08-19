@@ -23,6 +23,6 @@ class SeedsService {
 
     fun getCategories() = SeedsDb.SeedCategory.fetchAll()
 
-    fun getChores() = SeedsDb.Chore.fetchAll()
+    //fun getChores() = SeedsDb.Chore.fetchAll()
 
 }
