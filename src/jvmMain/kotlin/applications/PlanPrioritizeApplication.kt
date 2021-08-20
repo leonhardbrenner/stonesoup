@@ -2,9 +2,7 @@ package applications
 
 import com.google.inject.AbstractModule
 import com.mongodb.ConnectionString
-import org.litote.kmongo.coroutine.CoroutineDatabase
 import org.litote.kmongo.coroutine.coroutine
-import org.litote.kmongo.reactivestreams.KMongo
 import generated.model.Seeds.Chore
 import generated.model.SeedsDto
 import generated.model.db.SeedsDb
@@ -22,10 +20,7 @@ import services.SeedsService
 import java.util.*
 
 //Moving on I need to fix my id. I will move to name=path. This gives me assigned vs unassigned.
-class PlanPrioritizeApplication @Inject constructor(val service: Service, val database: CoroutineDatabase) {
-
-    val collection
-        get() = database.getCollection<Chore>()
+class PlanPrioritizeApplication @Inject constructor(val service: Service) {
 
     fun routesFrom(routing: Routing) = routing.route(SeedsDto.Chore.path) {
 
@@ -41,12 +36,12 @@ class PlanPrioritizeApplication @Inject constructor(val service: Service, val da
         }
         //
         ////XXX -- none of this works anymore. figure out the mongo api.
-        //put("/{id}") {
-        //    val item = call.receive<NodeUpdate>()
-        //    service.update(item)
-        //    call.respond(HttpStatusCode.OK)
-        //}
-        //
+        put("/{id}") {
+            val item = call.receive<NodeUpdate>()
+            service.update(item)
+            call.respond(HttpStatusCode.OK)
+        }
+
         delete("/{id}") {
             val id = call.parameters["id"]?.toInt() ?: error("Invalid delete request")
             service.delete(id)
@@ -57,39 +52,26 @@ class PlanPrioritizeApplication @Inject constructor(val service: Service, val da
     object Module : AbstractModule() {
 
         override fun configure() {
-            bind(CoroutineDatabase::class.java).toInstance(database())
+            //bind(CoroutineDatabase::class.java).toInstance(database())
         }
 
-        fun database(): CoroutineDatabase {
-            val connectionString: ConnectionString? = System.getenv("MONGODB_URI")?.let {
-                ConnectionString("$it?retryWrites=false")
-            }
-            val client = connectionString?.let {
-                KMongo.createClient(connectionString).coroutine
-            } ?: KMongo.createClient().coroutine
-            return client.getDatabase(connectionString?.database ?: "test")
-        }
+        //fun database(): CoroutineDatabase {
+        //    val connectionString: ConnectionString? = System.getenv("MONGODB_URI")?.let {
+        //        ConnectionString("$it?retryWrites=false")
+        //    }
+        //    val client = connectionString?.let {
+        //        KMongo.createClient(connectionString).coroutine
+        //    } ?: KMongo.createClient().coroutine
+        //    return client.getDatabase(connectionString?.database ?: "test")
+        //}
 
     }
 
     //Rename to CRUDService.
     class Service @Inject constructor(
-        val database: CoroutineDatabase,
         val seedsService: SeedsService) {
 
-        //val collection
-        //    get() = database.getCollection<Chore>()
-
-        //suspend fun get(): List<Chore> {
-        //    //Reinsert root.
-        //    //collection.insertOne(Chore(name = "<root>", id = 0, parentId = -1))
-        //    return collection.find().toList()
-        //}
-        fun get(): List<Chore> {
-            //Reinsert root.
-            //collection.insertOne(Chore(name = "<root>", id = 0, parentId = -1))
-            return SeedsDb.Chore.fetchAll()
-        }
+        fun get() = transaction { SeedsDb.Chore.fetchAll() }
 
         fun add(item: ChoreCreate): Int {
             var id = -1
@@ -122,18 +104,38 @@ class PlanPrioritizeApplication @Inject constructor(val service: Service, val da
          *   move to tornadoFx
          */
         fun update(item: NodeUpdate) {
-            //collection.updateOne(
-            //    Chore::id eq parent(item.id),
-            //    pull(Chore::childrenIds, item.id!!)
-            //)
-            //collection.updateOne(
-            //    Chore::id eq item.moveTo,
-            //    addToSet(Chore::childrenIds, item.id!!)
-            //)
-            //collection.updateOne(
-            //    Chore::id eq item.id,
-            //    setValue(Chore::parentId, item.moveTo!!)
-            //)
+            transaction {
+
+                //Remove node from old parent children list
+                val oldParentId = SeedsDb.Chore.Table.select {
+                    SeedsDb.Chore.Table.id.eq(item.id)
+                }.single()[SeedsDb.Chore.Table.parentId]
+
+                val oldChildrenIds = SeedsDb.Chore.Table.select {
+                    SeedsDb.Chore.Table.id.eq(oldParentId)
+                }.single()[SeedsDb.Chore.Table.childrenIds]
+
+                //Insert node to new parent children list
+                val newParentId = item.moveTo
+
+                val newChildrenIds = SeedsDb.Chore.Table.select {
+                    SeedsDb.Chore.Table.id.eq(newParentId)
+                }.single()[SeedsDb.Chore.Table.childrenIds]
+
+                SeedsDb.Chore.Table.update({ SeedsDb.Chore.Table.id.eq(oldParentId) }) {
+                    //Remove item from old list
+                    val oldChildrenIdsRewritten = (oldChildrenIds.split(",") - item.id.toString()).joinToString(",")
+                    it[SeedsDb.Chore.Table.childrenIds] = oldChildrenIdsRewritten
+                }
+
+                SeedsDb.Chore.Table.update({ SeedsDb.Chore.Table.id.eq(newParentId) }) {
+                    it[SeedsDb.Chore.Table.childrenIds] = (newChildrenIds.split(",") + item.id.toString()).joinToString(",")
+                }
+
+                SeedsDb.Chore.Table.update({ SeedsDb.Chore.Table.id.eq(item.id) }) {
+                    it[SeedsDb.Chore.Table.parentId] = item.moveTo!!
+                }
+            }
         }
 
         ////Todo - make this non-nullable

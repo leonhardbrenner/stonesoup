@@ -4,7 +4,7 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlinx.css.*
 import models.ChoreCreate
-//import models.*
+import models.NodeUpdate
 import react.*
 import styled.StyleSheet
 import styled.css
@@ -110,12 +110,12 @@ class App : RComponent<RProps, AppState>() {
                                         if (id == selected)
                                             selected = null
                                         else {
-                                            //val chore = NodeUpdate(
-                                            ///    id = selected!!,
-                                             //   moveTo = id
-                                            //)
+                                            val chore = NodeUpdate(
+                                                id = selected!!,
+                                                moveTo = id
+                                            )
                                             MainScope().launch {
-                                                //PlanPrioritizeApi.update(chore)
+                                                PlanPrioritizeApi.update(chore)
                                                 val prioritizedChores = PlanPrioritizeApi.get()
                                                 setState {
                                                     chores = prioritizedChores
