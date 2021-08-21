@@ -30,9 +30,11 @@ class TreeView<T: Seeds.Chore>(val rootId: Int, val collection: List<T>) {
     //Todo - swap for dependency walk. This walks from the leaves to the root completing entire projects.
     fun depthFirstWalk(id: Int = rootId, block: (T) -> Unit) {
         val node = collection.find { it.id == id }
+        console.log("ID2 of node was ${id}")
         if (node != null) {
             node!!.childrenIds.split(",").map {
-                depthFirstWalk(it.toInt(), block)
+                if (it != "")
+                    depthFirstWalk(it.toInt(), block)
             }
             block(node!!)
         }
@@ -41,9 +43,11 @@ class TreeView<T: Seeds.Chore>(val rootId: Int, val collection: List<T>) {
     //Todo - This will tell us all the little things working from the leave to the root.
     fun dependencyWalk(id: Int = rootId, block: (T) -> Unit) {
         val node = collection.find { it.id == id }
+        console.log("ID3 of node was ${id}")
         if (node != null) {
             node!!.childrenIds.split(",").map {
-                depthFirstWalk(it.toInt(), block)
+                if (it != "")
+                    dependencyWalk(it.toInt(), block)
             }
             block(node!!)
         }

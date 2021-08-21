@@ -75,7 +75,7 @@ abstract class TreeTable<T: Seeds.Chore, ColumnId>(props: Props<ColumnId>) : RCo
         sortingAndSelecting()
     }
 
-    val treeView get() = TreeView(0, state.items.map { it.second } )
+    val treeView get() = TreeView(1, state.items.map { it.second } )
 
     val size get() = state.items.size
     val Pair<Int, T>.id get() = first
@@ -104,7 +104,7 @@ abstract class TreeTable<T: Seeds.Chore, ColumnId>(props: Props<ColumnId>) : RCo
                           Todo - create a permalink from the path(id).map { it.symbol }.hashCode().encodeSHA()
                          */
                         treeView.depthFirstWalk { node ->
-                            if (node.id==0) return@depthFirstWalk
+                            if (node.id==1) return@depthFirstWalk
                             val isSelected = selectedIds.contains(node.id)
                             mTableRow(node.id, isSelected, true, onClick = { _ -> handleClick(node.id) }) {
                                 attrs.asDynamic().tabIndex = -1

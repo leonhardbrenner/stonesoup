@@ -3,7 +3,6 @@ import com.ccfraser.muirwik.components.menu.mMenuItem
 import com.ccfraser.muirwik.components.table.*
 import generated.model.Seeds
 import kotlinext.js.jsObject
-import models.Chore
 import react.*
 import styled.StyledElementBuilder
 
