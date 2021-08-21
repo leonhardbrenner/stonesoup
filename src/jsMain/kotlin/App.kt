@@ -133,7 +133,7 @@ class App : RComponent<RProps, AppState>() {
                             handleInput = { input: String ->
                                 scope.launch {
                                     val chore = ChoreCreate(
-                                        parentId = 0,
+                                        parentId = 1, //TODO - I think this should be a default controled by BE.
                                         name = input.replace("!", "")
                                         //, priority = input.count { it == '!' }
                                     )

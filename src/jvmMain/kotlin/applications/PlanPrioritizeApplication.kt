@@ -77,16 +77,15 @@ class PlanPrioritizeApplication @Inject constructor(val service: Service) {
             var id = -1
             transaction {
                 id = SeedsDb.Chore.Table.insertAndGetId {
-                    it[parentId] = item.parentId
-                    it[name] = item.name
-                    it[childrenIds] = ""
+                    it[SeedsDb.Chore.Table.parentId] = item.parentId
+                    it[SeedsDb.Chore.Table.name] = item.name
+                    it[SeedsDb.Chore.Table.childrenIds] = ""
                 }.value
                 val childrenIds = SeedsDb.Chore.Table.select {
                     SeedsDb.Chore.Table.id.eq(item.parentId)
                 }.single()[SeedsDb.Chore.Table.childrenIds]
                 SeedsDb.Chore.Table.update({ SeedsDb.Chore.Table.id.eq(item.parentId) }) {
-                    val newChildrenId = if (childrenIds == "") id.toString() else childrenIds + "," + id.toString()
-                    it[SeedsDb.Chore.Table.childrenIds] = childrenIds
+                    it[SeedsDb.Chore.Table.childrenIds] = (childrenIds.split(",") + id.toString()).joinToString(",")
                 }
             }
             return id
@@ -154,7 +153,7 @@ class PlanPrioritizeApplication @Inject constructor(val service: Service) {
                     SeedsDb.Chore.Table.id.eq(parentId)
                 }.single()[SeedsDb.Chore.Table.childrenIds]
                 SeedsDb.Chore.Table.update({ SeedsDb.Chore.Table.id.eq(parentId) }) {
-                    val newChildrenId = if (childrenIds == "") id.toString() else childrenIds + "," + id.toString()
+                    val newChildrenId = (childrenIds.split(",") - id.toString()).joinToString(",")
                     it[SeedsDb.Chore.Table.childrenIds] = newChildrenId
                 }
                 SeedsDb.Chore.Table.deleteWhere { SeedsDb.Chore.Table.id eq id }

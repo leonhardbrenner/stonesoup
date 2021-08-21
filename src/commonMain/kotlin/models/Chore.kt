@@ -28,8 +28,7 @@ data class Chore(
 @Serializable
 data class ChoreCreate(
     val parentId: Int,
-    val name: String,
-    val childrenIds: List<Int> = listOf()
+    val name: String
     //val description: String? = null,
     //var priority: Int? = null,
     //var estimateInHours: Int? = null
