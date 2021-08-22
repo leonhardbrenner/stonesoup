@@ -35,8 +35,8 @@ open class ModelGenerator : DefaultTask() {
         val seeds = Namespace(Seeds::class)
         listOf(seeds).forEach { namespace ->
             InterfaceGenerator.generate(namespace)
-            DtoGenerator.generate(namespace)
             DbGenerator.generate(namespace)
+            DtoGenerator.generate(namespace)
             BuilderGenerator.generate(namespace)
         }
 

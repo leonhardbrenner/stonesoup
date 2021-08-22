@@ -17,25 +17,26 @@ val jsonClient = HttpClient {
 //Todo - move these Apis to separate files
 object PlanPrioritizeApi {
 
-    suspend fun get(): List<Chore>
-        = jsonClient.get(endpoint + Chore.path)
+    suspend fun get(): List<SeedsDto.Chore> {
+        return jsonClient.get(endpoint + SeedsDto.Chore.path)
+    }
 
     suspend fun add(chore: ChoreCreate) {
-        jsonClient.post<Unit>(endpoint + Chore.path) {
+        jsonClient.post<Unit>(endpoint + SeedsDto.Chore.path) {
             contentType(ContentType.Application.Json)
             body = chore
         }
     }
 
     suspend fun update(node: NodeUpdate) {
-        jsonClient.put<Unit>(endpoint + Chore.path + "/${node.id}") {
+        jsonClient.put<Unit>(endpoint + SeedsDto.Chore.path + "/${node.id}") {
             contentType(ContentType.Application.Json)
             body = node
         }
     }
 
     suspend fun delete(choreId: ChoreId) {
-        jsonClient.delete<Unit>(endpoint + Chore.path + "/${choreId}")
+        jsonClient.delete<Unit>(endpoint + SeedsDto.Chore.path + "/${choreId}")
     }
 
 }

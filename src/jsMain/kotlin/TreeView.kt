@@ -1,3 +1,4 @@
+import generated.model.Seeds
 import models.Node
 
 /*
@@ -12,14 +13,16 @@ import models.Node
     Implement a walker for Infix and Postfix.
     Implement path which is just a walk back up the tree.
  */
-class TreeView<T: Node>(val rootId: Int, val collection: List<T>) {
+class TreeView<T: Seeds.Chore>(val rootId: Int, val collection: List<T>) {
 
     fun walk(id: Int = rootId, block: (T) -> Unit) {
         val node = collection.find { it.id == id }
+        console.log("ID of node was ${id}")
         if (node != null) {
             block(node!!)
-            node!!.childrenIds.map {
-                walk(it, block)
+            node!!.childrenIds.split(",").map {
+                if (it != "")
+                    walk(it.toInt(), block)
             }
         }
     }
@@ -27,9 +30,11 @@ class TreeView<T: Node>(val rootId: Int, val collection: List<T>) {
     //Todo - swap for dependency walk. This walks from the leaves to the root completing entire projects.
     fun depthFirstWalk(id: Int = rootId, block: (T) -> Unit) {
         val node = collection.find { it.id == id }
+        console.log("ID2 of node was ${id}")
         if (node != null) {
-            node!!.childrenIds.map {
-                depthFirstWalk(it, block)
+            node!!.childrenIds.split(",").map {
+                if (it != "")
+                    depthFirstWalk(it.toInt(), block)
             }
             block(node!!)
         }
@@ -38,9 +43,11 @@ class TreeView<T: Node>(val rootId: Int, val collection: List<T>) {
     //Todo - This will tell us all the little things working from the leave to the root.
     fun dependencyWalk(id: Int = rootId, block: (T) -> Unit) {
         val node = collection.find { it.id == id }
+        console.log("ID3 of node was ${id}")
         if (node != null) {
-            node!!.childrenIds.map {
-                depthFirstWalk(it, block)
+            node!!.childrenIds.split(",").map {
+                if (it != "")
+                    dependencyWalk(it.toInt(), block)
             }
             block(node!!)
         }

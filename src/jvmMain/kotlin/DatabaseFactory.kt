@@ -4,6 +4,9 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import com.typesafe.config.ConfigFactory
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
+import dbManagers.SeedsDBManager.create
+import dbManagers.SeedsDBManager.drop
+import dbManagers.SeedsDBManager.populate
 import io.ktor.config.HoconApplicationConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -18,7 +21,8 @@ object DatabaseFactory {
 
     fun init() {
         Database.connect(hikari())
-        //dbManagers.SeedsDBManager.apply { drop(); create(); populate() }
+        //(un)comment to toggle rebuilding and reloading initial data.
+        dbManagers.SeedsDBManager.apply { drop(); create(); populate() }
     }
 
     private fun hikari(): HikariDataSource {

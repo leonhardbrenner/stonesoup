@@ -8,6 +8,7 @@ import kotlin.String
 
 interface FlatBuilder {
   class A(
+    var id: Int?,
     var boolean: Boolean?,
     var int: Int?,
     var long: Long?,
@@ -15,6 +16,7 @@ interface FlatBuilder {
     var string: String?
   ) {
     fun build(): Flat.A = FlatDto.A(
+    id ?: throw IllegalArgumentException("id is not nullable"),
     boolean ?: throw IllegalArgumentException("boolean is not nullable"),
     int ?: throw IllegalArgumentException("int is not nullable"),
     long ?: throw IllegalArgumentException("long is not nullable"),

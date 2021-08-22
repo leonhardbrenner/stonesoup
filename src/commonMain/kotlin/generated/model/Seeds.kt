@@ -4,7 +4,19 @@ import kotlin.Int
 import kotlin.String
 
 interface Seeds {
+  interface Chore {
+    val id: Int
+
+    val parentId: Int
+
+    val childrenIds: String
+
+    val name: String
+  }
+
   interface DetailedSeed {
+    val id: Int
+
     val name: String
 
     val maturity: String?
@@ -19,7 +31,7 @@ interface Seeds {
   }
 
   interface MySeeds {
-    val my_seed_id: Int
+    val id: Int
 
     val seed_label: String
 
@@ -29,6 +41,8 @@ interface Seeds {
   }
 
   interface SeedCategory {
+    val id: Int
+
     val name: String
 
     val image: String

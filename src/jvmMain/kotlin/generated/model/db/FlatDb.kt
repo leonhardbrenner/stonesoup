@@ -18,8 +18,8 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 object FlatDb {
   object A {
-    fun create(source: ResultRow) = FlatDto.A(source[Table.boolean], source[Table.int],
-        source[Table.long], source[Table.double], source[Table.string])
+    fun create(source: ResultRow) = FlatDto.A(source[Table.id].value, source[Table.boolean],
+        source[Table.int], source[Table.long], source[Table.double], source[Table.string])
     fun fetchAll() = transaction { with (Table) { selectAll().map { create(it) } } }
     object Table : IntIdTable("A") {
       val boolean: Column<Boolean> = bool("boolean")
@@ -35,28 +35,18 @@ object FlatDb {
 
     class Entity(
       id: EntityID<Int>
-    ) : IntEntity(id), generated.model.Flat.A {
-      override var boolean: Boolean by Table.boolean
+    ) : IntEntity(id) {
+      var boolean: Boolean by Table.boolean
 
-      override var int: Int by Table.int
+      var int: Int by Table.int
 
-      override var long: Long by Table.long
+      var long: Long by Table.long
 
-      override var double: Double by Table.double
+      var double: Double by Table.double
 
-      override var string: String by Table.string
+      var string: String by Table.string
 
-      companion object : IntEntityClass<Entity>(Table) {
-        fun insert(source: Flat.A) {
-          Entity.new {
-            boolean = source.boolean
-            int = source.int
-            long = source.long
-            double = source.double
-            string = source.string
-          }
-        }
-      }
+      companion object : IntEntityClass<Entity>(Table)
     }
   }
 }

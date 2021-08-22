@@ -3,13 +3,21 @@ import generated.model.SeedsDto
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlinx.css.*
-import models.*
+import models.ChoreCreate
+import models.NodeUpdate
 import react.*
 import styled.StyleSheet
 import styled.css
 import styled.styledDiv
 
 private val scope = MainScope()
+
+//val noMoreChores = listOf(
+//    Chore(0, -1, listOf(1, 3), "<root>"),
+//    Chore(1, 0, listOf(2), "A"),
+//    Chore(2, 1, emptyList(), "B"),
+//    Chore(3, 0, emptyList(), "C")
+//)
 
 enum class Label(val text: String) {
     Register("Register"),
@@ -24,7 +32,7 @@ external interface AppState : RState {
     var registerType: String
     var organizerThing: String
     var prioritizeThing: String
-    var chores: List<Chore>
+    var chores: List<SeedsDto.Chore>
     var selected: Int?
     //var over: Int?
 }
@@ -36,11 +44,12 @@ class App : RComponent<RProps, AppState>() {
         scope.launch {
             val prioritizedChores = PlanPrioritizeApi.get()
             setState {
-                tabValue = Label.Plan.text
+                tabValue = Label.Organize.text
                 chores = prioritizedChores
-                registerType = SeedsDto.DetailedSeed.path
+                registerType = SeedsDto.Chore.path
                 organizerThing = SeedsDto.MySeeds.path
                 prioritizeThing = Chores.path
+                selected = null
                 //over = null
             }
         }
@@ -80,7 +89,7 @@ class App : RComponent<RProps, AppState>() {
                         }
                     }
                     //TODO - Move the complexity into PlanComponent. Consider using an abstract base class for handling.
-                    Label.Plan.text -> {
+                    Label.Plan.text ->
                         plan {
                             chores = state.chores
                             deleteChore = { id ->
@@ -124,8 +133,10 @@ class App : RComponent<RProps, AppState>() {
                             handleInput = { input: String ->
                                 scope.launch {
                                     val chore = ChoreCreate(
-                                        name = input.replace("!", ""),
-                                        priority = input.count { it == '!' })
+                                        parentId = 1, //TODO - I think this should be a default controled by BE.
+                                        name = input.replace("!", "")
+                                        //, priority = input.count { it == '!' }
+                                    )
                                     PlanPrioritizeApi.add(chore)
                                     val prioritizedChores = PlanPrioritizeApi.get()
                                     setState {
@@ -147,7 +158,7 @@ class App : RComponent<RProps, AppState>() {
                             //    state.over?.equals(id) ?: false
                             //}
                         }
-                    }
+
                     Label.Prioritize.text -> {
                         prioritize {
                             thing = state.prioritizeThing
