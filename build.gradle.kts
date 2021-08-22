@@ -62,8 +62,14 @@ kotlin {
                 implementation("io.ktor:ktor-websockets:$ktorVersion")
                 implementation("org.litote.kmongo:kmongo-coroutine-serialization:4.2.7")
                 implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.11.0")
+
+                //TODO - upgrade to 5.0.1 to get rid of this warning:
+                //    Illegal reflective access by com.google.inject.internal
+                //This is described in more detail here:
+                //    https://stackoverflow.com/questions/58165973/how-to-fix-guice-error-an-illegal-reflective-access-operation-has-occurred
                 implementation("com.google.inject:guice:4.2.2")
                 implementation("com.authzee.kotlinguice4:kotlin-guice:1.3.0")
+
                 //TODO - investigate if this actually works
                 implementation("io.mockk:mockk:1.10.4")
 

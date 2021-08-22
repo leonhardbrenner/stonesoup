@@ -21,9 +21,6 @@ object PlanPrioritizeApi {
         return jsonClient.get(endpoint + SeedsDto.Chore.path)
     }
 
-    //suspend fun get(): List<Chore>
-    //    = jsonClient.get(endpoint + Chore.path)
-
     suspend fun add(chore: ChoreCreate) {
         jsonClient.post<Unit>(endpoint + SeedsDto.Chore.path) {
             contentType(ContentType.Application.Json)

@@ -5,8 +5,8 @@ import com.fasterxml.jackson.module.kotlin.KotlinModule
 import generated.model.db.SeedsDb
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
-import java.io.File
 import jsonLoaders.SeedsJsonLoaders
+import java.io.File
 
 fun resource(path: String) = File(ClassLoader.getSystemResource(path).file)
 fun resourceText(path: String) = resource(path).readText()
@@ -34,7 +34,6 @@ object SeedsDBManager {
                 description = source.description
                 germination_test = source.germination_test
             }
-            println("Creating ${source.description}")
         }
         jsonLoaders.detailedSeeds.forEach { source ->
             SeedsDb.DetailedSeed.Entity.new {
@@ -45,7 +44,6 @@ object SeedsDBManager {
                 image = source.image
                 link = source.link
             }
-            println("Creating ${source.name}")
         }
         jsonLoaders.categories.forEach { source ->
             SeedsDb.SeedCategory.Entity.new {
@@ -53,7 +51,6 @@ object SeedsDBManager {
                 image = source.image
                 link = source.link
             }
-            println("Creating ${source.name}")
         }
         jsonLoaders.chores.forEach { source ->
             SeedsDb.Chore.Entity.new {
@@ -61,7 +58,6 @@ object SeedsDBManager {
                 childrenIds = source.childrenIds
                 name = source.name
             }
-            println("Creating ${source.name}")
         }
     }
 }

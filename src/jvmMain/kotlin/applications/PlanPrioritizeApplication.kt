@@ -19,7 +19,6 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import services.SeedsService
 import java.util.*
 
-//Moving on I need to fix my id. I will move to name=path. This gives me assigned vs unassigned.
 class PlanPrioritizeApplication @Inject constructor(val service: Service) {
 
     fun routesFrom(routing: Routing) = routing.route(SeedsDto.Chore.path) {
@@ -35,7 +34,6 @@ class PlanPrioritizeApplication @Inject constructor(val service: Service) {
             call.respond(HttpStatusCode.OK)
         }
         //
-        ////XXX -- none of this works anymore. figure out the mongo api.
         put("/{id}") {
             val item = call.receive<NodeUpdate>()
             service.update(item)
@@ -52,18 +50,9 @@ class PlanPrioritizeApplication @Inject constructor(val service: Service) {
     object Module : AbstractModule() {
 
         override fun configure() {
+            //Stonesoup PR 10 removed the rest database and all MongoDB wiring.
             //bind(CoroutineDatabase::class.java).toInstance(database())
         }
-
-        //fun database(): CoroutineDatabase {
-        //    val connectionString: ConnectionString? = System.getenv("MONGODB_URI")?.let {
-        //        ConnectionString("$it?retryWrites=false")
-        //    }
-        //    val client = connectionString?.let {
-        //        KMongo.createClient(connectionString).coroutine
-        //    } ?: KMongo.createClient().coroutine
-        //    return client.getDatabase(connectionString?.database ?: "test")
-        //}
 
     }
 
@@ -121,8 +110,8 @@ class PlanPrioritizeApplication @Inject constructor(val service: Service) {
                     SeedsDb.Chore.Table.id.eq(newParentId)
                 }.single()[SeedsDb.Chore.Table.childrenIds]
 
+                //Remove item from old list
                 SeedsDb.Chore.Table.update({ SeedsDb.Chore.Table.id.eq(oldParentId) }) {
-                    //Remove item from old list
                     val oldChildrenIdsRewritten = (oldChildrenIds.split(",") - item.id.toString()).joinToString(",")
                     it[SeedsDb.Chore.Table.childrenIds] = oldChildrenIdsRewritten
                 }
@@ -137,13 +126,6 @@ class PlanPrioritizeApplication @Inject constructor(val service: Service) {
             }
         }
 
-        ////Todo - make this non-nullable
-        //suspend fun element(id: Int) =
-        //    collection.findOne(Chore::id eq id)
-        //
-        //suspend fun parent(id: Int) =
-        //    element(id)!!.parentId
-        //
         fun delete(id: Int) {
             transaction {
                 val parentId = SeedsDb.Chore.Table.select {
@@ -159,10 +141,5 @@ class PlanPrioritizeApplication @Inject constructor(val service: Service) {
                 SeedsDb.Chore.Table.deleteWhere { SeedsDb.Chore.Table.id eq id }
             }
         }
-        //    collection.updateOne(
-        //        Chore::id eq parent(id),
-        //        pull(Chore::childrenIds, id)
-        //    )
-        //    collection.deleteMany(Chore::id eq id)
     }
 }
