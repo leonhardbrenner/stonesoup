@@ -67,7 +67,7 @@ kotlin {
                 //    Illegal reflective access by com.google.inject.internal
                 //This is described in more detail here:
                 //    https://stackoverflow.com/questions/58165973/how-to-fix-guice-error-an-illegal-reflective-access-operation-has-occurred
-                implementation("com.google.inject:guice:4.2.2")
+                implementation("com.google.inject:guice:5.0.1")
                 implementation("com.authzee.kotlinguice4:kotlin-guice:1.3.0")
 
                 //TODO - investigate if this actually works
