@@ -36,4 +36,18 @@ interface Seeds {
         //var estimateInHours: Int? = null
     )
 
+    class Schedule(
+        val id: Int,
+        val choreId: Int, //
+        val workHours: String?, //When can I work on this //TODO: This should support workDays as well.
+        val completeBy: String? //When must it be done.
+
+    )
+    //TODO - move away from reflection toward DSL
+    //Class("Schedule") {
+    //    Val("parentId", type = Int::class) {
+    //        Doc("""Stuff""")
+    //        Annotation("Bla")
+    //    }
+    //}
 }

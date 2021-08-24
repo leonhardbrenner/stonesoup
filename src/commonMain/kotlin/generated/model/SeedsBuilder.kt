@@ -49,6 +49,19 @@ interface SeedsBuilder {
     germination_test ?: throw IllegalArgumentException("germination_test is not nullable")
     )}
 
+  class Schedule(
+    var id: Int?,
+    var choreId: Int?,
+    var workHours: String?,
+    var completeBy: String?
+  ) {
+    fun build(): Seeds.Schedule = SeedsDto.Schedule(
+    id ?: throw IllegalArgumentException("id is not nullable"),
+    choreId ?: throw IllegalArgumentException("choreId is not nullable"),
+    workHours,
+    completeBy
+    )}
+
   class SeedCategory(
     var id: Int?,
     var name: String?,

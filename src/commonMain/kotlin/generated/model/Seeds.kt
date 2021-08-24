@@ -40,6 +40,16 @@ interface Seeds {
     val germination_test: String
   }
 
+  interface Schedule {
+    val id: Int
+
+    val choreId: Int
+
+    val workHours: String?
+
+    val completeBy: String?
+  }
+
   interface SeedCategory {
     val id: Int
 
