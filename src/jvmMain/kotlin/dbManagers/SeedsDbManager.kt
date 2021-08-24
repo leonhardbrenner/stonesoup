@@ -18,8 +18,8 @@ object SeedsDBManager {
         SchemaUtils.drop(SeedsDb.MySeeds.Table)
         SchemaUtils.drop(SeedsDb.DetailedSeed.Table)
         SchemaUtils.drop(SeedsDb.SeedCategory.Table)
-        SchemaUtils.drop(SeedsDb.Chore.Table)
         SchemaUtils.drop(SeedsDb.Schedule.Table)
+        SchemaUtils.drop(SeedsDb.Chore.Table)
     }
     fun create() = transaction {
         SchemaUtils.create(SeedsDb.MySeeds.Table)

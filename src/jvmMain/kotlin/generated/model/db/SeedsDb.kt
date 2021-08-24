@@ -39,6 +39,33 @@ object SeedsDb {
     }
   }
 
+  object Schedule {
+    fun create(source: ResultRow) = SeedsDto.Schedule(source[Table.id].value, source[Table.choreId],
+      source[Table.workHours], source[Table.completeBy])
+    fun fetchAll() = transaction { with (Table) { selectAll().map { create(it) } } }
+    object Table : IntIdTable("Schedule") {
+      val choreId: Column<Int> = integer("choreId")
+        .uniqueIndex()
+        .references(Chore.Table.id)
+
+      val workHours: Column<String?> = text("workHours").nullable()
+
+      val completeBy: Column<String?> = text("completeBy").nullable()
+    }
+
+    class Entity(
+      id: EntityID<Int>
+    ) : IntEntity(id) {
+      var choreId: Int by Table.choreId
+
+      var workHours: String? by Table.workHours
+
+      var completeBy: String? by Table.completeBy
+
+      companion object : IntEntityClass<Entity>(Table)
+    }
+  }
+
   object DetailedSeed {
     fun create(source: ResultRow) = SeedsDto.DetailedSeed(source[Table.id].value,
         source[Table.name], source[Table.maturity], source[Table.secondary_name],
@@ -97,31 +124,6 @@ object SeedsDb {
       var description: String by Table.description
 
       var germination_test: String by Table.germination_test
-
-      companion object : IntEntityClass<Entity>(Table)
-    }
-  }
-
-  object Schedule {
-    fun create(source: ResultRow) = SeedsDto.Schedule(source[Table.id].value, source[Table.choreId],
-        source[Table.workHours], source[Table.completeBy])
-    fun fetchAll() = transaction { with (Table) { selectAll().map { create(it) } } }
-    object Table : IntIdTable("Schedule") {
-      val choreId: Column<Int> = integer("choreId")
-
-      val workHours: Column<String?> = text("workHours").nullable()
-
-      val completeBy: Column<String?> = text("completeBy").nullable()
-    }
-
-    class Entity(
-      id: EntityID<Int>
-    ) : IntEntity(id) {
-      var choreId: Int by Table.choreId
-
-      var workHours: String? by Table.workHours
-
-      var completeBy: String? by Table.completeBy
 
       companion object : IntEntityClass<Entity>(Table)
     }

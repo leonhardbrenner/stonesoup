@@ -41,6 +41,7 @@ class PlanPrioritizeApplication @Inject constructor(val service: Service) {
         }
 
         delete("/{id}") {
+            //TODO: Find out why this is RED
             val id = call.parameters["id"]?.toInt() ?: error("Invalid delete request")
             service.delete(id)
             call.respond(HttpStatusCode.OK)
@@ -60,15 +61,40 @@ class PlanPrioritizeApplication @Inject constructor(val service: Service) {
     class Service @Inject constructor(
         val seedsService: SeedsService) {
 
-        fun get() = transaction { SeedsDb.Chore.fetchAll() }
+        fun get() = transaction {
+            with(SeedsDb.Chore.Table leftJoin SeedsDb.Schedule.Table) {
+                val x = selectAll().map {
+                    println("${it[generated.model.db.SeedsDb.Chore.Table.id].value} ${it[generated.model.db.SeedsDb.Chore.Table.name]} ${it[SeedsDb.Schedule.Table.workHours]}")
+                    SeedsDto.Chore(
+                        it[SeedsDb.Chore.Table.id].value,
+                        it[SeedsDb.Chore.Table.parentId],
+                        it[SeedsDb.Chore.Table.childrenIds],
+                        it[SeedsDb.Chore.Table.name]
+                        //XXX - This needs to be made to work. Currently I am getting data. Time to think about boundaries.
+                        //,
+                        //(if (it.hasValue(SeedsDb.Schedule.Table.id))
+                        //    SeedsDto.Schedule(
+                        //        it[SeedsDb.Schedule.Table.id].value,
+                        //        it[SeedsDb.Schedule.Table.choreId],
+                        //        it[SeedsDb.Schedule.Table.workHours],
+                        //        it[SeedsDb.Schedule.Table.completeBy]
+                        //    )
+                        //else
+                        //    null)
+
+                    )
+                }
+                x
+            }
+        }
 
         fun add(item: ChoreCreate): Int {
             var id = -1
             transaction {
                 id = SeedsDb.Chore.Table.insertAndGetId {
-                    it[SeedsDb.Chore.Table.parentId] = item.parentId
-                    it[SeedsDb.Chore.Table.name] = item.name
-                    it[SeedsDb.Chore.Table.childrenIds] = ""
+                    it[parentId] = item.parentId
+                    it[name] = item.name
+                    it[childrenIds] = ""
                 }.value
                 val childrenIds = SeedsDb.Chore.Table.select {
                     SeedsDb.Chore.Table.id.eq(item.parentId)

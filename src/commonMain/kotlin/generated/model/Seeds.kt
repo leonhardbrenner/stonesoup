@@ -12,7 +12,10 @@ interface Seeds {
     val childrenIds: String
 
     val name: String
-  }
+
+    val schedule: Schedule?
+
+}
 
   interface DetailedSeed {
     val id: Int
