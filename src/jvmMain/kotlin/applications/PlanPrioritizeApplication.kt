@@ -64,24 +64,23 @@ class PlanPrioritizeApplication @Inject constructor(val service: Service) {
         fun get() = transaction {
             with(SeedsDb.Chore.Table leftJoin SeedsDb.Schedule.Table) {
                 val x = selectAll().map {
-                    println("${it[generated.model.db.SeedsDb.Chore.Table.id].value} ${it[generated.model.db.SeedsDb.Chore.Table.name]} ${it[SeedsDb.Schedule.Table.workHours]}")
+                    println("${it[SeedsDb.Chore.Table.id].value} ${it[SeedsDb.Chore.Table.name]} ${it[SeedsDb.Schedule.Table.workHours]} ${it[SeedsDb.Schedule.Table.id] == null} ${it[SeedsDb.Schedule.Table.id]}")
+                    val schedule = if (it[SeedsDb.Schedule.Table.id]!=null)
+                        SeedsDto.Schedule(
+                            it[SeedsDb.Schedule.Table.id].value,
+                            it[SeedsDb.Schedule.Table.choreId],
+                            it[SeedsDb.Schedule.Table.workHours],
+                            it[SeedsDb.Schedule.Table.completeBy]
+                        )
+                    else
+                        null
                     SeedsDto.Chore(
                         it[SeedsDb.Chore.Table.id].value,
                         it[SeedsDb.Chore.Table.parentId],
                         it[SeedsDb.Chore.Table.childrenIds],
-                        it[SeedsDb.Chore.Table.name]
-                        //XXX - This needs to be made to work. Currently I am getting data. Time to think about boundaries.
-                        //,
-                        //(if (it.hasValue(SeedsDb.Schedule.Table.id))
-                        //    SeedsDto.Schedule(
-                        //        it[SeedsDb.Schedule.Table.id].value,
-                        //        it[SeedsDb.Schedule.Table.choreId],
-                        //        it[SeedsDb.Schedule.Table.workHours],
-                        //        it[SeedsDb.Schedule.Table.completeBy]
-                        //    )
-                        //else
-                        //    null)
-
+                        it[SeedsDb.Chore.Table.name],
+                        //XXX - This needs to be made to work. Currently, I am getting data. Time to think about boundaries.
+                        schedule
                     )
                 }
                 x

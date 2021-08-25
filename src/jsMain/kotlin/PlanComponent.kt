@@ -47,6 +47,7 @@ class PlanComponent : RComponent<PlanProps, RState>() {
                                 marginLeft = ((view.path(item.id).size - 1) * 2).spacingUnits
                             }
                         }
+                        mListItemText("${item.schedule?.workHours?:""}")
                         if (props.isSelected(item.id)) {
                             mListItemSecondaryAction {
                                 //TODO - change to edit action: to(textbox) expand an mCollapse[delete, priority, ]
