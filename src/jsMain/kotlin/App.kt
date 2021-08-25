@@ -34,7 +34,7 @@ external interface AppState : RState {
     var prioritizeThing: String
     var chores: List<SeedsDto.Chore>
     var selected: Int?
-    //var over: Int?
+    var over: Int?
 }
 
 class App : RComponent<RProps, AppState>() {
@@ -50,7 +50,7 @@ class App : RComponent<RProps, AppState>() {
                 organizerThing = SeedsDto.MySeeds.path
                 prioritizeThing = Chores.path
                 selected = null
-                //over = null
+                over = null
             }
         }
     }
@@ -144,19 +144,19 @@ class App : RComponent<RProps, AppState>() {
                                     }
                                 }
                             }
-                            //onMouseEnter = { id ->
-                            //    setState {
-                            //        over = id
-                            //    }
-                            //}
-                            //onMouseLeave = { id ->
-                            //    setState {
-                            //        over = null
-                            //    }
-                            //}
-                            //isMouseIn = { id ->
-                            //    state.over?.equals(id) ?: false
-                            //}
+                            onMouseEnter = { id ->
+                                setState {
+                                    over = id
+                                }
+                            }
+                            onMouseLeave = { id ->
+                                setState {
+                                    over = null
+                                }
+                            }
+                            isMouseIn = { id ->
+                                state.over?.equals(id) ?: false
+                            }
                         }
 
                     Label.Prioritize.text -> {

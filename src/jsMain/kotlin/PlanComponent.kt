@@ -16,9 +16,9 @@ external interface PlanProps: RProps {
     var handleInput: (String) -> Unit
     var onSelect: (Int) -> Unit
     var isSelected: (Int) -> Boolean
-    //var onMouseEnter: (Int) -> Unit
-    //var onMouseLeave: (Int) -> Unit
-    //var isMouseIn: (Int) -> Boolean
+    var onMouseEnter: (Int) -> Unit
+    var onMouseLeave: (Int) -> Unit
+    var isMouseIn: (Int) -> Boolean
 }
 
 class PlanComponent : RComponent<PlanProps, RState>() {
@@ -47,22 +47,29 @@ class PlanComponent : RComponent<PlanProps, RState>() {
                                 marginLeft = ((view.path(item.id).size - 1) * 2).spacingUnits
                             }
                         }
-                        mListItemText("${item.schedule?.workHours?:""}")
+
+                        if (props.isMouseIn(item.id))
+                            mListItemText("${item.schedule?.workHours?:""}")
+
                         if (props.isSelected(item.id)) {
                             mListItemSecondaryAction {
                                 //TODO - change to edit action: to(textbox) expand an mCollapse[delete, priority, ]
-                                mIconButton("comment",
+                                mIconButton("edit",
+                                    onClick = {
+                                        //props.deleteChore(item.id)
+                                    })
+                                mIconButton("delete",
                                     onClick = {
                                         props.deleteChore(item.id)
                                     })
                             }
                         }
-                        //attrs.onMouseEnter = {
-                        //    props.onMouseEnter(item.id)
-                        //}
-                        //attrs.onMouseLeave = {
-                        //    props.onMouseLeave(item.id)
-                        //}
+                        attrs.onMouseEnter = {
+                            props.onMouseEnter(item.id)
+                        }
+                        attrs.onMouseLeave = {
+                            props.onMouseLeave(item.id)
+                        }
                     }
                 }
             }
