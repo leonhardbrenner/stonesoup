@@ -67,106 +67,122 @@ abstract class Type {
     abstract val name: String
 }
 
-class ComplexType(
-    override val name: String,
-    builder: ComplexType.() -> Unit
-): Type() {
+class Namespace(val name: String, builder: Namespace.() -> Unit) {
+    companion object {
+        val namespace = this
+        val simpleTypes = mutableMapOf<String, Namespace.SimpleType<Any>>()
+    }
+    operator fun get(name: String) = simpleTypes[name]!!
+    inner class ComplexType(
+        override val name: String,
+        builder: ComplexType.() -> Unit
+    ): Type() {
+        inner class Element(
+            val name: String,
+            val type: Type,
+            var minOccurs: Int = 1, var maxOccurs: Int = 1,
+            var default: Any? = null,
+            val isAttribute: Boolean = false,
+            builder: Element.() -> Unit = {})
+    }
+
+    inner class SimpleType<T: Any>(
+        override val name: String,
+        val kClass: KClass<T>,
+        builder: SimpleType<T>.() -> Unit? = {}
+    ): Type() {
+        fun invoke() {}
+        init {
+            simpleTypes
+        }
+
+    }
     inner class Element(
         val name: String,
         val type: Type,
-        var minOccurs: Int = 1, var maxOccurs: Int = 1,
         var default: Any? = null,
         val isAttribute: Boolean = false,
-        builder: Element.() -> Unit = {})
-}
+        builder: Element.() -> Unit? = {}
+    ) {
 
-class SimpleType<T: Any>(
-    override val name: String,
-    val kClass: KClass<T>,
-    builder: SimpleType<T>.() -> Unit? = {}
-): Type() {
-    fun invoke() {}
-
-}
-class Element(
-    val name: String,
-    val type: Type,
-    var default: Any? = null,
-    val isAttribute: Boolean = false,
-    builder: Element.() -> Unit? = {}
-) {
+    }
 
 }
 
-val boolean = SimpleType("Int", Int::class)
-val int = SimpleType("Int", Int::class)
-val string = SimpleType("String", String::class)
-val long = SimpleType("Long", Long::class)
-val double = SimpleType("Double", Double::class)
-val float = SimpleType("Double", Double::class)
-
-val node = ComplexType("Node") {
-    Element("foo", string)
+val builtIn = Namespace("BuiltIn") {
+    SimpleType("Int", Int::class)
+    SimpleType("String", String::class)
+    SimpleType("Long", Long::class)
+    SimpleType("Double", Double::class)
+    SimpleType("Double", Double::class)
 }
+
+val seeds = Namespace("seeds") {
+
+    ComplexType("Node") {
+        Element("foo", builtIn["string"]!!)
+    }
+
 
 //TODO: Create namespaces
-val mySeeds = ComplexType("MySeeds") {
-    Element("id", int)
-    Element("seed_label", string)
-    Element("description", string)
-    Element("germination_test", string)
-}
+    ComplexType("MySeeds") {
+        Element("id", builtIn["int"])
+        Element("seed_label", builtIn["string"])
+        Element("description", builtIn["string"])
+        Element("germination_test", builtIn["string"])
+    }
 
-val seedCategory = ComplexType("SeedCategory") {
-    Element("id", int)
-    Element("name", string)
-    Element("image", string)
-    Element("link", string)
-}
+    ComplexType("SeedCategory") {
+        Element("id", builtIn["int"])
+        Element("name", builtIn["string"])
+        Element("image", builtIn["string"])
+        Element("link", builtIn["string"])
+    }
 
-val detailedSeed = ComplexType("DetailedSeed") {
-    Element("id", int)
-    Element("name", string)
-    Element("maturity", string) {
-        minOccurs = 0
+    ComplexType("DetailedSeed") {
+        Element("id", builtIn["int"])
+        Element("name", builtIn["string"])
+        Element("maturity", builtIn["string"]) {
+            minOccurs = 0
+        }
+        Element("secondary_name", builtIn["string"]) {
+            minOccurs = 0
+        }
+        Element("description", builtIn["string"]) {
+            minOccurs = 0
+        }
+        Element("image", builtIn["string"]) {
+            minOccurs = 0
+        }
+        Element("link", builtIn["string"]) {
+            minOccurs = 0
+        }
     }
-    Element("secondary_name", string) {
-        minOccurs = 0
-    }
-    Element("description", string) {
-        minOccurs = 0
-    }
-    Element("image", string) {
-        minOccurs = 0
-    }
-    Element("link", string) {
-        minOccurs = 0
-    }
-}
 
-//TODO: I am thinking this should just be Node. We can then tie items to the tree.
-//    This should make XQuery like queries much simpler
-//
-val chore = ComplexType("Chore") {
-    Element("id", int)
-    Element("parentId", int) {
-        default = 0
+    //TODO: I am thinking this should just be Node. We can then tie items to the tree.
+    //    This should make XQuery like queries much simpler
+    //
+    ComplexType("Chore") {
+        Element("id", builtIn["int"])
+        Element("parentId", builtIn["string"]) {
+            default = 0
+        }
+        Element("name", builtIn["string"])
+        Element("maturity", builtIn["string"]) {
+            minOccurs = 0
+        }
     }
-    Element("name", string)
-    Element("maturity", string) {
-        minOccurs = 0
-    }
-}
 
-val schedule = ComplexType("Schedule") {
-    Element("id", int)
-    Element("choreId", int) {
-        default = 0
-    }
-    Element("workHours", string) {
-        minOccurs = 0
-    }
-    Element("completeBy", string) {
-        minOccurs = 0
+    ComplexType("Schedule") {
+        Element("id", builtIn["int"])
+        Element("choreId", builtIn["string"]) {
+            default = 0
+        }
+        Element("workHours", builtIn["string"]) {
+            minOccurs = 0
+        }
+        Element("completeBy", builtIn["string"]) {
+            minOccurs = 0
+        }
     }
 }
