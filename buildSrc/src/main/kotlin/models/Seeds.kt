@@ -54,15 +54,6 @@ interface Seeds {
 
 }
 
-//TODO - move away from reflection toward DSL
-//Class("Schedule") {
-//    Val("parentId", type = Int::class) {
-//        Doc("""Stuff""")
-//        Annotation("Bla")
-//    }
-//}
-
-//XXX - Using reflection was a terrible idea change from above to below:)
 abstract class Type {
     abstract val name: String
 }
@@ -119,12 +110,6 @@ val builtIn = Namespace("BuiltIn") {
 
 val seeds = Namespace("seeds") {
 
-    ComplexType("Node") {
-        Element("foo", builtIn["string"]!!)
-    }
-
-
-//TODO: Create namespaces
     ComplexType("MySeeds") {
         Element("id", builtIn["int"])
         Element("seed_label", builtIn["string"])
