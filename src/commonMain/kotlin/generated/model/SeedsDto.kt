@@ -10,13 +10,12 @@ interface SeedsDto {
     override val id: Int,
     override val parentId: Int,
     override val childrenIds: String,
-    override val name: String,
-    override val schedule: Schedule? = null
-  ) : Seeds.Chore {
+    override val name: String
+  ) : generated.model.Chore {
     companion object {
       const val path: String = "/Seeds/Chore"
 
-      fun create(source: Seeds.Chore) = Chore(source.id, source.parentId,
+      fun create(source: generated.model.Chore) = SeedsDto.Chore(source.id, source.parentId,
           source.childrenIds, source.name)}
   }
 
@@ -29,12 +28,13 @@ interface SeedsDto {
     override val description: String?,
     override val image: String?,
     override val link: String?
-  ) : Seeds.DetailedSeed {
+  ) : generated.model.DetailedSeed {
     companion object {
       const val path: String = "/Seeds/DetailedSeed"
 
-      fun create(source: Seeds.DetailedSeed) = SeedsDto.DetailedSeed(source.id, source.name,
-          source.maturity, source.secondary_name, source.description, source.image, source.link)}
+      fun create(source: generated.model.DetailedSeed) = SeedsDto.DetailedSeed(source.id,
+          source.name, source.maturity, source.secondary_name, source.description, source.image,
+          source.link)}
   }
 
   @Serializable
@@ -43,11 +43,11 @@ interface SeedsDto {
     override val seed_label: String,
     override val description: String,
     override val germination_test: String
-  ) : Seeds.MySeeds {
+  ) : generated.model.MySeeds {
     companion object {
       const val path: String = "/Seeds/MySeeds"
 
-      fun create(source: Seeds.MySeeds) = SeedsDto.MySeeds(source.id, source.seed_label,
+      fun create(source: generated.model.MySeeds) = SeedsDto.MySeeds(source.id, source.seed_label,
           source.description, source.germination_test)}
   }
 
@@ -57,11 +57,11 @@ interface SeedsDto {
     override val choreId: Int,
     override val workHours: String?,
     override val completeBy: String?
-  ) : Seeds.Schedule {
+  ) : generated.model.Schedule {
     companion object {
       const val path: String = "/Seeds/Schedule"
 
-      fun create(source: Seeds.Schedule) = SeedsDto.Schedule(source.id, source.choreId,
+      fun create(source: generated.model.Schedule) = SeedsDto.Schedule(source.id, source.choreId,
           source.workHours, source.completeBy)}
   }
 
@@ -71,11 +71,11 @@ interface SeedsDto {
     override val name: String,
     override val image: String,
     override val link: String
-  ) : Seeds.SeedCategory {
+  ) : generated.model.SeedCategory {
     companion object {
       const val path: String = "/Seeds/SeedCategory"
 
-      fun create(source: Seeds.SeedCategory) = SeedsDto.SeedCategory(source.id, source.name,
-          source.image, source.link)}
+      fun create(source: generated.model.SeedCategory) = SeedsDto.SeedCategory(source.id,
+          source.name, source.image, source.link)}
   }
 }

@@ -35,6 +35,7 @@ class Manifest2(builder: Manifest2.() -> Unit) {
             override val name: String,
             builder: ComplexType.() -> Unit
         ) : Type() {
+            val parent: ComplexType? = null
             val elements = linkedMapOf<String, Element>()
             init {
                 types[name] = this
@@ -63,6 +64,17 @@ class Manifest2(builder: Manifest2.() -> Unit) {
                     builder()
                 }
             }
+
+            val path: String = if (parent==null)
+                "/${namespace.name}/$name"
+            else
+                "${parent.path}/$name"
+
+            fun dotPath(aspect: String = ""): String = if (parent==null)
+                "${namespace.name}$aspect.$name"
+            else
+                "${parent.dotPath(aspect)}.$name"
+
         }
 
         inner class SimpleType(

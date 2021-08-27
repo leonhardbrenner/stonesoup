@@ -28,7 +28,7 @@ object InterfaceGenerator2: Generator2 {
             type.elements.values.forEach { element ->
                 addProperty(
                     //Note that I have moved toward elements defining nullability making it XMLSchema like. Reconsider.
-                    PropertySpec.builder(element.name, with (element.type) { typeName.copy(nullable = element.nullable) })
+                    PropertySpec.builder(element.name, element.type.typeName.copy(nullable = element.nullable) )
                         .mutable(false)
                         .build()
                 )
