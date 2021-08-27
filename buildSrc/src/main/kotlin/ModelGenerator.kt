@@ -1,5 +1,6 @@
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
+import generators.InterfaceGenerator2
 import generators.InterfaceGenerator
 import generators.DtoGenerator
 import generators.DbGenerator
@@ -33,12 +34,17 @@ open class ModelGenerator : DefaultTask() {
         DtoGenerator.generate(fancy)
         //XXX - BuilderGenerator.generate(fancy)
         */
-        val seeds = Namespace(Seeds::class)
-        listOf(seeds).forEach { namespace ->
-            InterfaceGenerator.generate(namespace)
-            DbGenerator.generate(namespace)
-            DtoGenerator.generate(namespace)
-            BuilderGenerator.generate(namespace)
+        //val seeds = Namespace(Seeds::class)
+        //listOf(seeds).forEach { namespace ->
+        //    InterfaceGenerator.generate(namespace)
+        //    DbGenerator.generate(namespace)
+        //    DtoGenerator.generate(namespace)
+        //    BuilderGenerator.generate(namespace)
+        //}
+
+        //manifest.namespaces.values.forEach { namespace ->
+        listOf(manifest.namespaces["Seeds"]!!).forEach { namespace ->
+            InterfaceGenerator2.generate(namespace)
         }
 
     }
