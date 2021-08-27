@@ -9,6 +9,7 @@ import models.*
 
 
 import schema.Manifest.Namespace
+import kotlin.reflect.KClass
 
 open class ModelGenerator : DefaultTask() {
 
@@ -19,7 +20,7 @@ open class ModelGenerator : DefaultTask() {
 
     @TaskAction
     fun generate() {
-
+        /*
         val flat = Namespace(Flat::class)
         InterfaceGenerator.generate(flat)
         DtoGenerator.generate(flat)
@@ -31,7 +32,7 @@ open class ModelGenerator : DefaultTask() {
         InterfaceGenerator.generate(fancy)
         DtoGenerator.generate(fancy)
         //XXX - BuilderGenerator.generate(fancy)
-
+        */
         val seeds = Namespace(Seeds::class)
         listOf(seeds).forEach { namespace ->
             InterfaceGenerator.generate(namespace)

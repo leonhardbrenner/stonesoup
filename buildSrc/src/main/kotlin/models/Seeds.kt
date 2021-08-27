@@ -59,35 +59,42 @@ abstract class Type {
 }
 
 class Namespace(val name: String, builder: Namespace.() -> Unit) {
-    companion object {
-        val namespace = this
-        val simpleTypes = mutableMapOf<String, Namespace.SimpleType<Any>>()
-    }
+    val namespace = this
+    val simpleTypes = linkedMapOf<String, Namespace.SimpleType>()
     operator fun get(name: String) = simpleTypes[name]!!
+    init { builder() }
+
     inner class ComplexType(
         override val name: String,
         builder: ComplexType.() -> Unit
     ): Type() {
+        init { builder() }
+
         inner class Element(
             val name: String,
             val type: Type,
             var minOccurs: Int = 1, var maxOccurs: Int = 1,
             var default: Any? = null,
             val isAttribute: Boolean = false,
-            builder: Element.() -> Unit = {})
+            builder: Element.() -> Unit = {}
+        ) {
+            init { builder() }
+        }
     }
 
-    inner class SimpleType<T: Any>(
+    inner class SimpleType(
         override val name: String,
-        val kClass: KClass<T>,
-        builder: SimpleType<T>.() -> Unit? = {}
+        val kClass: KClass<*>, //builtIn["int"].kClass.qualifiedName
+        builder: SimpleType.() -> Unit? = {}
     ): Type() {
+        init { builder() }
         fun invoke() {}
         init {
-            simpleTypes
+            simpleTypes[name] = this
         }
 
     }
+
     inner class Element(
         val name: String,
         val type: Type,
@@ -95,17 +102,17 @@ class Namespace(val name: String, builder: Namespace.() -> Unit) {
         val isAttribute: Boolean = false,
         builder: Element.() -> Unit? = {}
     ) {
-
+        init { builder() }
     }
 
 }
 
 val builtIn = Namespace("BuiltIn") {
-    SimpleType("Int", Int::class)
-    SimpleType("String", String::class)
-    SimpleType("Long", Long::class)
-    SimpleType("Double", Double::class)
-    SimpleType("Double", Double::class)
+    SimpleType("int", Int::class)
+    SimpleType("string", String::class)
+    SimpleType("long", Long::class)
+    SimpleType("double", Double::class)
+    SimpleType("float", Float::class)
 }
 
 val seeds = Namespace("seeds") {
