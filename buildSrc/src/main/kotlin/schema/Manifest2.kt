@@ -30,6 +30,7 @@ class Manifest2(builder: Manifest2.() -> Unit) {
         operator fun invoke(builder: Namespace.() -> Unit) {
             builder()
         }
+        override fun toString() = name
 
         inner class ComplexType(
             override val name: String,
@@ -45,7 +46,7 @@ class Manifest2(builder: Manifest2.() -> Unit) {
             operator fun invoke(builder: ComplexType.() -> Unit) {
                 builder()
             }
-            override val typeName get() = ClassName("generated.model", name)
+            override val typeName get() = ClassName("generated.model.$namespace", name)
 
             inner class Element(
                 val name: String,
