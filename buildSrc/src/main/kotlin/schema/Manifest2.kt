@@ -1,6 +1,8 @@
 package schema
 
 import com.squareup.kotlinpoet.ClassName
+import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.PropertySpec
 import kotlin.reflect.KClass
 
 class Manifest2(builder: Manifest2.() -> Unit) {
@@ -64,6 +66,11 @@ class Manifest2(builder: Manifest2.() -> Unit) {
                 operator fun invoke(builder: Element.() -> Unit) {
                     builder()
                 }
+                val dbName = name//.toLowerCase()
+                fun asPropertySpec(mutable: Boolean, vararg modifiers: KModifier) = PropertySpec.builder(
+                    name,
+                    type.typeName
+                ).addModifiers(modifiers.toList() ).mutable(mutable)
             }
 
             val path: String = if (parent==null)

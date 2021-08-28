@@ -15,15 +15,15 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 object SeedsDb {
   object Chore {
-    fun create(source: ResultRow) = SeedsDto.Chore(source[Table.id].value, source[Table.parentId],
-        source[Table.childrenIds], source[Table.name])
+    fun create(source: ResultRow) = package.name.goes.hereDto.Chore(source[Table.id].value,
+        source[Table.parentId], source[Table.childrenIds], source[Table.name])
     fun fetchAll() = transaction { with (Table) { selectAll().map { create(it) } } }
     object Table : IntIdTable("Chore") {
-      val parentId: Column<Int> = integer("parentId")
+      val parentId: Column<Int> = int("parentId")
 
-      val childrenIds: Column<String> = text("childrenIds")
+      val childrenIds: Column<String> = string("childrenIds")
 
-      val name: Column<String> = text("name")
+      val name: Column<String> = string("name")
     }
 
     class Entity(
@@ -39,50 +39,23 @@ object SeedsDb {
     }
   }
 
-  object Schedule {
-    fun create(source: ResultRow) = SeedsDto.Schedule(source[Table.id].value, source[Table.choreId],
-      source[Table.workHours], source[Table.completeBy])
-    fun fetchAll() = transaction { with (Table) { selectAll().map { create(it) } } }
-    object Table : IntIdTable("Schedule") {
-      val choreId: Column<Int> = integer("choreId")
-        .uniqueIndex()
-        .references(Chore.Table.id)
-
-      val workHours: Column<String?> = text("workHours").nullable()
-
-      val completeBy: Column<String?> = text("completeBy").nullable()
-    }
-
-    class Entity(
-      id: EntityID<Int>
-    ) : IntEntity(id) {
-      var choreId: Int by Table.choreId
-
-      var workHours: String? by Table.workHours
-
-      var completeBy: String? by Table.completeBy
-
-      companion object : IntEntityClass<Entity>(Table)
-    }
-  }
-
   object DetailedSeed {
-    fun create(source: ResultRow) = SeedsDto.DetailedSeed(source[Table.id].value,
+    fun create(source: ResultRow) = package.name.goes.hereDto.DetailedSeed(source[Table.id].value,
         source[Table.name], source[Table.maturity], source[Table.secondary_name],
         source[Table.description], source[Table.image], source[Table.link])
     fun fetchAll() = transaction { with (Table) { selectAll().map { create(it) } } }
     object Table : IntIdTable("DetailedSeed") {
-      val name: Column<String> = text("name")
+      val name: Column<String> = string("name")
 
-      val maturity: Column<String?> = text("maturity").nullable()
+      val maturity: Column<String> = string("maturity").nullable()
 
-      val secondary_name: Column<String?> = text("secondary_name").nullable()
+      val secondary_name: Column<String> = string("secondary_name").nullable()
 
-      val description: Column<String?> = text("description").nullable()
+      val description: Column<String> = string("description").nullable()
 
-      val image: Column<String?> = text("image").nullable()
+      val image: Column<String> = string("image").nullable()
 
-      val link: Column<String?> = text("link").nullable()
+      val link: Column<String> = string("link").nullable()
     }
 
     class Entity(
@@ -90,30 +63,30 @@ object SeedsDb {
     ) : IntEntity(id) {
       var name: String by Table.name
 
-      var maturity: String? by Table.maturity
+      var maturity: String by Table.maturity
 
-      var secondary_name: String? by Table.secondary_name
+      var secondary_name: String by Table.secondary_name
 
-      var description: String? by Table.description
+      var description: String by Table.description
 
-      var image: String? by Table.image
+      var image: String by Table.image
 
-      var link: String? by Table.link
+      var link: String by Table.link
 
       companion object : IntEntityClass<Entity>(Table)
     }
   }
 
   object MySeeds {
-    fun create(source: ResultRow) = SeedsDto.MySeeds(source[Table.id].value,
+    fun create(source: ResultRow) = package.name.goes.hereDto.MySeeds(source[Table.id].value,
         source[Table.seed_label], source[Table.description], source[Table.germination_test])
     fun fetchAll() = transaction { with (Table) { selectAll().map { create(it) } } }
     object Table : IntIdTable("MySeeds") {
-      val seed_label: Column<String> = text("seed_label")
+      val seed_label: Column<String> = string("seed_label")
 
-      val description: Column<String> = text("description")
+      val description: Column<String> = string("description")
 
-      val germination_test: Column<String> = text("germination_test")
+      val germination_test: Column<String> = string("germination_test")
     }
 
     class Entity(
@@ -129,16 +102,41 @@ object SeedsDb {
     }
   }
 
+  object Schedule {
+    fun create(source: ResultRow) = package.name.goes.hereDto.Schedule(source[Table.id].value,
+        source[Table.choreId], source[Table.workHours], source[Table.completeBy])
+    fun fetchAll() = transaction { with (Table) { selectAll().map { create(it) } } }
+    object Table : IntIdTable("Schedule") {
+      val choreId: Column<Int> = int("choreId")
+
+      val workHours: Column<String> = string("workHours").nullable()
+
+      val completeBy: Column<String> = string("completeBy").nullable()
+    }
+
+    class Entity(
+      id: EntityID<Int>
+    ) : IntEntity(id) {
+      var choreId: Int by Table.choreId
+
+      var workHours: String by Table.workHours
+
+      var completeBy: String by Table.completeBy
+
+      companion object : IntEntityClass<Entity>(Table)
+    }
+  }
+
   object SeedCategory {
-    fun create(source: ResultRow) = SeedsDto.SeedCategory(source[Table.id].value,
+    fun create(source: ResultRow) = package.name.goes.hereDto.SeedCategory(source[Table.id].value,
         source[Table.name], source[Table.image], source[Table.link])
     fun fetchAll() = transaction { with (Table) { selectAll().map { create(it) } } }
     object Table : IntIdTable("SeedCategory") {
-      val name: Column<String> = text("name")
+      val name: Column<String> = string("name")
 
-      val image: Column<String> = text("image")
+      val image: Column<String> = string("image")
 
-      val link: Column<String> = text("link")
+      val link: Column<String> = string("link")
     }
 
     class Entity(
