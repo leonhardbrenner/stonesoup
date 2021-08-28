@@ -38,10 +38,10 @@ object DbGenerator2: Generator2 {
     }
 
     val Manifest2.Namespace.ComplexType.Element.propertySpec
-        get() = com.squareup.kotlinpoet.PropertySpec.builder(
+        get() = PropertySpec.builder(
             name,
             ClassName("org.jetbrains.exposed.sql", "Column")
-                .parameterizedBy(type.typeName)
+                .parameterizedBy(type.typeName.copy(nullable=nullable))
         )
             .apply {
                 type.name
@@ -76,6 +76,11 @@ object DbGenerator2: Generator2 {
             .addCode("return %LDto.%L(%L)",
                 packageName, name, elements.values.map { "source[Table.${it.name}]${if (it.name == "id") ".value" else ""}" }.joinToString(", "))
             .build()
+
+    fun Manifest2.Namespace.ComplexType.Element.asPropertySpec(mutable: Boolean, vararg modifiers: KModifier) =
+        PropertySpec.builder(name, type.typeName.copy(nullable = nullable))
+            .addModifiers(modifiers.toList())
+            .mutable(mutable)
 
     val Manifest2.Namespace.ComplexType.entity
         get() = TypeSpec.classBuilder("Entity")

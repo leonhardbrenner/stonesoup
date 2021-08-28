@@ -48,7 +48,7 @@ class Manifest2(builder: Manifest2.() -> Unit) {
             operator fun invoke(builder: ComplexType.() -> Unit) {
                 builder()
             }
-            override val typeName get() = ClassName("generated.model.$namespace", name)
+            override val typeName get() = ClassName(namespace.name, name)
 
             inner class Element(
                 val name: String,
@@ -67,10 +67,6 @@ class Manifest2(builder: Manifest2.() -> Unit) {
                     builder()
                 }
                 val dbName = name//.toLowerCase()
-                fun asPropertySpec(mutable: Boolean, vararg modifiers: KModifier) = PropertySpec.builder(
-                    name,
-                    type.typeName
-                ).addModifiers(modifiers.toList() ).mutable(mutable)
             }
 
             val path: String = if (parent==null)

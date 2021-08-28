@@ -1,6 +1,5 @@
 package generated.model.db
 
-import generated.model.Seeds
 import generated.model.SeedsDto
 import kotlin.Int
 import kotlin.String
@@ -47,15 +46,15 @@ object SeedsDb {
     object Table : IntIdTable("DetailedSeed") {
       val name: Column<String> = text("name")
 
-      val maturity: Column<String> = text("maturity").nullable()
+      val maturity: Column<String?> = text("maturity").nullable()
 
-      val secondary_name: Column<String> = text("secondary_name").nullable()
+      val secondary_name: Column<String?> = text("secondary_name").nullable()
 
-      val description: Column<String> = text("description").nullable()
+      val description: Column<String?> = text("description").nullable()
 
-      val image: Column<String> = text("image").nullable()
+      val image: Column<String?> = text("image").nullable()
 
-      val link: Column<String> = text("link").nullable()
+      val link: Column<String?> = text("link").nullable()
     }
 
     class Entity(
@@ -63,15 +62,15 @@ object SeedsDb {
     ) : IntEntity(id) {
       var name: String by Table.name
 
-      var maturity: String by Table.maturity
+      var maturity: String? by Table.maturity
 
-      var secondary_name: String by Table.secondary_name
+      var secondary_name: String? by Table.secondary_name
 
-      var description: String by Table.description
+      var description: String? by Table.description
 
-      var image: String by Table.image
+      var image: String? by Table.image
 
-      var link: String by Table.link
+      var link: String? by Table.link
 
       companion object : IntEntityClass<Entity>(Table)
     }
@@ -109,9 +108,9 @@ object SeedsDb {
     object Table : IntIdTable("Schedule") {
       val choreId: Column<Int> = integer("choreId")
 
-      val workHours: Column<String> = text("workHours").nullable()
+      val workHours: Column<String?> = text("workHours").nullable()
 
-      val completeBy: Column<String> = text("completeBy").nullable()
+      val completeBy: Column<String?> = text("completeBy").nullable()
     }
 
     class Entity(
@@ -119,9 +118,9 @@ object SeedsDb {
     ) : IntEntity(id) {
       var choreId: Int by Table.choreId
 
-      var workHours: String by Table.workHours
+      var workHours: String? by Table.workHours
 
-      var completeBy: String by Table.completeBy
+      var completeBy: String? by Table.completeBy
 
       companion object : IntEntityClass<Entity>(Table)
     }
