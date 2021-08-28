@@ -46,21 +46,20 @@ object DbGenerator2: Generator2 {
             .apply {
                 type.name
             }
-            .initializer("${type.name
-                //XXX - fix
-                //when (type.kType.toString()) {
-                //    "kotlin.String" -> "text"
-                //    "kotlin.Int" -> "integer"
-                //    "kotlin.Double" -> "double"
-                //    "kotlin.Long" -> "long"
-                //    "kotlin.Boolean" -> "bool"
-                //    else -> "text"
-                //}
+            .initializer("${
+                when (type.typeName.toString()) {
+                    "kotlin.String" -> "text"
+                    "kotlin.Int" -> "integer"
+                    "kotlin.Double" -> "double"
+                    "kotlin.Long" -> "long"
+                    "kotlin.Boolean" -> "bool"
+                    else -> "text"
+                }
             }(\"${dbName}\")${if (nullable) ".nullable()" else ""}")
             .build()
 
     val Manifest2.Namespace.ComplexType.table
-        get() = com.squareup.kotlinpoet.TypeSpec.objectBuilder("Table")
+        get() = TypeSpec.objectBuilder("Table")
             .superclass(ClassName("org.jetbrains.exposed.dao.id", "IntIdTable"))
             .addSuperclassConstructorParameter("%S", name)
             .apply {
@@ -71,15 +70,15 @@ object DbGenerator2: Generator2 {
             }.build()
 
     val Manifest2.Namespace.ComplexType.create
-        get() = com.squareup.kotlinpoet.FunSpec.builder("create")
+        get() = FunSpec.builder("create")
             .addParameter("source", ClassName("org.jetbrains.exposed.sql", "ResultRow"))
 
             .addCode("return %LDto.%L(%L)",
-                "package.name.goes.here"/*packageName*/, name, elements.values.map { "source[Table.${it.name}]${if (it.name == "id") ".value" else ""}" }.joinToString(", "))
+                packageName, name, elements.values.map { "source[Table.${it.name}]${if (it.name == "id") ".value" else ""}" }.joinToString(", "))
             .build()
 
     val Manifest2.Namespace.ComplexType.entity
-        get() = com.squareup.kotlinpoet.TypeSpec.classBuilder("Entity")
+        get() = TypeSpec.classBuilder("Entity")
             .superclass(ClassName("org.jetbrains.exposed.dao", "IntEntity"))
             .addSuperclassConstructorParameter("id")
             //TODO: Revisit this but I was clashing on column['id']. Remarkably this also deleted the override methods.
@@ -94,7 +93,7 @@ object DbGenerator2: Generator2 {
                 }.build()
             )
             .addType(
-                com.squareup.kotlinpoet.TypeSpec.companionObjectBuilder()
+                TypeSpec.companionObjectBuilder()
                     .superclass(
                         ClassName("org.jetbrains.exposed.dao", "IntEntityClass")
                             .parameterizedBy(ClassName("", "Entity"))

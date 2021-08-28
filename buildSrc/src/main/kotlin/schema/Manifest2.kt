@@ -83,6 +83,8 @@ class Manifest2(builder: Manifest2.() -> Unit) {
             else
                 "${parent.dotPath(aspect)}.$name"
 
+            val packageName = namespace.name
+
         }
 
         inner class SimpleType(
