@@ -62,7 +62,9 @@ class PlanPrioritizeApplication @Inject constructor(val service: Service) {
         val seedsService: SeedsService) {
 
         fun get() = transaction {
-            with(SeedsDb.Chore.Table leftJoin SeedsDb.Schedule.Table) {
+            //Nice exposed example:
+            //https://github.com/JetBrains/Exposed/issues/566
+            with(SeedsDb.Chore.Table.join(SeedsDb.Schedule.Table, JoinType.LEFT, additionalConstraint = {SeedsDb.Chore.Table.id eq SeedsDb.Schedule.Table.choreId})) {
                 val x = selectAll().map {
                     println("${it[SeedsDb.Chore.Table.id].value} ${it[SeedsDb.Chore.Table.name]} ${it[SeedsDb.Schedule.Table.workHours]} ${it[SeedsDb.Schedule.Table.id] == null} ${it[SeedsDb.Schedule.Table.id]}")
                     val schedule = if (it[SeedsDb.Schedule.Table.id]!=null)

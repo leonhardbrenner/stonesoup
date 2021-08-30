@@ -9,14 +9,14 @@ interface SeedsBuilder {
     var parentId: Int?,
     var childrenIds: String?,
     var name: String?,
-    var schedule: SeedsDto.Schedule?
+    var schedule: Seeds.Schedule?
   ) {
     fun build(): Seeds.Chore = SeedsDto.Chore(
     id ?: throw IllegalArgumentException("id is not nullable"),
     parentId ?: throw IllegalArgumentException("parentId is not nullable"),
     childrenIds ?: throw IllegalArgumentException("childrenIds is not nullable"),
     name ?: throw IllegalArgumentException("name is not nullable"),
-      schedule ?: throw IllegalArgumentException("schedule is not nullable")
+      schedule?.let { SeedsDto.Schedule.create(it) }
     )}
 
   class DetailedSeed(

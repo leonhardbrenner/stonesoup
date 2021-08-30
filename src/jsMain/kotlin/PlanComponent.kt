@@ -48,8 +48,8 @@ class PlanComponent : RComponent<PlanProps, RState>() {
                             }
                         }
 
-                        if (props.isMouseIn(item.id))
-                            mListItemText("${item.schedule?.workHours?:""}")
+                        //if (props.isMouseIn(item.id))
+                        //    mListItemText("${item.schedule?.workHours?:""}")
 
                         if (props.isSelected(item.id)) {
                             mListItemSecondaryAction {

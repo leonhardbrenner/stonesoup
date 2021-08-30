@@ -1,8 +1,9 @@
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
-import generators.InterfaceGenerator2
-import generators.DtoGenerator2
+import generators.BuilderGenerator2
 import generators.DbGenerator2
+import generators.DtoGenerator2
+import generators.InterfaceGenerator2
 import models.manifest
 
 open class ModelGenerator : DefaultTask() {
@@ -19,7 +20,7 @@ open class ModelGenerator : DefaultTask() {
             InterfaceGenerator2.generate(namespace)
             DtoGenerator2.generate(namespace)
             DbGenerator2.generate(namespace)
-            //BuilderGenerator.generate(namespace)
+            BuilderGenerator2.generate(namespace)
         }
 
     }
