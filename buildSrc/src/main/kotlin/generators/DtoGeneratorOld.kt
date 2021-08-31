@@ -10,6 +10,7 @@ import com.squareup.kotlinpoet.TypeSpec
 import schema.ManifestOld
 import java.io.File
 
+@Deprecated("See ManifestOld for details.")
 object DtoGeneratorOld: GeneratorOld {
 
     //TODO: Generate the top level elements as resources.

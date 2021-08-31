@@ -5,6 +5,7 @@ import java.io.File
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import schema.ManifestOld
 
+@Deprecated("See ManifestOld for details.")
 object DbGeneratorOld: GeneratorOld {
 
     override fun generate(namespace: ManifestOld.Namespace) {

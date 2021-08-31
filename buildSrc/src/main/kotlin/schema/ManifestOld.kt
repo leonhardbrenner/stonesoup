@@ -16,6 +16,7 @@ const val UNBOUNDED = Int.MAX_VALUE
 
 //Note: the suffix Old refers to loaders and generators based on reflection.
 //Note: I am keeping this code as a neat way of importing projects. - Lenny
+@Deprecated("All Manifests and Generators with suffix Old are depricated in favor of fluent API.")
 object ManifestOld {
 
     val namespaceMap = HashMap<String, Namespace>()

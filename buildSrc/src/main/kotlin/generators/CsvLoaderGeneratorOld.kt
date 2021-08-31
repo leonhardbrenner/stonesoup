@@ -14,6 +14,7 @@ import java.io.File
    seen1 and serializerConstructor:(
 */
 //TODO - try to just the DTO we may need to apply Serializable differently.
+@Deprecated("See ManifestOld for details.")
 object CsvLoaderGeneratorOld: GeneratorOld {
 
     override fun generate(namespace: ManifestOld.Namespace) {

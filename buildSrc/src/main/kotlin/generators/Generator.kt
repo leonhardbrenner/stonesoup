@@ -12,6 +12,7 @@ interface Generator {
 
 }
 
+@Deprecated("All Manifests and Generators with suffix Old are depricated in favor of fluent API.")
 interface GeneratorOld {
 
     fun generate(namespace: ManifestOld.Namespace)

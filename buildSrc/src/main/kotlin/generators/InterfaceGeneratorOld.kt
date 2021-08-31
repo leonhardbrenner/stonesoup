@@ -6,6 +6,7 @@ import com.squareup.kotlinpoet.TypeSpec
 import java.io.File
 import schema.ManifestOld
 
+@Deprecated("See ManifestOld for details.")
 object InterfaceGeneratorOld: GeneratorOld {
 
     override fun generate(namespace: ManifestOld.Namespace) {
