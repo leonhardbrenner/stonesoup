@@ -158,6 +158,7 @@ application {
 }
 
 tasks.register<ModelGenerator>("generate")
+tasks.register<ModelGeneratorOld>("generateOld")
 
 tasks.register<PlanPrioritize>("prioritize")
 
