@@ -26,6 +26,7 @@ data class Chore(
 }
 
 @Serializable
+@Deprecated("Fix PlanPrioritizeApi and then generate it with corresponding Services. Implement XQuery!")
 data class ChoreCreate(
     val parentId: Int,
     val name: String
