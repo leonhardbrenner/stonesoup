@@ -1,7 +1,6 @@
 package generators
 
 import com.squareup.kotlinpoet.FileSpec
-import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import java.io.File
@@ -29,6 +28,14 @@ object InterfaceGenerator2: Generator2 {
                 addProperty(
                     //Note that I have moved toward elements defining nullability making it XMLSchema like. Reconsider.
                     PropertySpec.builder(element.name, element.type.typeName.copy(nullable = element.nullable) )
+                        .mutable(false)
+                        .build()
+                )
+            }
+            type.links.values.forEach { link ->
+                addProperty(
+                    //Note that I have moved toward elements defining nullability making it XMLSchema like. Reconsider.
+                    PropertySpec.builder(link.name, link.type.typeName.copy(nullable = true) )
                         .mutable(false)
                         .build()
                 )

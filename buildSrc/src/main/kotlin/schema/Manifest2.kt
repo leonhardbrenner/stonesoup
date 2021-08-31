@@ -108,12 +108,13 @@ class Manifest2(builder: Manifest2.() -> Unit) {
              */
             inner class Link(
                 val name: String,
-                val table: Type,
+                val type: ComplexType,
                 val joinType: JoinType,
                 //Todo - in order to fully support the links I will need to handle the BY clause. For now I write that
                 //  manually.
                 builder: Link.() -> Unit = {}
             ) {
+                val table = type
                 init {
                     links[name] = this
                     builder()

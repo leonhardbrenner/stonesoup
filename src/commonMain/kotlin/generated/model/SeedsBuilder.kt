@@ -4,6 +4,19 @@ import kotlin.Int
 import kotlin.String
 
 interface SeedsBuilder {
+  class Schedule(
+    var id: Int?,
+    var choreId: Int?,
+    var workHours: String?,
+    var completeBy: String?
+  ) {
+    fun build(): Seeds.Schedule = SeedsDto.Schedule(
+    id ?: throw IllegalArgumentException("id is not nullable"),
+    choreId ?: throw IllegalArgumentException("choreId is not nullable"),
+    workHours,
+    completeBy
+    )}
+
   class Chore(
     var id: Int?,
     var parentId: Int?,
@@ -16,7 +29,7 @@ interface SeedsBuilder {
     parentId ?: throw IllegalArgumentException("parentId is not nullable"),
     childrenIds ?: throw IllegalArgumentException("childrenIds is not nullable"),
     name ?: throw IllegalArgumentException("name is not nullable"),
-      schedule?.let { SeedsDto.Schedule.create(it) }
+    schedule?.let { SeedsDto.Schedule.create(it) }
     )}
 
   class DetailedSeed(
@@ -49,19 +62,6 @@ interface SeedsBuilder {
     seed_label ?: throw IllegalArgumentException("seed_label is not nullable"),
     description ?: throw IllegalArgumentException("description is not nullable"),
     germination_test ?: throw IllegalArgumentException("germination_test is not nullable")
-    )}
-
-  class Schedule(
-    var id: Int?,
-    var choreId: Int?,
-    var workHours: String?,
-    var completeBy: String?
-  ) {
-    fun build(): Seeds.Schedule = SeedsDto.Schedule(
-    id ?: throw IllegalArgumentException("id is not nullable"),
-    choreId ?: throw IllegalArgumentException("choreId is not nullable"),
-    workHours,
-    completeBy
     )}
 
   class SeedCategory(

@@ -74,7 +74,10 @@ object DbGenerator2: Generator2 {
             .addParameter("source", ClassName("org.jetbrains.exposed.sql", "ResultRow"))
 
             .addCode("return %LDto.%L(%L)",
-                packageName, name, elements.values.map { "source[Table.${it.name}]${if (it.name == "id") ".value" else ""}" }.joinToString(", "))
+                packageName, name,
+                (elements.values.map { "source[Table.${it.name}]${if (it.name == "id") ".value" else ""}" }
+                        + links.values.map { "null"})
+                    .joinToString(", "))
             .build()
 
     fun Manifest2.Namespace.ComplexType.Element.asPropertySpec(mutable: Boolean, vararg modifiers: KModifier) =

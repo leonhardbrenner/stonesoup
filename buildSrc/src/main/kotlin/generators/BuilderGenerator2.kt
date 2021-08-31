@@ -22,6 +22,14 @@ object BuilderGenerator2: Generator2 {
                                     type.elements.values.forEach { element ->
                                         addParameter(element.name, element.type.typeName.copy(nullable = true)).build()
                                     }
+                                    type.links.values.forEach { link ->
+                                        addParameter(
+                                            link.name,
+                                            link.type.typeName.copy(nullable = true)
+                                            //ClassName("generated.model", link.type.dotPath("Dto"))
+                                            //    .copy(nullable = true)
+                                        ).build()
+                                    }
                                 }.build()
                             )
                             .apply {
@@ -35,19 +43,26 @@ object BuilderGenerator2: Generator2 {
                                             .initializer(element.name).build()
                                     )
                                 }
+                                type.links.values.forEach { link ->
+                                    addProperty(
+                                        //TODO - make extension function
+                                        PropertySpec.builder(
+                                            link.name,
+                                            link.type.typeName.copy(nullable = true)
+                                        ).mutable(true)
+                                            .initializer(link.name).build()
+                                    )
+                                }
                             }
-                            .addFunction(
+                            .addFunction( //Make this a lambda receiver
                                 FunSpec.builder("build")
                                     .returns(ClassName("generated.model", "${type.packageName}.${type.name}"))
                                     .addCode(
                                         "return %L(\n%L\n)",
                                         "${type.packageName}Dto.${type.name}",
-                                        type.elements.values.map {
-                                            if (it.nullable)
-                                                it.name
-                                            else
-                                                "${it.name} ?: throw IllegalArgumentException(\"${it.name} is not nullable\")"
-                                        }.joinToString(",\n")
+                                        (type.elements.values.map { if (it.nullable) it.name else "${it.name} ?: throw IllegalArgumentException(\"${it.name} is not nullable\")" }
+                                                + type.links.values.map { "${it.name}?.let { ${it.type.dotPath("Dto")}.create(it) }" })
+                                            .joinToString(",\n")
                                     )
                                     .build()
                             )

@@ -6,6 +6,20 @@ import kotlinx.serialization.Serializable
 
 interface SeedsDto {
   @Serializable
+  data class Schedule(
+    override val id: Int,
+    override val choreId: Int,
+    override val workHours: String?,
+    override val completeBy: String?
+  ) : Seeds.Schedule {
+    companion object {
+      const val path: String = "/Seeds/Schedule"
+
+      fun create(source: Seeds.Schedule) = SeedsDto.Schedule(source.id, source.choreId,
+          source.workHours, source.completeBy)}
+  }
+
+  @Serializable
   data class Chore(
     override val id: Int,
     override val parentId: Int,
@@ -17,7 +31,7 @@ interface SeedsDto {
       const val path: String = "/Seeds/Chore"
 
       fun create(source: Seeds.Chore) = SeedsDto.Chore(source.id, source.parentId,
-          source.childrenIds, source.name, source.schedule?.let { Schedule.create(it) })}
+          source.childrenIds, source.name, source.schedule?.let { SeedsDto.Schedule.create(it) })}
   }
 
   @Serializable
@@ -49,20 +63,6 @@ interface SeedsDto {
 
       fun create(source: Seeds.MySeeds) = SeedsDto.MySeeds(source.id, source.seed_label,
           source.description, source.germination_test)}
-  }
-
-  @Serializable
-  data class Schedule(
-    override val id: Int,
-    override val choreId: Int,
-    override val workHours: String?,
-    override val completeBy: String?
-  ) : Seeds.Schedule {
-    companion object {
-      const val path: String = "/Seeds/Schedule"
-
-      fun create(source: Seeds.Schedule) = SeedsDto.Schedule(source.id, source.choreId,
-          source.workHours, source.completeBy)}
   }
 
   @Serializable

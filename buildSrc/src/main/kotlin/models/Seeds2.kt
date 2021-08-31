@@ -50,7 +50,7 @@ val manifest = Manifest2 {
             }
             Element("childrenIds", builtIn["string"]) //Todo - make this a list of Ids
             Element("name", builtIn["string"])
-            Link("schedule", seeds["Schedule"], JoinType.LEFT) { //Todo => ).left {
+            Link("schedule", seeds.complexTypes["Schedule"]!!, JoinType.LEFT) { //Todo => ).left {
                 //Todo - id == Schedule.choreId
             }
         }

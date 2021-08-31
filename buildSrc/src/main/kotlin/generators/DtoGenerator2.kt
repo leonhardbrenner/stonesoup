@@ -38,6 +38,13 @@ object DtoGenerator2: Generator2 {
                         addParameter(element.name, element.type.typeName.copy(nullable = element.nullable))
                             .build()
                     }
+                    type.links.values.forEach { link ->
+                        addParameter(
+                            link.name,
+                            ClassName("generated.model", link.type.dotPath("Dto"))
+                                .copy(nullable = true)
+                        ).build()
+                    }
                 }.build()
             )
             .apply {
@@ -47,6 +54,19 @@ object DtoGenerator2: Generator2 {
                             .addModifiers(listOf(KModifier.OVERRIDE))
                             .mutable(false)
                             .initializer(element.name)
+                            .build()
+                    )
+                }
+                type.links.values.forEach { link ->
+                    addProperty(
+                        PropertySpec.builder(
+                            link.name,
+                            ClassName("generated.model", link.type.dotPath("Dto"))
+                                .copy(nullable = true)
+                        )
+                            .addModifiers(listOf(KModifier.OVERRIDE))
+                            .mutable(false)
+                            .initializer(link.name)
                             .build()
                     )
                 }
@@ -66,7 +86,9 @@ object DtoGenerator2: Generator2 {
                             .addCode(
                                 "return %T(%L)",
                                 ClassName("generated.model", type.dotPath("Dto")),
-                                type.elements.values.map { "source.${it.name}" }.joinToString(", ")
+                                (type.elements.values.map { "source.${it.name}" }
+                                        + type.links.values.map { "source.${it.name}?.let { ${it.type.dotPath("Dto")}.create(it) }" })
+                                    .joinToString(", ")
                             )
                             .build()
                     )
