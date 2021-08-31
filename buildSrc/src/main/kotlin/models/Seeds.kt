@@ -49,7 +49,6 @@ interface Seeds {
         val choreId: Int, //
         val workHours: String?, //When can I work on this //TODO: This should support workDays as well.
         val completeBy: String? //When must it be done.
-
     )
 
 }

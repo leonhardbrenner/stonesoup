@@ -1,15 +1,25 @@
 package schema
 
 import com.squareup.kotlinpoet.ClassName
-import com.squareup.kotlinpoet.KModifier
-import com.squareup.kotlinpoet.PropertySpec
 import kotlin.reflect.KClass
 
+/**
+ * Represents column set join types.
+ */
+//TODO - find a nice reference for what this means.
+enum class JoinType { INNER, LEFT, RIGHT, FULL, CROSS }
+
+//https://www.restapitutorial.com/lessons/httpmethods.html
+enum class Method { POST, GET, PUT, PATCH, DELETE }
+
 class Manifest2(builder: Manifest2.() -> Unit) {
+
     val namespaces = linkedMapOf<String, Namespace>()
+
     init {
         builder()
     }
+
     operator fun invoke(builder: Manifest2.() -> Unit) {
         builder()
     }
@@ -19,12 +29,16 @@ class Manifest2(builder: Manifest2.() -> Unit) {
         abstract val typeName: ClassName
     }
 
-    inner class Namespace(val name: String, builder: Namespace.() -> Unit) {
+    /**
+     *
+     */
+    inner class Namespace(val name: String, builder: Namespace.() -> Unit = {}) {
         val namespace = this
         val types = linkedMapOf<String, Type>()
         val simpleTypes = linkedMapOf<String, SimpleType>()
         val complexTypes = linkedMapOf<String, ComplexType>()
-        operator fun get(name: String) = simpleTypes[name]!!
+        val resources = linkedMapOf<Type, Resource>()
+        operator fun get(name: String) = types[name]!!
         init {
             namespaces[name] = this
             builder()
@@ -34,12 +48,17 @@ class Manifest2(builder: Manifest2.() -> Unit) {
         }
         override fun toString() = name
 
+        /**
+         *
+         */
         inner class ComplexType(
             override val name: String,
-            builder: ComplexType.() -> Unit
+            val isTable: Boolean = false, //Todo - flush this out
+            builder: ComplexType.() -> Unit = {}
         ) : Type() {
             val parent: ComplexType? = null
             val elements = linkedMapOf<String, Element>()
+            val links = linkedMapOf<String, Link>()
             init {
                 types[name] = this
                 complexTypes[name] = this
@@ -50,6 +69,21 @@ class Manifest2(builder: Manifest2.() -> Unit) {
             }
             override val typeName get() = ClassName(namespace.name, name)
 
+            val path: String = if (parent==null)
+                "/${namespace.name}/$name"
+            else
+                "${parent.path}/$name"
+
+            fun dotPath(aspect: String = ""): String = if (parent==null)
+                "${namespace.name}$aspect.$name"
+            else
+                "${parent.dotPath(aspect)}.$name"
+
+            val packageName = namespace.name
+
+            /**
+             *
+             */
             inner class Element(
                 val name: String,
                 val type: Type,
@@ -69,49 +103,118 @@ class Manifest2(builder: Manifest2.() -> Unit) {
                 val dbName = name//.toLowerCase()
             }
 
-            val path: String = if (parent==null)
-                "/${namespace.name}/$name"
-            else
-                "${parent.path}/$name"
-
-            fun dotPath(aspect: String = ""): String = if (parent==null)
-                "${namespace.name}$aspect.$name"
-            else
-                "${parent.dotPath(aspect)}.$name"
-
-            val packageName = namespace.name
+            /**
+             *
+             */
+            inner class Link(
+                val name: String,
+                val table: Type,
+                val joinType: JoinType,
+                //Todo - in order to fully support the links I will need to handle the BY clause. For now I write that
+                //  manually.
+                builder: Link.() -> Unit = {}
+            ) {
+                init {
+                    links[name] = this
+                    builder()
+                }
+                operator fun invoke(builder: Link.() -> Unit) {
+                    builder()
+                }
+            }
 
         }
 
+        /**
+         *
+         */
         inner class SimpleType(
             override val name: String,
             val kClass: KClass<*>, //builtIn["int"].kClass.qualifiedName
-            builder: SimpleType.() -> Unit? = {}
+            builder: SimpleType.() -> Unit = {}
         ) : Type() {
             init {
                 types[name] = this
                 simpleTypes[name] = this
                 builder()
             }
-            fun invoke(builder: SimpleType.() -> Unit? = {}) {
+            fun invoke(builder: SimpleType.() -> Unit) {
                 builder()
             }
             override val typeName get() = ClassName("kotlin", kClass.simpleName.toString())
 
         }
 
-        inner class Element(
-            val name: String,
+        /**
+         *
+         */
+        inner class Resource(
             val type: Type,
-            var default: Any? = null,
-            val isAttribute: Boolean = false,
-            builder: Element.() -> Unit? = {}
+            builder: Resource.() -> Unit = {}
         ) {
+            var method: Method? = Method.GET
+            val parameters = linkedMapOf<String, Resource.Parameter>()
+            var returnType: Resource.ReturnType? = null
             init {
+                resources[type] = this
                 builder()
             }
-            operator fun invoke(builder: Element.() -> Unit) {
+            operator fun invoke(builder: Resource.() -> Unit) {
                 builder()
+            }
+            fun post(builder: Resource.() -> Unit = {}) {
+                method = Method.POST
+                builder()
+            }
+            fun get(builder: Resource.() -> Unit = {}) {
+                method = Method.GET
+                builder()
+            }
+            fun put(builder: Resource.() -> Unit = {}) {
+                method = Method.PUT
+                builder()
+            }
+            fun patch(builder: Resource.() -> Unit = {}) {
+                method = Method.PATCH
+                builder()
+            }
+            fun delete(builder: Resource.() -> Unit = {}) {
+                method = Method.DELETE
+                builder()
+            }
+
+            /**
+             *
+             */
+            inner class Parameter(
+                val name: String,
+                val type: Type,
+                var default: Any? = null,
+                builder: Parameter.() -> Unit = {}
+            ) {
+                init {
+                    parameters[name] = this
+                    builder()
+                }
+                operator fun invoke(builder: Parameter.() -> Unit) {
+                    builder()
+                }
+            }
+
+            /**
+             *
+             */
+            inner class ReturnType(
+                val type: Type,
+                builder: ReturnType.() -> Unit = {}
+            ) {
+                init {
+                    returnType = this
+                    builder()
+                }
+                operator fun invoke(builder: ReturnType.() -> Unit) {
+                    builder()
+                }
             }
         }
     }

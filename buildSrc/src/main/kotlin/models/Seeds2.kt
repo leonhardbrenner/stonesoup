@@ -1,6 +1,6 @@
 package models
 
-import schema.Manifest2
+import schema.*
 
 val manifest = Manifest2 {
 
@@ -24,16 +24,35 @@ val manifest = Manifest2 {
         SimpleType("float", Float::class)
     }
 
-    val seeds = Namespace("Seeds") {
+    val seeds = Namespace("Seeds")
+    seeds {
 
-        ComplexType("Chore") {
+        //Todo - support forward references so Schedule can be referenced after Chore. This means we should fail during
+        //  validation. I would be nice to capture the line number where DSL occurred but we can handle this with
+        //  something like: LinkException Chore.schedule referrenced type Seeds.Schedule which is never defined.
+        ComplexType("Schedule") {
+            Element("id", builtIn["int"])
+            Element("choreId", builtIn["int"]) {
+                default = 0 //Todo - add support in InterfaceGenerator
+            }
+            Element("workHours", builtIn["string"]) {
+                minOccurs = 0
+            }
+            Element("completeBy", builtIn["string"]) {
+                minOccurs = 0
+            }
+        }
+
+        ComplexType("Chore", isTable = true) { //Todo - once isTable flag is implemented replicate on other types
             Element("id", builtIn["int"])
             Element("parentId", builtIn["int"]) {
                 default = 0
             }
-            Element("childrenIds", builtIn["string"])
+            Element("childrenIds", builtIn["string"]) //Todo - make this a list of Ids
             Element("name", builtIn["string"])
-            //XXX needed: Element("name", namespace.types["Schedule"]!!)
+            Link("schedule", seeds["Schedule"], JoinType.LEFT) { //Todo => ).left {
+                //Todo - id == Schedule.choreId
+            }
         }
 
         ComplexType("DetailedSeed") {
@@ -63,19 +82,6 @@ val manifest = Manifest2 {
             Element("germination_test", builtIn["string"])
         }
 
-        ComplexType("Schedule") {
-            Element("id", builtIn["int"])
-            Element("choreId", builtIn["int"]) {
-                default = 0
-            }
-            Element("workHours", builtIn["string"]) {
-                minOccurs = 0
-            }
-            Element("completeBy", builtIn["string"]) {
-                minOccurs = 0
-            }
-        }
-
         ComplexType("SeedCategory") {
             Element("id", builtIn["int"])
             Element("name", builtIn["string"])
@@ -83,6 +89,36 @@ val manifest = Manifest2 {
             Element("link", builtIn["string"])
         }
 
+    }
+    seeds {
+        //Todo - Implement generator for this.
+        //Todo - Create a CRUD template it should be enough to say Service("chore")
+        Resource(seeds["Chore"]) {
+        //    post {
+        //        Parameter("parentId", builtIn["int"]) {
+        //            default = 0
+        //        }
+        //        Parameter("childrenIds", builtIn["string"])
+        //        Parameter("name", builtIn["string"])
+        //        ReturnType(builtIn["int"])
+        //    }
+        //    get {
+        //        Parameter("id", builtIn["int"])
+        //        ReturnType(seeds["Chore"])
+        //    }
+        //    put {
+        //        Parameter("id", builtIn["int"])
+        //        Parameter("parentId", builtIn["int"]) {
+        //            default = 0
+        //        }
+        //        Parameter("childrenIds", builtIn["string"])
+        //        Parameter("name", builtIn["string"])
+        //        //TODO - perhaps this could included lastUpdate: OffsetDateTime
+        //    }
+        //    delete {
+        //        Parameter("id", builtIn["int"])
+        //    }
+        }
 
     }
 }
