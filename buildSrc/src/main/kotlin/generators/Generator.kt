@@ -1,23 +1,23 @@
 package generators
 
+import schema.ManifestOld
 import schema.Manifest
-import schema.Manifest2
 
 interface Generator {
 
     fun generate(namespace: Manifest.Namespace)
 
     val path
-        get() = "/home/lbrenner/projects/stonesoup/src"
+        get() = "/home/lbrenner/projects/stonesoup/src" //Todo - move to config
 
 }
 
-interface Generator2 {
+interface GeneratorOld {
 
-    fun generate(namespace: Manifest2.Namespace)
+    fun generate(namespace: ManifestOld.Namespace)
 
     val path
-        get() = "/home/lbrenner/projects/stonesoup/src"
+        get() = "/home/lbrenner/projects/stonesoup/src" //Todo - move to config
 
 }
 

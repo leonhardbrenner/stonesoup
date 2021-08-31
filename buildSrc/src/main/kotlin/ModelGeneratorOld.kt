@@ -1,14 +1,13 @@
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
-import generators.InterfaceGenerator
-import generators.DtoGenerator
-import generators.DbGenerator
-import generators.BuilderGenerator
-import generators.CsvLoaderGenerator
+import generators.InterfaceGeneratorOld
+import generators.DtoGeneratorOld
+import generators.DbGeneratorOld
+import generators.BuilderGeneratorOld
+import generators.CsvLoaderGeneratorOld
 import models.*
 
-
-import schema.Manifest.Namespace
+import schema.ManifestOld.Namespace
 
 open class ModelGeneratorOld : DefaultTask() {
 
@@ -20,23 +19,23 @@ open class ModelGeneratorOld : DefaultTask() {
     @TaskAction
     fun generate() {
         val flat = Namespace(Flat::class)
-        InterfaceGenerator.generate(flat)
-        DtoGenerator.generate(flat)
-        BuilderGenerator.generate(flat)
-        DbGenerator.generate(flat)
-        CsvLoaderGenerator.generate(flat)
+        InterfaceGeneratorOld.generate(flat)
+        DtoGeneratorOld.generate(flat)
+        BuilderGeneratorOld.generate(flat)
+        DbGeneratorOld.generate(flat)
+        CsvLoaderGeneratorOld.generate(flat)
 
         val fancy = Namespace(Fancy::class)
-        InterfaceGenerator.generate(fancy)
-        DtoGenerator.generate(fancy)
+        InterfaceGeneratorOld.generate(fancy)
+        DtoGeneratorOld.generate(fancy)
         //XXX - BuilderGenerator.generate(fancy)
 
         val seeds = Namespace(Seeds::class)
         listOf(seeds).forEach { namespace ->
-            InterfaceGenerator.generate(namespace)
-            DbGenerator.generate(namespace)
-            DtoGenerator.generate(namespace)
-            BuilderGenerator.generate(namespace)
+            InterfaceGeneratorOld.generate(namespace)
+            DbGeneratorOld.generate(namespace)
+            DtoGeneratorOld.generate(namespace)
+            BuilderGeneratorOld.generate(namespace)
         }
 
     }

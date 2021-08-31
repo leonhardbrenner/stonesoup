@@ -1,9 +1,9 @@
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
-import generators.BuilderGenerator2
-import generators.DbGenerator2
-import generators.DtoGenerator2
-import generators.InterfaceGenerator2
+import generators.BuilderGenerator
+import generators.DbGenerator
+import generators.DtoGenerator
+import generators.InterfaceGenerator
 import models.manifest
 
 open class ModelGenerator : DefaultTask() {
@@ -15,12 +15,12 @@ open class ModelGenerator : DefaultTask() {
 
     @TaskAction
     fun generate() {
-        //manifest.namespaces.values.forEach { namespace ->
+        //TODO - manifest.namespaces.values.forEach { namespace ->
         listOf(manifest.namespaces["Seeds"]!!).forEach { namespace ->
-            InterfaceGenerator2.generate(namespace)
-            DtoGenerator2.generate(namespace)
-            DbGenerator2.generate(namespace)
-            BuilderGenerator2.generate(namespace)
+            InterfaceGenerator.generate(namespace)
+            DtoGenerator.generate(namespace)
+            DbGenerator.generate(namespace)
+            BuilderGenerator.generate(namespace)
         }
 
     }

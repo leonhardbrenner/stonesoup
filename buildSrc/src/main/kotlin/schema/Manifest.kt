@@ -1,99 +1,73 @@
 package schema
 
 import com.squareup.kotlinpoet.ClassName
-import com.squareup.kotlinpoet.KModifier
-import com.squareup.kotlinpoet.PropertySpec
-import com.squareup.kotlinpoet.asTypeName
-
 import kotlin.reflect.KClass
-import kotlin.reflect.KProperty
-import kotlin.reflect.KType
-import kotlin.reflect.full.createType
-import kotlin.reflect.full.declaredMemberProperties
-import kotlin.reflect.full.primaryConstructor
 
-const val UNBOUNDED = Int.MAX_VALUE
+/**
+ * Represents column set join types.
+ */
+//TODO - find a nice reference for what this means.
+enum class JoinType { INNER, LEFT, RIGHT, FULL, CROSS }
 
-object Manifest {
+//https://www.restapitutorial.com/lessons/httpmethods.html
+enum class Method { POST, GET, PUT, PATCH, DELETE }
 
-    val namespaceMap = HashMap<String, Namespace>()
+class Manifest(builder: Manifest.() -> Unit) {
 
-    val namespaces get() = namespaceMap.values.toList()
+    val namespaces = linkedMapOf<String, Namespace>()
 
-    class Namespace(val kclass: KClass<*>) {
+    init {
+        builder()
+    }
+
+    operator fun invoke(builder: Manifest.() -> Unit) {
+        builder()
+    }
+
+    abstract class Type {
+        abstract val name: String
+        abstract val typeName: ClassName
+    }
+
+    /**
+     *
+     */
+    inner class Namespace(val name: String, builder: Namespace.() -> Unit = {}) {
+        val namespace = this
+        val types = linkedMapOf<String, Type>()
+        val simpleTypes = linkedMapOf<String, SimpleType>()
+        val complexTypes = linkedMapOf<String, ComplexType>()
+        val resources = linkedMapOf<Type, Resource>()
+        operator fun get(name: String) = types[name]!!
         init {
-            namespaceMap[kclass.simpleName!!] = this
+            namespaces[name] = this
+            builder()
         }
-
-        val name get() = kclass.simpleName?:"UNKNOWN $kclass"
-
-        val elements by lazy { kclass.declaredMemberProperties.map { Element(this, null, it) } }
-
-        val types by lazy { kclass.nestedClasses.map { Type(this, null, it.createType(), it) } }
-
-        class Element(val namespace: Namespace, val parent: Type?, val property: KProperty<*>) {
-
-            //XXX - I am guessing we only need one or there is more to one of these implementations.
-            val dbName = name//.toLowerCase()
-            val columnName = name//.toLowerCase()
-
-            val name get() = property.name
-
-            val type get() = Type(namespace, parent, property.returnType)
-
-            val minOccurs get() = if (type.rawType.isMarkedNullable) 0 else 1
-
-            val maxOccurs get() = if (property.returnType.classifier == List::class) UNBOUNDED else 1
-
-            //TODO - This should be a part of a class of generators.
-            fun asPropertySpec(mutable: Boolean, vararg modifiers: KModifier) = PropertySpec.builder(
-                name,
-                type.typeName
-            ).addModifiers(modifiers.toList() ).mutable(mutable)
-
+        operator fun invoke(builder: Namespace.() -> Unit) {
+            builder()
         }
+        override fun toString() = name
 
-        class Type(
-            val namespace: Namespace, val parent: Type?,
-            val kType: KType, val kClass: KClass<*>? = null
-        ) {
-
-            val name: String get() = if (kClass==null)
-                rawType.toString().split(".").last().replace("?", "")
-            else
-                (kClass.simpleName?:"UNKNOWN2").replace("?", "")
-
-
-            private val memberProperties get() = kClass?.declaredMemberProperties?:emptyList()
-            val elements by lazy {
-                //TODO - Revisit! This is done so properties are generated in the order they were declared.
-                val parameters = kClass!!.primaryConstructor!!.parameters.mapIndexed {
-                        pos, it -> it.name to pos
-                }.toMap()
-                memberProperties.map { Element(namespace, parent, it) }.sortedBy { parameters[it.name] }
+        /**
+         *
+         */
+        inner class ComplexType(
+            override val name: String,
+            val isTable: Boolean = false, //Todo - flush this out
+            builder: ComplexType.() -> Unit = {}
+        ) : Type() {
+            val parent: ComplexType? = null
+            val elements = linkedMapOf<String, Element>()
+            val links = linkedMapOf<String, Link>()
+            init {
+                types[name] = this
+                complexTypes[name] = this
+                builder()
             }
-
-            private val nestedClasses get() = kClass?.nestedClasses?:emptyList()
-            val types by lazy { nestedClasses.map { Type(namespace, this, it.createType(), it) } }
-
-            val rawType get() = if (kType.classifier == List::class)
-                kType.arguments[0].type!!
-            else
-                kType
-
-            val typeName get() = with (rawType.asTypeName()) {
-                if (rawType.toString().startsWith("models."))
-                    ClassName(
-                        "generated.model",
-                        rawType.toString()
-                            .replace("models.", "")
-                            .replace("?", "")
-                    )
-                else
-                    rawType.asTypeName()
-            }.copy(nullable = nullable)
-
-            val nullable get() = rawType.isMarkedNullable
+            operator fun invoke(builder: ComplexType.() -> Unit) {
+                builder()
+            }
+            override val typeName get() = ClassName(namespace.name, name)
 
             val path: String = if (parent==null)
                 "/${namespace.name}/$name"
@@ -106,6 +80,143 @@ object Manifest {
                 "${parent.dotPath(aspect)}.$name"
 
             val packageName = namespace.name
+
+            /**
+             *
+             */
+            inner class Element(
+                val name: String,
+                val type: Type,
+                var minOccurs: Int = 1, var maxOccurs: Int = 1,
+                var default: Any? = null,
+                val isAttribute: Boolean = false,
+                builder: Element.() -> Unit = {}
+            ) {
+                val nullable get() = (minOccurs == 0 && maxOccurs == 1)
+                init {
+                    elements[name] = this
+                    builder()
+                }
+                operator fun invoke(builder: Element.() -> Unit) {
+                    builder()
+                }
+                val dbName = name//.toLowerCase()
+            }
+
+            /**
+             *
+             */
+            inner class Link(
+                val name: String,
+                val type: ComplexType,
+                val joinType: JoinType,
+                //Todo - in order to fully support the links I will need to handle the BY clause. For now I write that
+                //  manually.
+                builder: Link.() -> Unit = {}
+            ) {
+                val table = type
+                init {
+                    links[name] = this
+                    builder()
+                }
+                operator fun invoke(builder: Link.() -> Unit) {
+                    builder()
+                }
+            }
+
+        }
+
+        /**
+         *
+         */
+        inner class SimpleType(
+            override val name: String,
+            val kClass: KClass<*>, //builtIn["int"].kClass.qualifiedName
+            builder: SimpleType.() -> Unit = {}
+        ) : Type() {
+            init {
+                types[name] = this
+                simpleTypes[name] = this
+                builder()
+            }
+            fun invoke(builder: SimpleType.() -> Unit) {
+                builder()
+            }
+            override val typeName get() = ClassName("kotlin", kClass.simpleName.toString())
+
+        }
+
+        /**
+         *
+         */
+        inner class Resource(
+            val type: Type,
+            builder: Resource.() -> Unit = {}
+        ) {
+            var method: Method? = Method.GET
+            val parameters = linkedMapOf<String, Resource.Parameter>()
+            var returnType: Resource.ReturnType? = null
+            init {
+                resources[type] = this
+                builder()
+            }
+            operator fun invoke(builder: Resource.() -> Unit) {
+                builder()
+            }
+            fun post(builder: Resource.() -> Unit = {}) {
+                method = Method.POST
+                builder()
+            }
+            fun get(builder: Resource.() -> Unit = {}) {
+                method = Method.GET
+                builder()
+            }
+            fun put(builder: Resource.() -> Unit = {}) {
+                method = Method.PUT
+                builder()
+            }
+            fun patch(builder: Resource.() -> Unit = {}) {
+                method = Method.PATCH
+                builder()
+            }
+            fun delete(builder: Resource.() -> Unit = {}) {
+                method = Method.DELETE
+                builder()
+            }
+
+            /**
+             *
+             */
+            inner class Parameter(
+                val name: String,
+                val type: Type,
+                var default: Any? = null,
+                builder: Parameter.() -> Unit = {}
+            ) {
+                init {
+                    parameters[name] = this
+                    builder()
+                }
+                operator fun invoke(builder: Parameter.() -> Unit) {
+                    builder()
+                }
+            }
+
+            /**
+             *
+             */
+            inner class ReturnType(
+                val type: Type,
+                builder: ReturnType.() -> Unit = {}
+            ) {
+                init {
+                    returnType = this
+                    builder()
+                }
+                operator fun invoke(builder: ReturnType.() -> Unit) {
+                    builder()
+                }
+            }
         }
     }
 

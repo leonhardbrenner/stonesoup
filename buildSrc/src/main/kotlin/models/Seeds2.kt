@@ -2,7 +2,7 @@ package models
 
 import schema.*
 
-val manifest = Manifest2 {
+val manifest = Manifest {
 
     val builtIn = Namespace("BuiltIn") {
         //TODO: This is a fine place for type alias to be generated we could do stuff like:
