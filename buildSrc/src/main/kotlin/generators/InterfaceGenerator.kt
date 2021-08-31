@@ -1,7 +1,6 @@
 package generators
 
 import com.squareup.kotlinpoet.FileSpec
-import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import java.io.File
@@ -11,7 +10,7 @@ object InterfaceGenerator: Generator {
 
     override fun generate(namespace: Manifest.Namespace) {
         val typeSpec = TypeSpec.interfaceBuilder("${namespace.name}").apply {
-            namespace.types.forEach { type ->
+            namespace.complexTypes.values.forEach { type ->
                 generateType(type)
             }
         }
@@ -22,20 +21,30 @@ object InterfaceGenerator: Generator {
         file.writeTo(writer)
     }
 
-    fun TypeSpec.Builder.generateType(type: Manifest.Namespace.Type): TypeSpec.Builder
-    = addType(
+    fun TypeSpec.Builder.generateType(type: Manifest.Namespace.ComplexType): TypeSpec.Builder
+            = addType(
         TypeSpec.interfaceBuilder(type.name).apply {
-            type.elements.forEach { element ->
+            type.elements.values.forEach { element ->
                 addProperty(
-                    PropertySpec.builder(element.name, with (element.type) { typeName.copy(nullable = nullable) })
+                    //Note that I have moved toward elements defining nullability making it XMLSchema like. Reconsider.
+                    PropertySpec.builder(element.name, element.type.typeName.copy(nullable = element.nullable) )
+                        .mutable(false)
+                        .build()
+                )
+            }
+            type.links.values.forEach { link ->
+                addProperty(
+                    //Note that I have moved toward elements defining nullability making it XMLSchema like. Reconsider.
+                    PropertySpec.builder(link.name, link.type.typeName.copy(nullable = true) )
                         .mutable(false)
                         .build()
                 )
             }
 
-            type.types.forEach { type ->
-                generateType(type)
-            }
+            //XXX - Needed for fancy thi
+            //type.types.forEach { type ->
+            //    generateType(type)
+            //}
         }.build()
     )
 }

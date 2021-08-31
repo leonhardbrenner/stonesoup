@@ -18,6 +18,7 @@ object SeedsDBManager {
         SchemaUtils.drop(SeedsDb.MySeeds.Table)
         SchemaUtils.drop(SeedsDb.DetailedSeed.Table)
         SchemaUtils.drop(SeedsDb.SeedCategory.Table)
+        SchemaUtils.drop(SeedsDb.Schedule.Table)
         SchemaUtils.drop(SeedsDb.Chore.Table)
     }
     fun create() = transaction {
@@ -25,6 +26,7 @@ object SeedsDBManager {
         SchemaUtils.create(SeedsDb.DetailedSeed.Table)
         SchemaUtils.create(SeedsDb.SeedCategory.Table)
         SchemaUtils.create(SeedsDb.Chore.Table)
+        SchemaUtils.create(SeedsDb.Schedule.Table)
     }
     fun populate() = transaction {
         val jsonLoaders = SeedsJsonLoaders(kMapper)
@@ -57,6 +59,13 @@ object SeedsDBManager {
                 parentId = source.parentId
                 childrenIds = source.childrenIds
                 name = source.name
+            }
+        }
+        jsonLoaders.schedules.forEach { source ->
+            SeedsDb.Schedule.Entity.new {
+                choreId = source.choreId
+                workHours = source.workHours
+                completeBy = source.completeBy
             }
         }
     }

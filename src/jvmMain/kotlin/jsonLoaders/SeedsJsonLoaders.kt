@@ -28,4 +28,9 @@ class SeedsJsonLoaders @Inject constructor(val kMapper: ObjectMapper) {
             resourceText("seeds/chores.json")
         )
 
+    val schedules: List<SeedsDto.Schedule>
+        get() = kMapper.readValue(
+            resourceText("seeds/schedule.json")
+        )
+
 }

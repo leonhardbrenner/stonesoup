@@ -14,9 +14,34 @@ import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 
 object SeedsDb {
+  object Schedule {
+    fun create(source: ResultRow) = SeedsDto.Schedule(source[Table.id].value, source[Table.choreId],
+        source[Table.workHours], source[Table.completeBy])
+    fun fetchAll() = transaction { with (Table) { selectAll().map { create(it) } } }
+    object Table : IntIdTable("Schedule") {
+      val choreId: Column<Int> = integer("choreId")
+
+      val workHours: Column<String?> = text("workHours").nullable()
+
+      val completeBy: Column<String?> = text("completeBy").nullable()
+    }
+
+    class Entity(
+      id: EntityID<Int>
+    ) : IntEntity(id) {
+      var choreId: Int by Table.choreId
+
+      var workHours: String? by Table.workHours
+
+      var completeBy: String? by Table.completeBy
+
+      companion object : IntEntityClass<Entity>(Table)
+    }
+  }
+
   object Chore {
     fun create(source: ResultRow) = SeedsDto.Chore(source[Table.id].value, source[Table.parentId],
-        source[Table.childrenIds], source[Table.name])
+        source[Table.childrenIds], source[Table.name], null)
     fun fetchAll() = transaction { with (Table) { selectAll().map { create(it) } } }
     object Table : IntIdTable("Chore") {
       val parentId: Column<Int> = integer("parentId")
