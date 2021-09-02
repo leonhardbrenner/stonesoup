@@ -1,5 +1,4 @@
 import generated.model.SeedsDto
-import io.ktor.http.*
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.features.json.JsonFeature
@@ -21,21 +20,24 @@ object PlanPrioritizeApi {
         return jsonClient.get(endpoint + SeedsDto.Chore.path)
     }
 
-    suspend fun add(chore: ChoreCreate) {
+    suspend fun add(parentId: Int, name: String) {
         jsonClient.post<Unit>(endpoint + SeedsDto.Chore.path) {
-            contentType(ContentType.Application.Json)
-            body = chore
+            parameter("parentId", parentId)
+            parameter("name", name)
         }
     }
 
-    suspend fun update(node: NodeUpdate) {
-        jsonClient.put<Unit>(endpoint + SeedsDto.Chore.path + "/${node.id}") {
-            contentType(ContentType.Application.Json)
-            body = node
+    suspend fun move(id: Int, to: Int?) {
+        jsonClient.put<Unit>(endpoint + SeedsDto.Chore.path + "/$id") {
+            //Example of how to send a complexType
+            //data class Node(val id: Int, val name: String)
+            //contentType(ContentType.Application.Json)
+            //body = Node(1, "Y")
+            parameter("moveTo", to)
         }
     }
 
-    suspend fun delete(choreId: ChoreId) {
+    suspend fun delete(choreId: Int) {
         jsonClient.delete<Unit>(endpoint + SeedsDto.Chore.path + "/${choreId}")
     }
 

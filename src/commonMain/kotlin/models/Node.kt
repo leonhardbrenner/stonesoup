@@ -17,11 +17,3 @@ interface Node {
     var childrenIds: List<Int>
     val symbol get() = id.toString().padStart(4, '0')
 }
-
-//Make this a sealed class with Move and Link as sub classes.
-@Serializable
-data class NodeUpdate(
-    val id: Int,
-    val moveTo: Int? = null, //Todo - String -> Path
-    val linkTo: Int? = null
-)

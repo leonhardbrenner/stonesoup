@@ -3,10 +3,7 @@ import generated.model.SeedsDto
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlinx.css.*
-import models.ChoreCreate
-import models.NodeUpdate
 import react.*
-import styled.StyleSheet
 import styled.css
 import styled.styledDiv
 
@@ -110,12 +107,8 @@ class App : RComponent<RProps, AppState>() {
                                         if (id == selected)
                                             selected = null
                                         else {
-                                            val chore = NodeUpdate(
-                                                id = selected!!,
-                                                moveTo = id
-                                            )
                                             MainScope().launch {
-                                                PlanPrioritizeApi.update(chore)
+                                                PlanPrioritizeApi.move(selected!!, id)
                                                 val prioritizedChores = PlanPrioritizeApi.get()
                                                 setState {
                                                     chores = prioritizedChores
@@ -132,12 +125,7 @@ class App : RComponent<RProps, AppState>() {
                             }
                             handleInput = { input: String ->
                                 scope.launch {
-                                    val chore = ChoreCreate(
-                                        parentId = 1, //TODO - I think this should be a default controled by BE.
-                                        name = input.replace("!", "")
-                                        //, priority = input.count { it == '!' }
-                                    )
-                                    PlanPrioritizeApi.add(chore)
+                                    PlanPrioritizeApi.add(1, input.replace("!", ""))
                                     val prioritizedChores = PlanPrioritizeApi.get()
                                     setState {
                                         chores = prioritizedChores

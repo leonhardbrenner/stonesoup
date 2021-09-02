@@ -4,7 +4,7 @@ import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
 val kotlinVersion = "1.5.20"
 val kotlinJsVersion = "1.5.20"
 val serializationVersion = "1.2.1"
-val ktorVersion = "1.6.1"
+val ktorVersion = "1.6.3"
 val logbackVersion = "1.2.3"
 val kmongoVersion = "4.2.7"
 val reactWrappersVersion = "17.0.2-pre.214-kotlin-1.5.20"
@@ -58,6 +58,7 @@ kotlin {
                 implementation("io.ktor:ktor-serialization:$ktorVersion")
                 implementation("io.ktor:ktor-server-core:$ktorVersion")
                 implementation("io.ktor:ktor-server-netty:$ktorVersion")
+                implementation("io.ktor:ktor-html-builder:$ktorVersion")
                 implementation("ch.qos.logback:logback-classic:1.2.3")
                 implementation("io.ktor:ktor-websockets:$ktorVersion")
                 implementation("org.litote.kmongo:kmongo-coroutine-serialization:4.2.7")

@@ -1,26 +1,21 @@
 package applications
 
 import com.google.inject.AbstractModule
-import com.mongodb.ConnectionString
-import org.litote.kmongo.coroutine.coroutine
-import generated.model.Seeds.Chore
 import generated.model.SeedsDto
 import generated.model.db.SeedsDb
 import javax.inject.Inject
 import io.ktor.application.*
-import io.ktor.http.*
-import io.ktor.request.*
-import io.ktor.response.*
 import io.ktor.routing.*
-import models.ChoreCreate
-import models.NodeUpdate
+import io.ktor.http.*
+import io.ktor.response.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import services.SeedsService
-import java.util.*
 
 class PlanPrioritizeApplication @Inject constructor(val service: Service) {
 
+    //https://ktor.io/docs/routing-in-ktor.html#define_route
+    //https://medium.com/@shubhangirajagrawal/the-7-restful-routes-a8e84201f206
     fun routesFrom(routing: Routing) = routing.route(SeedsDto.Chore.path) {
 
         get {
@@ -29,19 +24,21 @@ class PlanPrioritizeApplication @Inject constructor(val service: Service) {
         }
 
         post {
-            val item = call.receive<ChoreCreate>()
-            service.add(item)
+            val parentId = call.parameters["parentId"]?.toInt() ?: return@post call.respond(HttpStatusCode.BadRequest)
+            val name = call.parameters["name"] ?: return@post call.respond(HttpStatusCode.BadRequest)
+            service.add(parentId, name)
             call.respond(HttpStatusCode.OK)
         }
-        //
+
         put("/{id}") {
-            val item = call.receive<NodeUpdate>()
-            service.update(item)
+            val id = call.parameters["id"]?.toInt() ?: return@put call.respond(HttpStatusCode.BadRequest)
+            call.parameters["moveTo"]?.toInt()?.let { to -> //Todo: move:to would be better.
+                service.move(id, to)
+            }
             call.respond(HttpStatusCode.OK)
         }
 
         delete("/{id}") {
-            //TODO: Find out why this is RED
             val id = call.parameters["id"]?.toInt() ?: error("Invalid delete request")
             service.delete(id)
             call.respond(HttpStatusCode.OK)
@@ -68,6 +65,18 @@ class PlanPrioritizeApplication @Inject constructor(val service: Service) {
                 SeedsDb.Chore.Table.join(
                     SeedsDb.Schedule.Table,
                     JoinType.LEFT,
+                    /*
+                     Todo - generate the unique foreign key in SeedsDb.kt. It should look something like this:
+                        object Table : IntIdTable("Schedule") {
+                          val choreId: Column<Int> = integer("choreId")
+                            .uniqueIndex()
+                            .references(Chore.Table.id)
+                          val workHours: Column<String?> = text("workHours").nullable()
+                          val completeBy: Column<String?> = text("completeBy").nullable()
+                        }
+                      When complete we can remove additional constraints. Note the primary reason for proposed change
+                      is to create our index.
+                    */
                     additionalConstraint = { SeedsDb.Chore.Table.id eq SeedsDb.Schedule.Table.choreId }
                 )
             ) {
@@ -95,18 +104,18 @@ class PlanPrioritizeApplication @Inject constructor(val service: Service) {
             }
         }
 
-        fun add(item: ChoreCreate): Int {
+        fun add(attrParentId: Int, attrName: String): Int {
             var id = -1
             transaction {
                 id = SeedsDb.Chore.Table.insertAndGetId {
-                    it[parentId] = item.parentId
-                    it[name] = item.name
+                    it[parentId] = attrParentId
+                    it[name] = attrName
                     it[childrenIds] = ""
                 }.value
                 val childrenIds = SeedsDb.Chore.Table.select {
-                    SeedsDb.Chore.Table.id.eq(item.parentId)
+                    SeedsDb.Chore.Table.id.eq(attrParentId)
                 }.single()[SeedsDb.Chore.Table.childrenIds]
-                SeedsDb.Chore.Table.update({ SeedsDb.Chore.Table.id.eq(item.parentId) }) {
+                SeedsDb.Chore.Table.update({ SeedsDb.Chore.Table.id.eq(attrParentId) }) {
                     it[SeedsDb.Chore.Table.childrenIds] = (childrenIds.split(",") + id.toString()).joinToString(",")
                 }
             }
@@ -124,12 +133,12 @@ class PlanPrioritizeApplication @Inject constructor(val service: Service) {
          *   we need a field for time estimates
          *   move to tornadoFx
          */
-        fun update(item: NodeUpdate) {
+        fun move(id: Int, to: Int) {
             transaction {
 
                 //Remove node from old parent children list
                 val oldParentId = SeedsDb.Chore.Table.select {
-                    SeedsDb.Chore.Table.id.eq(item.id)
+                    SeedsDb.Chore.Table.id.eq(id)
                 }.single()[SeedsDb.Chore.Table.parentId]
 
                 val oldChildrenIds = SeedsDb.Chore.Table.select {
@@ -137,7 +146,7 @@ class PlanPrioritizeApplication @Inject constructor(val service: Service) {
                 }.single()[SeedsDb.Chore.Table.childrenIds]
 
                 //Insert node to new parent children list
-                val newParentId = item.moveTo
+                val newParentId = to
 
                 val newChildrenIds = SeedsDb.Chore.Table.select {
                     SeedsDb.Chore.Table.id.eq(newParentId)
@@ -145,16 +154,16 @@ class PlanPrioritizeApplication @Inject constructor(val service: Service) {
 
                 //Remove item from old list
                 SeedsDb.Chore.Table.update({ SeedsDb.Chore.Table.id.eq(oldParentId) }) {
-                    val oldChildrenIdsRewritten = (oldChildrenIds.split(",") - item.id.toString()).joinToString(",")
+                    val oldChildrenIdsRewritten = (oldChildrenIds.split(",") - id.toString()).joinToString(",")
                     it[SeedsDb.Chore.Table.childrenIds] = oldChildrenIdsRewritten
                 }
 
                 SeedsDb.Chore.Table.update({ SeedsDb.Chore.Table.id.eq(newParentId) }) {
-                    it[SeedsDb.Chore.Table.childrenIds] = (newChildrenIds.split(",") + item.id.toString()).joinToString(",")
+                    it[SeedsDb.Chore.Table.childrenIds] = (newChildrenIds.split(",") + id.toString()).joinToString(",")
                 }
 
-                SeedsDb.Chore.Table.update({ SeedsDb.Chore.Table.id.eq(item.id) }) {
-                    it[SeedsDb.Chore.Table.parentId] = item.moveTo!!
+                SeedsDb.Chore.Table.update({ SeedsDb.Chore.Table.id.eq(id) }) {
+                    it[SeedsDb.Chore.Table.parentId] = to
                 }
             }
         }
