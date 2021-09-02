@@ -28,10 +28,12 @@ object PlanPrioritizeApi {
         }
     }
 
-    suspend fun update(node: NodeUpdate) {
-        jsonClient.put<Unit>(endpoint + SeedsDto.Chore.path + "/${node.id}") {
-            contentType(ContentType.Application.Json)
-            body = node
+    suspend fun move(id: Int, to: Int?) {
+        jsonClient.put<Unit>(endpoint + SeedsDto.Chore.path + "/$id") {
+            //Note: the goal is to avoid the extra object but if that gets clumsy we could go back to this.
+            //contentType(ContentType.Application.Json)
+            //body = node
+            parameter("moveTo", to)
         }
     }
 

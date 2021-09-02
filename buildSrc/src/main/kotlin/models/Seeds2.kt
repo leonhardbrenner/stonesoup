@@ -33,6 +33,11 @@ val manifest = Manifest {
         ComplexType("Schedule") {
             Element("id", builtIn["int"])
             Element("choreId", builtIn["int"]) {
+                /*
+                Todo - foreignKey = seeds["Chore"]["id"]
+                    This will require a foreignKey param of type ComplexType.Element
+                    operator fun ComplexType.get(key) = elements.get(key) //This provides the foreign key lookup.
+                 */
                 default = 0 //Todo - add support in InterfaceGenerator
             }
             Element("workHours", builtIn["string"]) {
@@ -40,6 +45,9 @@ val manifest = Manifest {
             }
             Element("completeBy", builtIn["string"]) {
                 minOccurs = 0
+            }
+            Link("chore", seeds.complexTypes["Chore"]!!, JoinType.LEFT) { //Todo => ).left {
+                //Todo - id == Schedule.choreId
             }
         }
 
