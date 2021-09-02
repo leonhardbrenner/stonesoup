@@ -1,26 +1,21 @@
 package applications
 
 import com.google.inject.AbstractModule
-import com.mongodb.ConnectionString
-import org.litote.kmongo.coroutine.coroutine
-import generated.model.Seeds.Chore
 import generated.model.SeedsDto
 import generated.model.db.SeedsDb
 import javax.inject.Inject
 import io.ktor.application.*
-import io.ktor.http.*
-import io.ktor.request.*
-import io.ktor.response.*
 import io.ktor.routing.*
-import models.ChoreCreate
+import io.ktor.http.*
+import io.ktor.response.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import services.SeedsService
-import java.util.*
 
 class PlanPrioritizeApplication @Inject constructor(val service: Service) {
 
-    //
+    //https://ktor.io/docs/routing-in-ktor.html#define_route
+    //https://medium.com/@shubhangirajagrawal/the-7-restful-routes-a8e84201f206
     fun routesFrom(routing: Routing) = routing.route(SeedsDto.Chore.path) {
 
         get {
@@ -29,15 +24,17 @@ class PlanPrioritizeApplication @Inject constructor(val service: Service) {
         }
 
         post {
-            val item = call.receive<ChoreCreate>()
-            service.add(item)
+            val parentId = call.parameters["parentId"]?.toInt() ?: return@post call.respond(HttpStatusCode.BadRequest)
+            val name = call.parameters["name"] ?: return@post call.respond(HttpStatusCode.BadRequest)
+            service.add(parentId, name)
             call.respond(HttpStatusCode.OK)
         }
 
         put("/{id}") {
             val id = call.parameters["id"]?.toInt() ?: return@put call.respond(HttpStatusCode.BadRequest)
-            val moveTo = call.parameters["moveTo"]?.toInt() //optional because we will have other parameters
-            moveTo?.let { to -> service.move(id, to) }
+            call.parameters["moveTo"]?.toInt()?.let { to -> //Todo: move:to would be better.
+                service.move(id, to)
+            }
             call.respond(HttpStatusCode.OK)
         }
 
@@ -107,18 +104,18 @@ class PlanPrioritizeApplication @Inject constructor(val service: Service) {
             }
         }
 
-        fun add(item: ChoreCreate): Int {
+        fun add(attrParentId: Int, attrName: String): Int {
             var id = -1
             transaction {
                 id = SeedsDb.Chore.Table.insertAndGetId {
-                    it[parentId] = item.parentId
-                    it[name] = item.name
+                    it[parentId] = attrParentId
+                    it[name] = attrName
                     it[childrenIds] = ""
                 }.value
                 val childrenIds = SeedsDb.Chore.Table.select {
-                    SeedsDb.Chore.Table.id.eq(item.parentId)
+                    SeedsDb.Chore.Table.id.eq(attrParentId)
                 }.single()[SeedsDb.Chore.Table.childrenIds]
-                SeedsDb.Chore.Table.update({ SeedsDb.Chore.Table.id.eq(item.parentId) }) {
+                SeedsDb.Chore.Table.update({ SeedsDb.Chore.Table.id.eq(attrParentId) }) {
                     it[SeedsDb.Chore.Table.childrenIds] = (childrenIds.split(",") + id.toString()).joinToString(",")
                 }
             }
