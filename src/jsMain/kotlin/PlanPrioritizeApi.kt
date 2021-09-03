@@ -13,27 +13,32 @@ val jsonClient = HttpClient {
     install(JsonFeature) { serializer = KotlinxSerializer() }
 }
 
-//Todo - move these Apis to separate files
+//https://medium.com/@shubhangirajagrawal/the-7-restful-routes-a8e84201f206
 object PlanPrioritizeApi {
 
-    suspend fun get(): List<SeedsDto.Chore> {
+    suspend fun index(): List<SeedsDto.Chore> {
         return jsonClient.get(endpoint + SeedsDto.Chore.path)
     }
 
-    suspend fun add(parentId: Int, name: String) {
+    suspend fun create(parentId: Int, name: String) {
         jsonClient.post<Unit>(endpoint + SeedsDto.Chore.path) {
             parameter("parentId", parentId)
             parameter("name", name)
         }
     }
 
-    suspend fun move(id: Int, to: Int?) {
+//suspend fun //Todo - implement create which has form data defaults. Make a template base class for this.
+
+    //Todo - implement edit which has loads existing values
+
+    suspend fun update(id: Int, parentId: Int?, name: String?) {
         jsonClient.put<Unit>(endpoint + SeedsDto.Chore.path + "/$id") {
             //Example of how to send a complexType
             //data class Node(val id: Int, val name: String)
             //contentType(ContentType.Application.Json)
             //body = Node(1, "Y")
-            parameter("moveTo", to)
+            parameter("parentId", parentId)
+            parameter("name", name)
         }
     }
 

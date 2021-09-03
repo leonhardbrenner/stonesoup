@@ -11,6 +11,7 @@ import io.ktor.response.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import services.SeedsService
+import utils.then
 
 class PlanPrioritizeApplication @Inject constructor(val service: Service) {
 
@@ -32,9 +33,9 @@ class PlanPrioritizeApplication @Inject constructor(val service: Service) {
 
         put("/{id}") {
             val id = call.parameters["id"]?.toInt() ?: return@put call.respond(HttpStatusCode.BadRequest)
-            call.parameters["moveTo"]?.toInt()?.let { to -> //Todo: move:to would be better.
-                service.move(id, to)
-            }
+            val parentId = call.parameters["parentId"]?.toInt() ?: return@put call.respond(HttpStatusCode.BadRequest)
+            val name = call.parameters["name"]// ?: return@put call.respond(HttpStatusCode.BadRequest)
+            service.update(id, parentId, name)
             call.respond(HttpStatusCode.OK)
         }
 
@@ -133,37 +134,44 @@ class PlanPrioritizeApplication @Inject constructor(val service: Service) {
          *   we need a field for time estimates
          *   move to tornadoFx
          */
-        fun move(id: Int, to: Int) {
+        fun update(id: Int, parentId: Int?, name: String?) {
+
             transaction {
 
                 //Remove node from old parent children list
-                val oldParentId = SeedsDb.Chore.Table.select {
-                    SeedsDb.Chore.Table.id.eq(id)
-                }.single()[SeedsDb.Chore.Table.parentId]
+                val (oldParentId, oldName) = SeedsDb.Chore.Table
+                    .slice(SeedsDb.Chore.Table.parentId, SeedsDb.Chore.Table.name)
+                    .select {
+                        SeedsDb.Chore.Table.id.eq(id)
+                    }.single().let {
+                        it[SeedsDb.Chore.Table.parentId] then it[SeedsDb.Chore.Table.name]
+                    }
 
-                val oldChildrenIds = SeedsDb.Chore.Table.select {
-                    SeedsDb.Chore.Table.id.eq(oldParentId)
-                }.single()[SeedsDb.Chore.Table.childrenIds]
+                parentId?.let { newParentId ->
+                    if ((newParentId != null) and (newParentId != oldParentId)) {
+                        val oldChildrenIds = SeedsDb.Chore.Table.select {
+                            SeedsDb.Chore.Table.id.eq(oldParentId)
+                        }.single()[SeedsDb.Chore.Table.childrenIds]
 
-                //Insert node to new parent children list
-                val newParentId = to
+                        val newChildrenIds = SeedsDb.Chore.Table.select {
+                            SeedsDb.Chore.Table.id.eq(newParentId)
+                        }.single()[SeedsDb.Chore.Table.childrenIds]
 
-                val newChildrenIds = SeedsDb.Chore.Table.select {
-                    SeedsDb.Chore.Table.id.eq(newParentId)
-                }.single()[SeedsDb.Chore.Table.childrenIds]
+                        //Remove item from old list
+                        SeedsDb.Chore.Table.update({ SeedsDb.Chore.Table.id.eq(oldParentId) }) {
+                            val oldChildrenIdsRewritten = (oldChildrenIds.split(",") - id.toString()).joinToString(",")
+                            it[SeedsDb.Chore.Table.childrenIds] = oldChildrenIdsRewritten
+                        }
 
-                //Remove item from old list
-                SeedsDb.Chore.Table.update({ SeedsDb.Chore.Table.id.eq(oldParentId) }) {
-                    val oldChildrenIdsRewritten = (oldChildrenIds.split(",") - id.toString()).joinToString(",")
-                    it[SeedsDb.Chore.Table.childrenIds] = oldChildrenIdsRewritten
-                }
+                        SeedsDb.Chore.Table.update({ SeedsDb.Chore.Table.id.eq(newParentId) }) {
+                            it[SeedsDb.Chore.Table.childrenIds] =
+                                (newChildrenIds.split(",") + id.toString()).joinToString(",")
+                        }
 
-                SeedsDb.Chore.Table.update({ SeedsDb.Chore.Table.id.eq(newParentId) }) {
-                    it[SeedsDb.Chore.Table.childrenIds] = (newChildrenIds.split(",") + id.toString()).joinToString(",")
-                }
-
-                SeedsDb.Chore.Table.update({ SeedsDb.Chore.Table.id.eq(id) }) {
-                    it[SeedsDb.Chore.Table.parentId] = to
+                        SeedsDb.Chore.Table.update({ SeedsDb.Chore.Table.id.eq(id) }) {
+                            it[SeedsDb.Chore.Table.parentId] = newParentId
+                        }
+                    }
                 }
             }
         }
