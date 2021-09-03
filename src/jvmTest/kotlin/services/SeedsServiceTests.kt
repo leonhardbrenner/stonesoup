@@ -18,10 +18,10 @@ class SeedsServiceTests {
         with (mySeeds[0]) {
             assertEquals("Okra", description)
             assertEquals("jss:2588G.11", seed_label)
-            assertEquals(1, my_seed_id)
             assertEquals("3/20", germination_test)
             assertEquals(
                 SeedsDto.DetailedSeed(
+                    id=0,
                     name="Clemson Spineless",
                     maturity="60 Days",
                     secondary_name="Organic Okra Seed",
@@ -40,10 +40,10 @@ class SeedsServiceTests {
         with (bokChoys[0]) {
             assertEquals("Bok Choy", description)
             assertEquals("jss:509.53", seed_label)
-            assertEquals(2, my_seed_id)
             assertEquals("3/17", germination_test)
             assertEquals(
                 SeedsDto.DetailedSeed(
+                    id=0,
                     name = "Mei Qing Choi",
                     maturity = "45 Days",
                     secondary_name = "(F1) Green Seed",

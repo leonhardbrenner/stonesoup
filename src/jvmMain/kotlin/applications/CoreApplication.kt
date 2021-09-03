@@ -13,37 +13,56 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import services.SeedsService
 import utils.then
 
-class PlanPrioritizeApplication @Inject constructor(val service: Service) {
+class CoreApplication @Inject constructor(val service: Service, val seedsService: SeedsService) {
 
     //https://ktor.io/docs/routing-in-ktor.html#define_route
     //https://medium.com/@shubhangirajagrawal/the-7-restful-routes-a8e84201f206
-    fun routesFrom(routing: Routing) = routing.route(SeedsDto.Chore.path) {
+    fun routesFrom(routing: Routing) = routing.apply {
+        route(SeedsDto.MySeeds.path) {
+            get {
+                //XXX - You will need an outbound route which creates a Dto for us. This would be a good use of extensions.
+                call.respond(seedsService.mySeeds)
+            }
+        }
+        route(SeedsDto.DetailedSeed.path) {
+            get {
+                call.respond(seedsService.getDetailedSeeds())
+            }
+        }
+        route(SeedsDto.SeedCategory.path) {
+            get {
+                call.respond(seedsService.getCategories())
+            }
+        }
+        route(SeedsDto.Chore.path) {
 
-        get {
-            //call.respond(collection.find().toList())
-            call.respond(service.get())
+            get {
+                //call.respond(collection.find().toList())
+                call.respond(service.get())
+            }
+
+            post {
+                val parentId = call.parameters["parentId"]?.toInt() ?: return@post call.respond(HttpStatusCode.BadRequest)
+                val name = call.parameters["name"] ?: return@post call.respond(HttpStatusCode.BadRequest)
+                service.add(parentId, name)
+                call.respond(HttpStatusCode.OK)
+            }
+
+            put("/{id}") {
+                val id = call.parameters["id"]?.toInt() ?: return@put call.respond(HttpStatusCode.BadRequest)
+                val parentId = call.parameters["parentId"]?.toInt() ?: return@put call.respond(HttpStatusCode.BadRequest)
+                val name = call.parameters["name"]// ?: return@put call.respond(HttpStatusCode.BadRequest)
+                service.update(id, parentId, name)
+                call.respond(HttpStatusCode.OK)
+            }
+
+            delete("/{id}") {
+                val id = call.parameters["id"]?.toInt() ?: error("Invalid delete request")
+                service.delete(id)
+                call.respond(HttpStatusCode.OK)
+            }
         }
 
-        post {
-            val parentId = call.parameters["parentId"]?.toInt() ?: return@post call.respond(HttpStatusCode.BadRequest)
-            val name = call.parameters["name"] ?: return@post call.respond(HttpStatusCode.BadRequest)
-            service.add(parentId, name)
-            call.respond(HttpStatusCode.OK)
-        }
-
-        put("/{id}") {
-            val id = call.parameters["id"]?.toInt() ?: return@put call.respond(HttpStatusCode.BadRequest)
-            val parentId = call.parameters["parentId"]?.toInt() ?: return@put call.respond(HttpStatusCode.BadRequest)
-            val name = call.parameters["name"]// ?: return@put call.respond(HttpStatusCode.BadRequest)
-            service.update(id, parentId, name)
-            call.respond(HttpStatusCode.OK)
-        }
-
-        delete("/{id}") {
-            val id = call.parameters["id"]?.toInt() ?: error("Invalid delete request")
-            service.delete(id)
-            call.respond(HttpStatusCode.OK)
-        }
     }
 
     object Module : AbstractModule() {
@@ -56,8 +75,7 @@ class PlanPrioritizeApplication @Inject constructor(val service: Service) {
     }
 
     //Rename to CRUDService.
-    class Service @Inject constructor(
-        val seedsService: SeedsService) {
+    class Service {
 
         fun get() = transaction {
             //Nice exposed example:
