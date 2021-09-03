@@ -50,7 +50,7 @@ class Chores(props: Props<ColumnId>): TreeTable<Seeds.Chore, Chores.ColumnId>(pr
         val path = Chores::class.simpleName.toString()
     }
 
-    override suspend fun get() = PlanPrioritizeApi.index()
+    override suspend fun get() = Api.Chore.index()
 
     override fun Seeds.Chore.label() = name
 
