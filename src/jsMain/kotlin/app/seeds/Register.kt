@@ -1,5 +1,8 @@
-import DisplayComponent.ComponentStyles.inline
-import DisplayComponent.ComponentStyles.listDiv
+package app.seeds
+
+import SeedsApi
+import app.seeds.DisplayComponent.ComponentStyles.inline
+import app.seeds.DisplayComponent.ComponentStyles.listDiv
 import com.ccfraser.muirwik.components.*
 import com.ccfraser.muirwik.components.list.*
 import com.ccfraser.muirwik.components.menu.mMenuItem
@@ -42,7 +45,7 @@ class RegisterComponent : RComponent<RegisterProps, RState>() {
             mMenuItem("My Seeds", value = SeedsDto.MySeeds.path)
             mMenuItem("Available Seeds", value = SeedsDto.DetailedSeed.path)
             mMenuItem("Category", value = SeedsDto.SeedCategory.path)
-            mMenuItem("Chore", value = SeedsDto.Chore.path)
+            mMenuItem("app.seeds.Chore", value = SeedsDto.Chore.path)
         }
         when (props.type) {
             SeedsDto.MySeeds.path -> mySeeds {}

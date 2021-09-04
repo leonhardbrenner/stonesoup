@@ -1,3 +1,7 @@
+package app.seeds
+
+import SeedsApi
+import app.Table
 import com.ccfraser.muirwik.components.*
 import com.ccfraser.muirwik.components.menu.mMenuItem
 import com.ccfraser.muirwik.components.table.*
@@ -34,9 +38,9 @@ class OrganizeComponent : RComponent<OrganizeProps, RState>() {
         }
         when (props.thing) {
             SeedsDto.MySeeds.path -> seeds {
-                title = "These are your seeds."
+                title = "These are your app.seeds.seeds."
                 sortTemplate = { col: AvailableSeeds.ColumnId, direction: MTableCellSortDirection ->
-                    "Your seeds ordered by $col $direction"
+                    "Your app.seeds.seeds ordered by $col $direction"
                 }
             } //TODO - this should point to SeedsOrganizer
             DessertOrganizer.path -> dessertOrganizer {
@@ -157,7 +161,7 @@ class DessertOrganizer(props: Props<ColumnId>): Table<Dessert, DessertOrganizer.
     override val Dessert._id get() = id //TODO - handle this differently. Perhaps make an interfaces on the items.
 
     override val columnData = listOf(
-        ColumnData(ColumnId.Name, false, true, "Dessert (100g serving)"),
+        ColumnData(ColumnId.Name, false, true, "app.seeds.Dessert (100g serving)"),
         ColumnData(ColumnId.Calories, true, false, "Calories"),
         ColumnData(ColumnId.Fat, true, false, "Fat (g)"),
         ColumnData(ColumnId.Carbs, true, false, "Carbs (g)"),

@@ -1,3 +1,7 @@
+import app.seeds.Chores
+import app.seeds.organize
+import app.seeds.prioritize
+import app.seeds.register
 import com.ccfraser.muirwik.components.*
 import generated.model.SeedsDto
 import kotlinx.coroutines.MainScope
@@ -10,10 +14,10 @@ import styled.styledDiv
 private val scope = MainScope()
 
 //val noMoreChores = listOf(
-//    Chore(0, -1, listOf(1, 3), "<root>"),
-//    Chore(1, 0, listOf(2), "A"),
-//    Chore(2, 1, emptyList(), "B"),
-//    Chore(3, 0, emptyList(), "C")
+//    app.seeds.Chore(0, -1, listOf(1, 3), "<root>"),
+//    app.seeds.Chore(1, 0, listOf(2), "A"),
+//    app.seeds.Chore(2, 1, emptyList(), "B"),
+//    app.seeds.Chore(3, 0, emptyList(), "C")
 //)
 
 enum class Label(val text: String) {
@@ -60,7 +64,7 @@ class App : RComponent<RProps, AppState>() {
                     mTabs(state.tabValue,
                         onChange = { _, value -> setState { tabValue = value as String } }
                     ) {
-                        //Todo - register, organize, prioritize
+                        //Todo - app.seeds.register, app.seeds.organize, app.seeds.prioritize
                         mTab(Label.Register.text, Label.Register.text)
                         mTab(Label.Organize.text, Label.Organize.text)
                         mTab(Label.Plan.text, Label.Plan.text) //This can be personal or community
