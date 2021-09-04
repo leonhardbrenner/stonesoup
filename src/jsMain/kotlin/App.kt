@@ -1,8 +1,5 @@
-import components.seeds.Chores
-import components.seeds.organize
-import components.seeds.prioritize
-import components.seeds.register
 import com.ccfraser.muirwik.components.*
+import components.seeds.*
 import generated.model.SeedsDto
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch

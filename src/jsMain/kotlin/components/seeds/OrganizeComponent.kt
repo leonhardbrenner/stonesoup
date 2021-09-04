@@ -11,6 +11,7 @@ import models.Resources
 import react.*
 import styled.StyledElementBuilder
 
+//Todo - I think these should be moved to a top level file.
 fun RBuilder.organize(handler: OrganizeProps.() -> Unit): ReactElement {
     return child(OrganizeComponent::class) {
         this.attrs(handler)
