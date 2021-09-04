@@ -54,28 +54,28 @@ class RegisterComponent : RComponent<RegisterProps, RState>() {
 }
 
 private class MySeeds(props: DisplayProps): DisplayComponent<Resources.MySeeds>(props) {
-    override suspend fun get() = SeedsApi.MySeeds.index()
+    override suspend fun get() = SeedsApi.MySeedsApi.index()
     override fun Resources.MySeeds.label() = description //I don't think extension function is a good choice
     override fun Resources.MySeeds.transform() = "$id ${detailedSeed?.image?:"No image found"}"
 }
 fun RBuilder.mySeeds(handler: DisplayProps.() -> Unit) = child(MySeeds::class) { attrs { handler() } }
 
 private class DetailedSeed(props: DisplayProps): DisplayComponent<Seeds.DetailedSeed>(props) {
-    override suspend fun get() = SeedsApi.DetailedSeeds.index()
+    override suspend fun get() = SeedsApi.DetailedSeedsApi.index()
     override fun Seeds.DetailedSeed.label() = name
     override fun Seeds.DetailedSeed.transform() = "$id $name"
 }
 fun RBuilder.detailedSeed(handler: DisplayProps.() -> Unit) = child(DetailedSeed::class) { attrs { handler() } }
 
 private class SeedCategory(props: DisplayProps): DisplayComponent<Seeds.SeedCategory>(props) {
-    override suspend fun get() = SeedsApi.Category.index()
+    override suspend fun get() = SeedsApi.CategoryApi.index()
     override fun Seeds.SeedCategory.label() = name
     override fun Seeds.SeedCategory.transform() = "$id $name"
 }
 fun RBuilder.category(handler: DisplayProps.() -> Unit) = child(SeedCategory::class) { attrs { handler() } }
 
 private class Chore(props: DisplayProps): DisplayComponent<Seeds.Chore>(props) {
-    override suspend fun get() = SeedsApi.Chore.index()
+    override suspend fun get() = SeedsApi.ChoreApi.index()
     override fun Seeds.Chore.label() = name
     override fun Seeds.Chore.transform() = "$id $name"
 }

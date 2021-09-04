@@ -6,7 +6,7 @@ import generated.model.SeedsDto
 import io.ktor.client.request.*
 import models.Resources
 
-open class MySeeds {
+open class MySeedsApi {
     suspend fun index(): List<Resources.MySeeds> {
         return jsonClient.get(endpoint + SeedsDto.MySeeds.path)
     }

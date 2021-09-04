@@ -5,7 +5,7 @@ import jsonClient
 import generated.model.SeedsDto
 import io.ktor.client.request.*
 
-open class SeedCategory {
+open class SeedCategoryApi {
     suspend fun index(): List<SeedsDto.SeedCategory> {
         return jsonClient.get(endpoint + SeedsDto.SeedCategory.path)
     }
