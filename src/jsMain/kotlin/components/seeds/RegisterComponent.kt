@@ -1,8 +1,8 @@
-package app.seeds
+package components.seeds
 
 import SeedsApi
-import app.seeds.DisplayComponent.ComponentStyles.inline
-import app.seeds.DisplayComponent.ComponentStyles.listDiv
+import components.seeds.DisplayComponent.ComponentStyles.inline
+import components.seeds.DisplayComponent.ComponentStyles.listDiv
 import com.ccfraser.muirwik.components.*
 import com.ccfraser.muirwik.components.list.*
 import com.ccfraser.muirwik.components.menu.mMenuItem

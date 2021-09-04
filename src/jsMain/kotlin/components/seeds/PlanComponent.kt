@@ -1,7 +1,7 @@
-package app.seeds
+package components.seeds
 
-import app.TreeView
-import app.seeds.Plan.ComponentStyles.listDiv
+import components.TreeView
+import components.seeds.PlanComponent.ComponentStyles.listDiv
 import com.ccfraser.muirwik.components.*
 import com.ccfraser.muirwik.components.button.mIconButton
 import com.ccfraser.muirwik.components.list.*
@@ -25,7 +25,7 @@ external interface PlanProps: RProps {
     var isMouseIn: (Int) -> Boolean
 }
 
-class Plan : RComponent<PlanProps, RState>() {
+class PlanComponent : RComponent<PlanProps, RState>() {
     private object ComponentStyles : StyleSheet("ComponentStyles", isStatic = true) {
         val listDiv by css {
             display = Display.inlineFlex
@@ -90,7 +90,7 @@ class Plan : RComponent<PlanProps, RState>() {
 }
 
 fun RBuilder.plan(handler: PlanProps.() -> Unit): ReactElement {
-    return child(Plan::class) {
+    return child(PlanComponent::class) {
         this.attrs(handler)
     }
 }

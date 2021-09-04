@@ -1,8 +1,9 @@
-package app
+package components
 
 import com.ccfraser.muirwik.components.*
 import com.ccfraser.muirwik.components.button.mIconButton
 import com.ccfraser.muirwik.components.table.*
+import generated.model.Seeds
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlinx.css.*
@@ -16,15 +17,15 @@ import kotlin.math.min
 
 private val scope = MainScope()
 
-abstract class Table<T, ColumnId>(props: Props<ColumnId>) : RComponent<Table.Props<ColumnId>, Table.State<T>>() {
+abstract class TreeTable<T: Seeds.Chore, ColumnId>(props: Props<ColumnId>) : RComponent<TreeTable.Props<ColumnId>, TreeTable.State>() {
 
     interface Props<ColumnId> : RProps {
         var title: String
         var sortTemplate: (ColumnId, MTableCellSortDirection) -> String
     }
 
-    interface State<T> : RState {
-        var items: MutableList<Pair<Int, T>>
+    interface State : RState {
+        var items: MutableList<Pair<Int, Seeds.Chore>>
         var order: MTableCellSortDirection
     }
 
@@ -35,12 +36,12 @@ abstract class Table<T, ColumnId>(props: Props<ColumnId>) : RComponent<Table.Pro
         val label: String
     )
 
-    override fun State<T>.init() {
+    override fun State.init() {
         items = mutableListOf()
         scope.launch {
-            val items: List<T> = get()
+            val items: List<Seeds.Chore> = get()
             setState {
-                items.forEach { this.items.add(it._id to it) }
+                items.forEach { this.items.add(it._id to it) } //XXX - Fix this
                 order = MTableCellSortDirection.asc
             }
         }
@@ -56,17 +57,17 @@ abstract class Table<T, ColumnId>(props: Props<ColumnId>) : RComponent<Table.Pro
 
     abstract suspend fun get(): List<T>
 
-    abstract fun T.label(): String
+    abstract fun Seeds.Chore.label(): String
 
-    abstract fun ColumnId.comparator(a: T, b: T): Int
+    abstract fun ColumnId.comparator(a: Seeds.Chore, b: Seeds.Chore): Int
 
     abstract val columnData: List<ColumnData<ColumnId>>
 
     abstract var orderByColumn: ColumnId
 
-    abstract fun StyledElementBuilder<*>.buildRow(source: T, isSelected: Boolean)
+    abstract fun StyledElementBuilder<*>.buildRow(source: Seeds.Chore, isSelected: Boolean)
 
-    abstract val T._id: Int
+    abstract val Seeds.Chore._id: Int
 
     override fun RBuilder.render() {
         mTypography("${props.title}")
@@ -74,6 +75,8 @@ abstract class Table<T, ColumnId>(props: Props<ColumnId>) : RComponent<Table.Pro
         mTypography(props.sortTemplate(orderByColumn, state.order))
         sortingAndSelecting()
     }
+
+    val treeView get() = TreeView(1, state.items.map { it.second } )
 
     val size get() = state.items.size
     val Pair<Int, T>.id get() = first
@@ -93,12 +96,21 @@ abstract class Table<T, ColumnId>(props: Props<ColumnId>) : RComponent<Table.Pro
                         ::handleSelectAllClick, ::handleRequestSort
                     )
                     mTableBody {
-                        state.items.subList(page * rowsPerPage, min((page + 1) * rowsPerPage, size)).forEach {
-                            val isSelected = selectedIds.contains(it.id)
-                            mTableRow(it.id, isSelected, true, onClick = { _ -> handleClick(it.id) }) {
+                        //state.items.subList(page * rowsPerPage, min((page + 1) * rowsPerPage, size)).forEach {
+                        /*Todo - toggle between walk and walk2 for chores. This will allow us to see how chores fit into
+                             the larger plan. We should be able to select a few item in chore view then see switch to
+                             plan view and only see the task that depend on these chores all the way up to the projects.
+                             It may make sense to add a narrow feature here.
+                          Todo - bring back sorting of the other columns.
+                          Todo - create a permalink from the path(id).map { it.symbol }.hashCode().encodeSHA()
+                         */
+                        treeView.depthFirstWalk { node ->
+                            if (node.id==1) return@depthFirstWalk
+                            val isSelected = selectedIds.contains(node.id)
+                            mTableRow(node.id, isSelected, true, onClick = { _ -> handleClick(node.id) }) {
                                 attrs.asDynamic().tabIndex = -1
                                 attrs.asDynamic().role = "checkbox"
-                                buildRow(it.second, isSelected)
+                                buildRow(node, isSelected)
                             }
                         }
                         val emptyRows = rowsPerPage - min(rowsPerPage, state.items.size - page * rowsPerPage)

@@ -1,4 +1,4 @@
-package app
+package components
 
 import generated.model.Seeds
 

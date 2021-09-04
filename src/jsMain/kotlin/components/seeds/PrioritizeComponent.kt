@@ -1,7 +1,7 @@
-package app.seeds
+package components.seeds
 
 import SeedsApi
-import app.TreeTable
+import components.TreeTable
 import com.ccfraser.muirwik.components.*
 import com.ccfraser.muirwik.components.menu.mMenuItem
 import com.ccfraser.muirwik.components.table.*
