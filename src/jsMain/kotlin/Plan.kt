@@ -1,4 +1,4 @@
-import PlanComponent.ComponentStyles.listDiv
+import Plan.ComponentStyles.listDiv
 import com.ccfraser.muirwik.components.*
 import com.ccfraser.muirwik.components.button.mIconButton
 import com.ccfraser.muirwik.components.list.*
@@ -21,7 +21,7 @@ external interface PlanProps: RProps {
     var isMouseIn: (Int) -> Boolean
 }
 
-class PlanComponent : RComponent<PlanProps, RState>() {
+class Plan : RComponent<PlanProps, RState>() {
     private object ComponentStyles : StyleSheet("ComponentStyles", isStatic = true) {
         val listDiv by css {
             display = Display.inlineFlex
@@ -86,7 +86,7 @@ class PlanComponent : RComponent<PlanProps, RState>() {
 }
 
 fun RBuilder.plan(handler: PlanProps.() -> Unit): ReactElement {
-    return child(PlanComponent::class) {
+    return child(Plan::class) {
         this.attrs(handler)
     }
 }
