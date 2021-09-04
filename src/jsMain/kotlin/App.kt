@@ -39,7 +39,7 @@ class App : RComponent<RProps, AppState>() {
 
     override fun AppState.init() {
         scope.launch {
-            val prioritizedChores = Api.Chore.index()
+            val prioritizedChores = SeedsApi.Chore.index()
             setState {
                 tabValue = Label.Organize.text
                 chores = prioritizedChores
@@ -91,8 +91,8 @@ class App : RComponent<RProps, AppState>() {
                             chores = state.chores
                             deleteChore = { id ->
                                 scope.launch {
-                                    Api.Chore.destroy(id)
-                                    val prioritizedChores = Api.Chore.index()
+                                    SeedsApi.Chore.destroy(id)
+                                    val prioritizedChores = SeedsApi.Chore.index()
                                     setState {
                                         chores = prioritizedChores
                                         selected = null //TODO - Yuck this is spaghetti. This is because in order to delete we once selected.
@@ -108,8 +108,8 @@ class App : RComponent<RProps, AppState>() {
                                             selected = null
                                         else {
                                             MainScope().launch {
-                                                Api.Chore.update(selected!!, parentId = id, name = null)
-                                                val prioritizedChores = Api.Chore.index()
+                                                SeedsApi.Chore.update(selected!!, parentId = id, name = null)
+                                                val prioritizedChores = SeedsApi.Chore.index()
                                                 setState {
                                                     chores = prioritizedChores
                                                     selected = null
@@ -125,8 +125,8 @@ class App : RComponent<RProps, AppState>() {
                             }
                             handleInput = { input: String ->
                                 scope.launch {
-                                    Api.Chore.create(1, input.replace("!", ""))
-                                    val prioritizedChores = Api.Chore.index()
+                                    SeedsApi.Chore.create(1, input.replace("!", ""))
+                                    val prioritizedChores = SeedsApi.Chore.index()
                                     setState {
                                         chores = prioritizedChores
                                     }

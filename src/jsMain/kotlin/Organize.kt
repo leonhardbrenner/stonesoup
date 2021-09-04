@@ -52,7 +52,7 @@ class OrganizeComponent : RComponent<OrganizeProps, RState>() {
 
 class AvailableSeeds(props: Props<ColumnId>): Table<Resources.MySeeds, AvailableSeeds.ColumnId>(props) {
 
-    override suspend fun get() = Api.MySeeds.index()
+    override suspend fun get() = SeedsApi.MySeeds.index()
 
     override fun Resources.MySeeds.label() = description
 
