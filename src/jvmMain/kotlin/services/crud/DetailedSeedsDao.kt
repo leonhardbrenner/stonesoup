@@ -8,7 +8,7 @@ import utils.then
 
 object DetailedSeedsDao {
 
-    fun index() = transaction {
+    fun index() = //transaction {
         SeedsDb.DetailedSeed.fetchAll()
         //SeedsDb.DetailedSeed.Table.selectAll().map {
         //    SeedsDto.DetailedSeed(
@@ -21,7 +21,7 @@ object DetailedSeedsDao {
         //        it[SeedsDb.DetailedSeed.Table.link]
         //    )
         //}
-    }
+    //}
 
     fun create(attrName: String,
                attrMaturity: String,

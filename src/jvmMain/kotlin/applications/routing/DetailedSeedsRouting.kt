@@ -11,17 +11,18 @@ import javax.inject.Inject
 import kotlin.text.get
 
 class DetailedSeedsRouting @Inject constructor(val dao: CoreApplication.Dao) {
-    fun routes(routing: Routing) = routing.route(SeedsDto.Chore.path) {
+    fun routes(routing: Routing) = routing.route(SeedsDto.DetailedSeed.path) {
 
         get {
             //call.respond(collection.find().toList())
-            call.respond(dao.DetailedSeeds.index())
+            call.respond(SeedsDb.DetailedSeed.fetchAll())
+            //call.respond(dao.DetailedSeeds.index())
         }
 
         //get("/new") {
-        //    TODO("Show form to make new Chore")
+        //    TODO("Show form to make new")
         //    //call.respond(collection.find().toList())
-        //    //call.respond(dao.Chore.index())
+        //    //call.respond(dao.DetailedSeed.index())
         //}
 
         post {
@@ -37,15 +38,11 @@ class DetailedSeedsRouting @Inject constructor(val dao: CoreApplication.Dao) {
         }
 
         //get("/{id}") {
-        //    TODO("Show form to make new Chore")
-        //    //call.respond(collection.find().toList())
-        //    //call.respond(dao.Chore.index())
+        //    TODO("Lookup Chore by id")
         //}
 
         //get("/{id}/edit") {
-        //    TODO("Show form to make new Chore")
-        //    //call.respond(collection.find().toList())
-        //    //call.respond(dao.Chore.index())
+        //    TODO("Show form to update Chore")
         //}
 
         put("/{id}") {

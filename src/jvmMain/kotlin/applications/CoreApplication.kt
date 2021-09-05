@@ -23,10 +23,10 @@ class CoreApplication @Inject constructor(
     fun routesFrom(routing: Routing) {
         choreRouting.routes(routing)
         //TODO - fix this
-        //detailedSeedsRouting.routes(routing)
+        detailedSeedsRouting.routes(routing)
         //TODO - define routing for these
         routesFromMySeeds(routing)
-        routesFromDetailedSeed(routing)
+        //routesFromDetailedSeed(routing)
         routesFromSeedCategory(routing)
     }
 
