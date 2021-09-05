@@ -2,6 +2,7 @@ package applications.routing
 
 import applications.CoreApplication
 import generated.model.SeedsDto
+import generated.model.db.SeedsDb
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.response.*
@@ -14,7 +15,7 @@ class DetailedSeedsRouting @Inject constructor(val dao: CoreApplication.Dao) {
 
         get {
             //call.respond(collection.find().toList())
-            call.respond(dao.Chore.index())
+            call.respond(dao.DetailedSeeds.index())
         }
 
         //get("/new") {
@@ -24,9 +25,14 @@ class DetailedSeedsRouting @Inject constructor(val dao: CoreApplication.Dao) {
         //}
 
         post {
-            val parentId = call.parameters["parentId"]?.toInt() ?: return@post call.respond(HttpStatusCode.BadRequest)
             val name = call.parameters["name"] ?: return@post call.respond(HttpStatusCode.BadRequest)
-            dao.Chore.create(parentId, name)
+            //XXX - none of these are required but our create 6 lines down requires it.
+            val maturity = call.parameters["maturity"] ?: return@post call.respond(HttpStatusCode.BadRequest)
+            val secondary_name = call.parameters["name"] ?: return@post call.respond(HttpStatusCode.BadRequest)
+            val description = call.parameters["name"] ?: return@post call.respond(HttpStatusCode.BadRequest)
+            val image = call.parameters["name"] ?: return@post call.respond(HttpStatusCode.BadRequest)
+            val link = call.parameters["name"] ?: return@post call.respond(HttpStatusCode.BadRequest)
+            dao.DetailedSeeds.create(name, maturity, secondary_name, description, image, link)
             call.respond(HttpStatusCode.OK)
         }
 
@@ -44,15 +50,19 @@ class DetailedSeedsRouting @Inject constructor(val dao: CoreApplication.Dao) {
 
         put("/{id}") {
             val id = call.parameters["id"]?.toInt() ?: return@put call.respond(HttpStatusCode.BadRequest)
-            val parentId = call.parameters["parentId"]?.toInt() ?: return@put call.respond(HttpStatusCode.BadRequest)
-            val name = call.parameters["name"]// ?: return@put call.respond(HttpStatusCode.BadRequest)
-            dao.Chore.update(id, parentId, name)
+            val name = call.parameters["name"] ?: return@put call.respond(HttpStatusCode.BadRequest)
+            val maturity = call.parameters["maturity"] ?: return@put call.respond(HttpStatusCode.BadRequest)
+            val secondary_name = call.parameters["name"] ?: return@put call.respond(HttpStatusCode.BadRequest)
+            val description = call.parameters["name"] ?: return@put call.respond(HttpStatusCode.BadRequest)
+            val image = call.parameters["name"] ?: return@put call.respond(HttpStatusCode.BadRequest)
+            val link = call.parameters["name"] ?: return@put call.respond(HttpStatusCode.BadRequest)
+            dao.DetailedSeeds.update(id, name, maturity, secondary_name, description, image, link)
             call.respond(HttpStatusCode.OK)
         }
 
         delete("/{id}") {
             val id = call.parameters["id"]?.toInt() ?: error("Invalid delete request")
-            dao.Chore.destroy(id)
+            dao.DetailedSeeds.destroy(id)
             call.respond(HttpStatusCode.OK)
         }
     }

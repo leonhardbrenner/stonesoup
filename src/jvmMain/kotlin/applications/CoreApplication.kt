@@ -1,6 +1,7 @@
 package applications
 
 import applications.routing.ChoreRouting
+import applications.routing.DetailedSeedsRouting
 import com.google.inject.AbstractModule
 import generated.model.SeedsDto
 import javax.inject.Inject
@@ -10,18 +11,23 @@ import io.ktor.http.*
 import io.ktor.response.*
 import services.SeedsService
 import services.crud.ChoreDao
+import services.crud.DetailedSeedsDao
 
 class CoreApplication @Inject constructor(
     val dao: Dao,
     val seedsService: SeedsService,
-    val choreRouting: ChoreRouting
+    val choreRouting: ChoreRouting,
+    val detailedSeedsRouting: DetailedSeedsRouting
     ) {
 
     fun routesFrom(routing: Routing) {
+        choreRouting.routes(routing)
+        //TODO - fix this
+        //detailedSeedsRouting.routes(routing)
+        //TODO - define routing for these
         routesFromMySeeds(routing)
         routesFromDetailedSeed(routing)
         routesFromSeedCategory(routing)
-        choreRouting.routes(routing)
     }
 
     //https://ktor.io/docs/routing-in-ktor.html#define_route
@@ -44,52 +50,6 @@ class CoreApplication @Inject constructor(
             call.respond(seedsService.getCategories())
         }
     }
-    fun routesFromChore(routing: Routing) = routing.route(SeedsDto.Chore.path) {
-        get {
-            //call.respond(collection.find().toList())
-            //Todo - figure out why this is red
-            call.respond(dao.Chore.index())
-        }
-
-        //get("/new") {
-        //    TODO("Show form to make new Chore")
-        //    //call.respond(collection.find().toList())
-        //    //call.respond(dao.Chore.index())
-        //}
-
-        post {
-            val parentId = call.parameters["parentId"]?.toInt() ?: return@post call.respond(HttpStatusCode.BadRequest)
-            val name = call.parameters["name"] ?: return@post call.respond(HttpStatusCode.BadRequest)
-            dao.Chore.create(parentId, name)
-            call.respond(HttpStatusCode.OK)
-        }
-
-        //get("/{id}") {
-        //    TODO("Show form to make new Chore")
-        //    //call.respond(collection.find().toList())
-        //    //call.respond(dao.Chore.index())
-        //}
-
-        //get("/{id}/edit") {
-        //    TODO("Show form to make new Chore")
-        //    //call.respond(collection.find().toList())
-        //    //call.respond(dao.Chore.index())
-        //}
-
-        put("/{id}") {
-            val id = call.parameters["id"]?.toInt() ?: return@put call.respond(HttpStatusCode.BadRequest)
-            val parentId = call.parameters["parentId"]?.toInt() ?: return@put call.respond(HttpStatusCode.BadRequest)
-            val name = call.parameters["name"]// ?: return@put call.respond(HttpStatusCode.BadRequest)
-            dao.Chore.update(id, parentId, name)
-            call.respond(HttpStatusCode.OK)
-        }
-
-        delete("/{id}") {
-            val id = call.parameters["id"]?.toInt() ?: error("Invalid delete request")
-            dao.Chore.destroy(id)
-            call.respond(HttpStatusCode.OK)
-        }
-    }
 
     object Module : AbstractModule() {
 
@@ -102,5 +62,6 @@ class CoreApplication @Inject constructor(
 
     class Dao {
         val Chore = ChoreDao
+        val DetailedSeeds = DetailedSeedsDao
     }
 }
