@@ -2,18 +2,15 @@ package applications
 
 import com.google.inject.AbstractModule
 import generated.model.SeedsDto
-import generated.model.db.SeedsDb
 import javax.inject.Inject
 import io.ktor.application.*
 import io.ktor.routing.*
 import io.ktor.http.*
 import io.ktor.response.*
-import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.transactions.transaction
 import services.SeedsService
-import utils.then
+import services.crud.ChoreDao
 
-class CoreApplication @Inject constructor(val service: Service, val seedsService: SeedsService) {
+class CoreApplication @Inject constructor(val dao: Dao, val seedsService: SeedsService) {
 
     //https://ktor.io/docs/routing-in-ktor.html#define_route
     //https://medium.com/@shubhangirajagrawal/the-7-restful-routes-a8e84201f206
@@ -38,27 +35,45 @@ class CoreApplication @Inject constructor(val service: Service, val seedsService
 
             get {
                 //call.respond(collection.find().toList())
-                call.respond(service.get())
+                call.respond(dao.Chore.index())
             }
+
+            //get("/new") {
+            //    TODO("Show form to make new Chore")
+            //    //call.respond(collection.find().toList())
+            //    //call.respond(dao.Chore.index())
+            //}
 
             post {
                 val parentId = call.parameters["parentId"]?.toInt() ?: return@post call.respond(HttpStatusCode.BadRequest)
                 val name = call.parameters["name"] ?: return@post call.respond(HttpStatusCode.BadRequest)
-                service.add(parentId, name)
+                dao.Chore.create(parentId, name)
                 call.respond(HttpStatusCode.OK)
             }
+
+            //get("/{id}") {
+            //    TODO("Show form to make new Chore")
+            //    //call.respond(collection.find().toList())
+            //    //call.respond(dao.Chore.index())
+            //}
+
+            //get("/{id}/edit") {
+            //    TODO("Show form to make new Chore")
+            //    //call.respond(collection.find().toList())
+            //    //call.respond(dao.Chore.index())
+            //}
 
             put("/{id}") {
                 val id = call.parameters["id"]?.toInt() ?: return@put call.respond(HttpStatusCode.BadRequest)
                 val parentId = call.parameters["parentId"]?.toInt() ?: return@put call.respond(HttpStatusCode.BadRequest)
                 val name = call.parameters["name"]// ?: return@put call.respond(HttpStatusCode.BadRequest)
-                service.update(id, parentId, name)
+                dao.Chore.update(id, parentId, name)
                 call.respond(HttpStatusCode.OK)
             }
 
             delete("/{id}") {
                 val id = call.parameters["id"]?.toInt() ?: error("Invalid delete request")
-                service.delete(id)
+                dao.Chore.destroy(id)
                 call.respond(HttpStatusCode.OK)
             }
         }
@@ -74,140 +89,7 @@ class CoreApplication @Inject constructor(val service: Service, val seedsService
 
     }
 
-    //Rename to CRUDService.
-    class Service {
-
-        fun get() = transaction {
-            //Nice exposed example:
-            //https://github.com/JetBrains/Exposed/issues/566
-            with(
-                SeedsDb.Chore.Table.join(
-                    SeedsDb.Schedule.Table,
-                    JoinType.LEFT,
-                    /*
-                     Todo - generate the unique foreign key in SeedsDb.kt. It should look something like this:
-                        object Table : IntIdTable("Schedule") {
-                          val choreId: Column<Int> = integer("choreId")
-                            .uniqueIndex()
-                            .references(Chore.Table.id)
-                          val workHours: Column<String?> = text("workHours").nullable()
-                          val completeBy: Column<String?> = text("completeBy").nullable()
-                        }
-                      When complete we can remove additional constraints. Note the primary reason for proposed change
-                      is to create our index.
-                    */
-                    additionalConstraint = { SeedsDb.Chore.Table.id eq SeedsDb.Schedule.Table.choreId }
-                )
-            ) {
-                val x = selectAll().map {
-                    println("${it[SeedsDb.Chore.Table.id].value} ${it[SeedsDb.Chore.Table.name]} ${it[SeedsDb.Schedule.Table.workHours]} ${it[SeedsDb.Schedule.Table.id] == null} ${it[SeedsDb.Schedule.Table.id]}")
-                    val schedule = if (it[SeedsDb.Schedule.Table.id]!=null)
-                        SeedsDto.Schedule(
-                            it[SeedsDb.Schedule.Table.id].value,
-                            it[SeedsDb.Schedule.Table.choreId],
-                            it[SeedsDb.Schedule.Table.workHours],
-                            it[SeedsDb.Schedule.Table.completeBy]
-                        )
-                    else
-                        null
-                    SeedsDto.Chore(
-                        it[SeedsDb.Chore.Table.id].value,
-                        it[SeedsDb.Chore.Table.parentId],
-                        it[SeedsDb.Chore.Table.childrenIds],
-                        it[SeedsDb.Chore.Table.name],
-                        //XXX - This needs to be made to work. Currently, I am getting data. Time to think about boundaries.
-                        schedule
-                    )
-                }
-                x
-            }
-        }
-
-        fun add(attrParentId: Int, attrName: String): Int {
-            var id = -1
-            transaction {
-                id = SeedsDb.Chore.Table.insertAndGetId {
-                    it[parentId] = attrParentId
-                    it[name] = attrName
-                    it[childrenIds] = ""
-                }.value
-                val childrenIds = SeedsDb.Chore.Table.select {
-                    SeedsDb.Chore.Table.id.eq(attrParentId)
-                }.single()[SeedsDb.Chore.Table.childrenIds]
-                SeedsDb.Chore.Table.update({ SeedsDb.Chore.Table.id.eq(attrParentId) }) {
-                    it[SeedsDb.Chore.Table.childrenIds] = (childrenIds.split(",") + id.toString()).joinToString(",")
-                }
-            }
-            return id
-        }
-
-        /**
-         * Todo
-         *   the node id should then be used for our update
-         *   let's start with move then do link
-         *   display on the front end more like a graph
-         *   create a link routine something as simple as little x(es) that connect
-         *   make a priority widget something like a +/-
-         *   make a box for real description
-         *   we need a field for time estimates
-         *   move to tornadoFx
-         */
-        fun update(id: Int, parentId: Int?, name: String?) {
-
-            transaction {
-
-                //Remove node from old parent children list
-                val (oldParentId, oldName) = SeedsDb.Chore.Table
-                    .slice(SeedsDb.Chore.Table.parentId, SeedsDb.Chore.Table.name)
-                    .select {
-                        SeedsDb.Chore.Table.id.eq(id)
-                    }.single().let {
-                        it[SeedsDb.Chore.Table.parentId] then it[SeedsDb.Chore.Table.name]
-                    }
-
-                parentId?.let { newParentId ->
-                    if ((newParentId != null) and (newParentId != oldParentId)) {
-                        val oldChildrenIds = SeedsDb.Chore.Table.select {
-                            SeedsDb.Chore.Table.id.eq(oldParentId)
-                        }.single()[SeedsDb.Chore.Table.childrenIds]
-
-                        val newChildrenIds = SeedsDb.Chore.Table.select {
-                            SeedsDb.Chore.Table.id.eq(newParentId)
-                        }.single()[SeedsDb.Chore.Table.childrenIds]
-
-                        //Remove item from old list
-                        SeedsDb.Chore.Table.update({ SeedsDb.Chore.Table.id.eq(oldParentId) }) {
-                            val oldChildrenIdsRewritten = (oldChildrenIds.split(",") - id.toString()).joinToString(",")
-                            it[SeedsDb.Chore.Table.childrenIds] = oldChildrenIdsRewritten
-                        }
-
-                        SeedsDb.Chore.Table.update({ SeedsDb.Chore.Table.id.eq(newParentId) }) {
-                            it[SeedsDb.Chore.Table.childrenIds] =
-                                (newChildrenIds.split(",") + id.toString()).joinToString(",")
-                        }
-
-                        SeedsDb.Chore.Table.update({ SeedsDb.Chore.Table.id.eq(id) }) {
-                            it[SeedsDb.Chore.Table.parentId] = newParentId
-                        }
-                    }
-                }
-            }
-        }
-
-        fun delete(id: Int) {
-            transaction {
-                val parentId = SeedsDb.Chore.Table.select {
-                    SeedsDb.Chore.Table.id.eq(id)
-                }.single()[SeedsDb.Chore.Table.parentId]
-                val childrenIds = SeedsDb.Chore.Table.select {
-                    SeedsDb.Chore.Table.id.eq(parentId)
-                }.single()[SeedsDb.Chore.Table.childrenIds]
-                SeedsDb.Chore.Table.update({ SeedsDb.Chore.Table.id.eq(parentId) }) {
-                    val newChildrenId = (childrenIds.split(",") - id.toString()).joinToString(",")
-                    it[SeedsDb.Chore.Table.childrenIds] = newChildrenId
-                }
-                SeedsDb.Chore.Table.deleteWhere { SeedsDb.Chore.Table.id eq id }
-            }
-        }
+    class Dao {
+        val Chore = ChoreDao
     }
 }
