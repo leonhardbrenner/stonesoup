@@ -66,11 +66,13 @@ val manifest = Manifest {
 
         ComplexType("DetailedSeed") {
             Element("id", builtIn["int"])
+            Element("companyId", builtIn["string"])
+            Element("seedId", builtIn["string"])
             Element("name", builtIn["string"])
             Element("maturity", builtIn["string"]) {
                 minOccurs = 0
             }
-            Element("secondary_name", builtIn["string"]) {
+            Element("secondaryName", builtIn["string"]) {
                 minOccurs = 0
             }
             Element("description", builtIn["string"]) {

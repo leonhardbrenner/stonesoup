@@ -66,15 +66,20 @@ object SeedsDb {
 
   object DetailedSeed {
     fun create(source: ResultRow) = SeedsDto.DetailedSeed(source[Table.id].value,
-        source[Table.name], source[Table.maturity], source[Table.secondary_name],
-        source[Table.description], source[Table.image], source[Table.link])
+        source[Table.companyId], source[Table.seedId], source[Table.name], source[Table.maturity],
+        source[Table.secondaryName], source[Table.description], source[Table.image],
+        source[Table.link])
     fun fetchAll() = transaction { with (Table) { selectAll().map { create(it) } } }
     object Table : IntIdTable("DetailedSeed") {
+      val companyId: Column<String> = text("companyId")
+
+      val seedId: Column<String> = text("seedId")
+
       val name: Column<String> = text("name")
 
       val maturity: Column<String?> = text("maturity").nullable()
 
-      val secondary_name: Column<String?> = text("secondary_name").nullable()
+      val secondaryName: Column<String?> = text("secondaryName").nullable()
 
       val description: Column<String?> = text("description").nullable()
 
@@ -86,11 +91,15 @@ object SeedsDb {
     class Entity(
       id: EntityID<Int>
     ) : IntEntity(id) {
+      var companyId: String by Table.companyId
+
+      var seedId: String by Table.seedId
+
       var name: String by Table.name
 
       var maturity: String? by Table.maturity
 
-      var secondary_name: String? by Table.secondary_name
+      var secondaryName: String? by Table.secondaryName
 
       var description: String? by Table.description
 

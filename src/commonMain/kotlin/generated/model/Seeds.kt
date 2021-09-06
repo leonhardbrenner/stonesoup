@@ -29,11 +29,15 @@ interface Seeds {
   interface DetailedSeed {
     val id: Int
 
+    val companyId: String
+
+    val seedId: String
+
     val name: String
 
     val maturity: String?
 
-    val secondary_name: String?
+    val secondaryName: String?
 
     val description: String?
 

@@ -40,9 +40,11 @@ object SeedsDBManager {
         }
         jsonLoaders.detailedSeeds.forEach { source ->
             SeedsDb.DetailedSeed.Entity.new {
+                companyId = source.companyId
+                seedId = source.seedId
                 name = source.name
                 maturity = source.maturity
-                secondary_name = source.secondary_name
+                secondaryName = source.secondaryName
                 description = source.description
                 image = source.image
                 link = source.link

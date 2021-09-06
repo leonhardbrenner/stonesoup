@@ -37,9 +37,11 @@ interface SeedsDto {
   @Serializable
   data class DetailedSeed(
     override val id: Int,
+    override val companyId: String,
+    override val seedId: String,
     override val name: String,
     override val maturity: String?,
-    override val secondary_name: String?,
+    override val secondaryName: String?,
     override val description: String?,
     override val image: String?,
     override val link: String?
@@ -47,8 +49,9 @@ interface SeedsDto {
     companion object {
       const val path: String = "/Seeds/DetailedSeed"
 
-      fun create(source: Seeds.DetailedSeed) = SeedsDto.DetailedSeed(source.id, source.name,
-          source.maturity, source.secondary_name, source.description, source.image, source.link)}
+      fun create(source: Seeds.DetailedSeed) = SeedsDto.DetailedSeed(source.id, source.companyId,
+          source.seedId, source.name, source.maturity, source.secondaryName, source.description,
+          source.image, source.link)}
   }
 
   @Serializable

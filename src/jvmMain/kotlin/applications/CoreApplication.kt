@@ -26,8 +26,7 @@ class CoreApplication @Inject constructor(
         choreRouting.routes(routing)
         detailedSeedsRouting.routes(routing)
         seedCategoryRouting.routes(routing)
-        routesFromMySeeds(routing)
-        //mySeedsRouting.routes(routing) //Todo - fix this
+        mySeedsRouting.routes(routing)
     }
 
     //https://ktor.io/docs/routing-in-ktor.html#define_route
