@@ -2,32 +2,30 @@ package applications
 
 import applications.routing.ChoreRouting
 import applications.routing.DetailedSeedsRouting
+import applications.routing.SeedCategoryRouting
 import com.google.inject.AbstractModule
 import generated.model.SeedsDto
 import javax.inject.Inject
 import io.ktor.application.*
 import io.ktor.routing.*
-import io.ktor.http.*
 import io.ktor.response.*
 import services.SeedsService
-import services.crud.ChoreDao
-import services.crud.DetailedSeedsDao
+import services.crud.*
 
 class CoreApplication @Inject constructor(
     val dao: Dao,
     val seedsService: SeedsService,
     val choreRouting: ChoreRouting,
-    val detailedSeedsRouting: DetailedSeedsRouting
+    val detailedSeedsRouting: DetailedSeedsRouting,
+    val seedCategoryRouting: SeedCategoryRouting
     ) {
 
     fun routesFrom(routing: Routing) {
         choreRouting.routes(routing)
-        //TODO - fix this
         detailedSeedsRouting.routes(routing)
+        seedCategoryRouting.routes(routing)
         //TODO - define routing for these
         routesFromMySeeds(routing)
-        //routesFromDetailedSeed(routing)
-        routesFromSeedCategory(routing)
     }
 
     //https://ktor.io/docs/routing-in-ktor.html#define_route
@@ -36,18 +34,6 @@ class CoreApplication @Inject constructor(
         get {
             //XXX - You will need an outbound route which creates a Dto for us. This would be a good use of extensions.
             call.respond(seedsService.mySeeds)
-        }
-    }
-
-    fun routesFromDetailedSeed(routing: Routing) = routing.route(SeedsDto.DetailedSeed.path) {
-        get {
-            call.respond(seedsService.getDetailedSeeds())
-        }
-    }
-
-    fun routesFromSeedCategory(routing: Routing) = routing.route(SeedsDto.SeedCategory.path) {
-        get {
-            call.respond(seedsService.getCategories())
         }
     }
 
@@ -63,5 +49,6 @@ class CoreApplication @Inject constructor(
     class Dao {
         val Chore = ChoreDao
         val DetailedSeeds = DetailedSeedsDao
+        val SeedCategory = SeedCategoryDao
     }
 }
