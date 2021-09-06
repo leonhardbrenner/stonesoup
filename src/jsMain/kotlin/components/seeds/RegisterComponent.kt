@@ -1,5 +1,8 @@
-import DisplayComponent.ComponentStyles.inline
-import DisplayComponent.ComponentStyles.listDiv
+package components.seeds
+
+import SeedsApi
+import components.seeds.DisplayComponent.ComponentStyles.inline
+import components.seeds.DisplayComponent.ComponentStyles.listDiv
 import com.ccfraser.muirwik.components.*
 import com.ccfraser.muirwik.components.list.*
 import com.ccfraser.muirwik.components.menu.mMenuItem
@@ -42,7 +45,7 @@ class RegisterComponent : RComponent<RegisterProps, RState>() {
             mMenuItem("My Seeds", value = SeedsDto.MySeeds.path)
             mMenuItem("Available Seeds", value = SeedsDto.DetailedSeed.path)
             mMenuItem("Category", value = SeedsDto.SeedCategory.path)
-            mMenuItem("Chore", value = SeedsDto.Chore.path)
+            mMenuItem("app.seeds.Chore", value = SeedsDto.Chore.path)
         }
         when (props.type) {
             SeedsDto.MySeeds.path -> mySeeds {}
@@ -54,28 +57,28 @@ class RegisterComponent : RComponent<RegisterProps, RState>() {
 }
 
 private class MySeeds(props: DisplayProps): DisplayComponent<Resources.MySeeds>(props) {
-    override suspend fun get() = RegisterOrganizeApi.getMySeeds()
+    override suspend fun get() = SeedsApi.MySeedsApi.index()
     override fun Resources.MySeeds.label() = description //I don't think extension function is a good choice
     override fun Resources.MySeeds.transform() = "$id ${detailedSeed?.image?:"No image found"}"
 }
 fun RBuilder.mySeeds(handler: DisplayProps.() -> Unit) = child(MySeeds::class) { attrs { handler() } }
 
 private class DetailedSeed(props: DisplayProps): DisplayComponent<Seeds.DetailedSeed>(props) {
-    override suspend fun get() = RegisterOrganizeApi.getDetailedSeed()
+    override suspend fun get() = SeedsApi.DetailedSeedsApi.index()
     override fun Seeds.DetailedSeed.label() = name
     override fun Seeds.DetailedSeed.transform() = "$id $name"
 }
 fun RBuilder.detailedSeed(handler: DisplayProps.() -> Unit) = child(DetailedSeed::class) { attrs { handler() } }
 
-private class Category(props: DisplayProps): DisplayComponent<Seeds.SeedCategory>(props) {
-    override suspend fun get() = RegisterOrganizeApi.getCategory()
+private class SeedCategory(props: DisplayProps): DisplayComponent<Seeds.SeedCategory>(props) {
+    override suspend fun get() = SeedsApi.CategoryApi.index()
     override fun Seeds.SeedCategory.label() = name
     override fun Seeds.SeedCategory.transform() = "$id $name"
 }
-fun RBuilder.category(handler: DisplayProps.() -> Unit) = child(Category::class) { attrs { handler() } }
+fun RBuilder.category(handler: DisplayProps.() -> Unit) = child(SeedCategory::class) { attrs { handler() } }
 
 private class Chore(props: DisplayProps): DisplayComponent<Seeds.Chore>(props) {
-    override suspend fun get() = RegisterOrganizeApi.getChores()
+    override suspend fun get() = SeedsApi.ChoreApi.index()
     override fun Seeds.Chore.label() = name
     override fun Seeds.Chore.transform() = "$id $name"
 }

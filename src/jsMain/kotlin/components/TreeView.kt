@@ -1,5 +1,6 @@
+package components
+
 import generated.model.Seeds
-import models.Node
 
 /*
   Todo
@@ -8,8 +9,8 @@ import models.Node
     display leaf to root order
     render in material list
     add controls I mention them elsewhere
-    move TreeView out
-    maybe TreeView can provide and abstraction around our API?
+    move app.TreeView out
+    maybe app.TreeView can provide and abstraction around our API?
     Implement a walker for Infix and Postfix.
     Implement path which is just a walk back up the tree.
  */

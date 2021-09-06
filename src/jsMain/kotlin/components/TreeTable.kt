@@ -1,3 +1,5 @@
+package components
+
 import com.ccfraser.muirwik.components.*
 import com.ccfraser.muirwik.components.button.mIconButton
 import com.ccfraser.muirwik.components.table.*
@@ -5,7 +7,6 @@ import generated.model.Seeds
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlinx.css.*
-import models.Node
 import react.*
 import react.dom.br
 import styled.StyleSheet

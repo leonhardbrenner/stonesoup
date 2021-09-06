@@ -1,4 +1,5 @@
 import com.ccfraser.muirwik.components.*
+import components.seeds.*
 import generated.model.SeedsDto
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
@@ -10,10 +11,10 @@ import styled.styledDiv
 private val scope = MainScope()
 
 //val noMoreChores = listOf(
-//    Chore(0, -1, listOf(1, 3), "<root>"),
-//    Chore(1, 0, listOf(2), "A"),
-//    Chore(2, 1, emptyList(), "B"),
-//    Chore(3, 0, emptyList(), "C")
+//    app.seeds.Chore(0, -1, listOf(1, 3), "<root>"),
+//    app.seeds.Chore(1, 0, listOf(2), "A"),
+//    app.seeds.Chore(2, 1, emptyList(), "B"),
+//    app.seeds.Chore(3, 0, emptyList(), "C")
 //)
 
 enum class Label(val text: String) {
@@ -39,7 +40,7 @@ class App : RComponent<RProps, AppState>() {
 
     override fun AppState.init() {
         scope.launch {
-            val prioritizedChores = PlanPrioritizeApi.get()
+            val prioritizedChores = SeedsApi.ChoreApi.index()
             setState {
                 tabValue = Label.Organize.text
                 chores = prioritizedChores
@@ -60,7 +61,7 @@ class App : RComponent<RProps, AppState>() {
                     mTabs(state.tabValue,
                         onChange = { _, value -> setState { tabValue = value as String } }
                     ) {
-                        //Todo - register, organize, prioritize
+                        //Todo - app.seeds.register, app.seeds.organize, app.seeds.prioritize
                         mTab(Label.Register.text, Label.Register.text)
                         mTab(Label.Organize.text, Label.Organize.text)
                         mTab(Label.Plan.text, Label.Plan.text) //This can be personal or community
@@ -91,8 +92,8 @@ class App : RComponent<RProps, AppState>() {
                             chores = state.chores
                             deleteChore = { id ->
                                 scope.launch {
-                                    PlanPrioritizeApi.delete(id)
-                                    val prioritizedChores = PlanPrioritizeApi.get()
+                                    SeedsApi.ChoreApi.destroy(id)
+                                    val prioritizedChores = SeedsApi.ChoreApi.index()
                                     setState {
                                         chores = prioritizedChores
                                         selected = null //TODO - Yuck this is spaghetti. This is because in order to delete we once selected.
@@ -108,8 +109,8 @@ class App : RComponent<RProps, AppState>() {
                                             selected = null
                                         else {
                                             MainScope().launch {
-                                                PlanPrioritizeApi.move(selected!!, id)
-                                                val prioritizedChores = PlanPrioritizeApi.get()
+                                                SeedsApi.ChoreApi.update(selected!!, parentId = id, name = null)
+                                                val prioritizedChores = SeedsApi.ChoreApi.index()
                                                 setState {
                                                     chores = prioritizedChores
                                                     selected = null
@@ -125,8 +126,8 @@ class App : RComponent<RProps, AppState>() {
                             }
                             handleInput = { input: String ->
                                 scope.launch {
-                                    PlanPrioritizeApi.add(1, input.replace("!", ""))
-                                    val prioritizedChores = PlanPrioritizeApi.get()
+                                    SeedsApi.ChoreApi.create(1, input.replace("!", ""))
+                                    val prioritizedChores = SeedsApi.ChoreApi.index()
                                     setState {
                                         chores = prioritizedChores
                                     }

@@ -1,5 +1,5 @@
-import applications.RegisterOrganizeApplication
-import applications.PlanPrioritizeApplication
+import applications.MobileApplication
+import applications.CoreApplication
 import com.authzee.kotlinguice4.getInstance
 import com.google.inject.Guice
 import io.ktor.application.*
@@ -14,10 +14,10 @@ import io.ktor.server.netty.*
 
 fun main() {
     DatabaseFactory.init()
-    val planPrioritizeApplication = Guice.createInjector(PlanPrioritizeApplication.Module)
-        .getInstance<PlanPrioritizeApplication>()
-    val registerOrganizeApplication = Guice.createInjector(RegisterOrganizeApplication.Module)
-        .getInstance<RegisterOrganizeApplication>()
+    val coreApplication = Guice.createInjector(CoreApplication.Module)
+        .getInstance<CoreApplication>()
+    val mobileApplication = Guice.createInjector(MobileApplication.Module)
+        .getInstance<MobileApplication>()
 
     val port = System.getenv("PORT")?.toInt() ?: 9090
     embeddedServer(Netty, port) {
@@ -50,8 +50,8 @@ fun main() {
                 resources("")
             }
 
-            planPrioritizeApplication.routesFrom(this)
-            registerOrganizeApplication.routesFrom(this)
+            coreApplication.routesFrom(this)
+            mobileApplication.routesFrom(this)
 
         }
     }.start(wait = true)

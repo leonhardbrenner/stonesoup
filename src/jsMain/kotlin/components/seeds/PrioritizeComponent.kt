@@ -1,3 +1,7 @@
+package components.seeds
+
+import SeedsApi
+import components.TreeTable
 import com.ccfraser.muirwik.components.*
 import com.ccfraser.muirwik.components.menu.mMenuItem
 import com.ccfraser.muirwik.components.table.*
@@ -29,13 +33,13 @@ class PrioritizeComponent : RComponent<PrioritizeProps, RState>() {
             onChange = { event, _ -> props.setThing(event.targetValue as String) }
         ) {
             attrs.inputProps = inputProps
-            mMenuItem("Chores", value = Chores.path)
+            mMenuItem("app.seeds.Chores", value = Chores.path)
         }
         when (props.thing) {
             Chores.path -> chores {
-                title = "Priorities in terms of Chores"
+                title = "Priorities in terms of app.seeds.Chores"
                 sortTemplate = { col: Chores.ColumnId, direction: MTableCellSortDirection ->
-                    "Chores ordered by $col $direction"}
+                    "app.seeds.Chores ordered by $col $direction"}
             }
         }
     }
@@ -50,7 +54,7 @@ class Chores(props: Props<ColumnId>): TreeTable<Seeds.Chore, Chores.ColumnId>(pr
         val path = Chores::class.simpleName.toString()
     }
 
-    override suspend fun get() = PlanPrioritizeApi.get()
+    override suspend fun get() = SeedsApi.ChoreApi.index()
 
     override fun Seeds.Chore.label() = name
 

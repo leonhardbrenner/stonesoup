@@ -5,7 +5,7 @@
 https://www.jetbrains.com/space/solutions/software-teams/#space-form
 
 Prioritize
-    move use items from app
+    move use items from components
 
 The purpose of this branch is to standardize on one way of doing things:
     functionalComponent => RComponent
