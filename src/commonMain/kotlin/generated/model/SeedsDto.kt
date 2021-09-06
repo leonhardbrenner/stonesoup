@@ -54,15 +54,16 @@ interface SeedsDto {
   @Serializable
   data class MySeeds(
     override val id: Int,
-    override val seed_label: String,
+    override val companyId: String,
+    override val seedId: String,
     override val description: String,
-    override val germination_test: String
+    override val germinationTest: String
   ) : Seeds.MySeeds {
     companion object {
       const val path: String = "/Seeds/MySeeds"
 
-      fun create(source: Seeds.MySeeds) = SeedsDto.MySeeds(source.id, source.seed_label,
-          source.description, source.germination_test)}
+      fun create(source: Seeds.MySeeds) = SeedsDto.MySeeds(source.id, source.companyId,
+          source.seedId, source.description, source.germinationTest)}
   }
 
   @Serializable

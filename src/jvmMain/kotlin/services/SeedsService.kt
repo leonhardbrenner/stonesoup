@@ -8,7 +8,7 @@ class SeedsService {
     val mySeeds get() = SeedsDb.MySeeds.fetchAll().map {
         Resources.MySeeds(
             it,
-            detailedSeedMap[it.seed_label.split(":").last().split(".").first()]
+            detailedSeedMap[it.seedId]
         )
     }
 

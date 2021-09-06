@@ -104,24 +104,29 @@ object SeedsDb {
 
   object MySeeds {
     fun create(source: ResultRow) = SeedsDto.MySeeds(source[Table.id].value,
-        source[Table.seed_label], source[Table.description], source[Table.germination_test])
+        source[Table.companyId], source[Table.seedId], source[Table.description],
+        source[Table.germinationTest])
     fun fetchAll() = transaction { with (Table) { selectAll().map { create(it) } } }
     object Table : IntIdTable("MySeeds") {
-      val seed_label: Column<String> = text("seed_label")
+      val companyId: Column<String> = text("companyId")
+
+      val seedId: Column<String> = text("seedId")
 
       val description: Column<String> = text("description")
 
-      val germination_test: Column<String> = text("germination_test")
+      val germinationTest: Column<String> = text("germinationTest")
     }
 
     class Entity(
       id: EntityID<Int>
     ) : IntEntity(id) {
-      var seed_label: String by Table.seed_label
+      var companyId: String by Table.companyId
+
+      var seedId: String by Table.seedId
 
       var description: String by Table.description
 
-      var germination_test: String by Table.germination_test
+      var germinationTest: String by Table.germinationTest
 
       companion object : IntEntityClass<Entity>(Table)
     }

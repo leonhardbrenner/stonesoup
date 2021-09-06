@@ -15,7 +15,7 @@ class AvailableSeedsOrganizer(props: Props<ColumnId>): Table<Resources.MySeeds, 
 
     override fun Resources.MySeeds.label() = description
 
-    enum class ColumnId { Description, Id, SeedLabel, Name, Germination, Maturity }
+    enum class ColumnId { Description, Id, CompanyId, SeedId, Name, Germination, Maturity }
 
     override var orderByColumn: ColumnId = ColumnId.Description
 
@@ -25,18 +25,20 @@ class AvailableSeedsOrganizer(props: Props<ColumnId>): Table<Resources.MySeeds, 
         }
         mTableCell(align = MTableCellAlign.left, padding = MTableCellPadding.none) { +source.description }
         mTableCell(align = MTableCellAlign.right) { +source.id.toString() }
-        mTableCell(align = MTableCellAlign.right) { +source.seed_label }
+        mTableCell(align = MTableCellAlign.right) { +source.seedId }
+        mTableCell(align = MTableCellAlign.right) { +source.companyId }
         mTableCell(align = MTableCellAlign.right) { +(source.detailedSeed?.name ?: "") }
-        mTableCell(align = MTableCellAlign.right) { +source.germination_test }
+        mTableCell(align = MTableCellAlign.right) { +source.germinationTest }
         mTableCell(align = MTableCellAlign.right) { +(source.detailedSeed?.maturity ?: "") }
     }
 
     override fun ColumnId.comparator(a: Resources.MySeeds, b: Resources.MySeeds) = when (this) {
         ColumnId.Description -> (a.description).compareTo(b.description)
         ColumnId.Id -> a.id.compareTo(b.id)
-        ColumnId.SeedLabel -> (a.seed_label).compareTo(b.seed_label)
+        ColumnId.SeedId -> (a.seedId).compareTo(b.seedId)
+        ColumnId.CompanyId -> (a.companyId).compareTo(b.companyId)
         ColumnId.Name -> (a.detailedSeed?.name ?: "").compareTo(b.detailedSeed?.name ?: "")
-        ColumnId.Germination -> a.germination_test.compareTo(b.germination_test)
+        ColumnId.Germination -> a.germinationTest.compareTo(b.germinationTest)
         ColumnId.Maturity -> (a.detailedSeed?.maturity ?: "").compareTo(b.detailedSeed?.maturity ?: "")
     }
 
@@ -45,7 +47,8 @@ class AvailableSeedsOrganizer(props: Props<ColumnId>): Table<Resources.MySeeds, 
     override val columnData = listOf(
         ColumnData(ColumnId.Description, false, true, "Description"),
         ColumnData(ColumnId.Id, true, false, "Id"),
-        ColumnData(ColumnId.SeedLabel, true, false, "Label"),
+        ColumnData(ColumnId.CompanyId, true, false, "CompanyId"),
+        ColumnData(ColumnId.SeedId, true, false, "SeedId"),
         ColumnData(ColumnId.Name, true, false, "Name"),
         ColumnData(ColumnId.Germination, true, false, "Germination"),
         ColumnData(ColumnId.Maturity, true, false, "Maturity")

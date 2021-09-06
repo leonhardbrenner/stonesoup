@@ -45,11 +45,13 @@ interface Seeds {
   interface MySeeds {
     val id: Int
 
-    val seed_label: String
+    val companyId: String
+
+    val seedId: String
 
     val description: String
 
-    val germination_test: String
+    val germinationTest: String
   }
 
   interface SeedCategory {

@@ -87,9 +87,10 @@ val manifest = Manifest {
         ComplexType("MySeeds") {
             Element("id", builtIn["int"])
             //Todo - Split labelCompany and labelSeed then dao with something like DetailedSeeds.
-            Element("seed_label", builtIn["string"])
+            Element("companyId", builtIn["string"])
+            Element("seedId", builtIn["string"])
             Element("description", builtIn["string"])
-            Element("germination_test", builtIn["string"])
+            Element("germinationTest", builtIn["string"])
         }
 
         ComplexType("SeedCategory") {

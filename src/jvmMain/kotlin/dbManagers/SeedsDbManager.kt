@@ -32,9 +32,10 @@ object SeedsDBManager {
         val jsonLoaders = SeedsJsonLoaders(kMapper)
         jsonLoaders.mySeeds.forEach { source ->
             SeedsDb.MySeeds.Entity.new {
-                seed_label = source.seed_label
+                companyId = source.companyId
+                seedId = source.seedId
                 description = source.description
-                germination_test = source.germination_test
+                germinationTest = source.germinationTest
             }
         }
         jsonLoaders.detailedSeeds.forEach { source ->

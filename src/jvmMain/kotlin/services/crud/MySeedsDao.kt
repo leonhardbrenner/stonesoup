@@ -38,17 +38,18 @@ object MySeedsDao {
     //}
 
     fun create(
-        attrSeedLabel: String,
+        attrCompanyId: String,
+        attrSeedId: String,
         attrDescription: String,
         attrGerminationTest: String
-
     ): Int {
         var id = -1
         transaction {
             id = SeedsDb.Chore.Table.insertAndGetId {
-                it[SeedsDb.MySeeds.Table.seed_label] = attrSeedLabel
+                it[SeedsDb.MySeeds.Table.companyId] = attrCompanyId
+                it[SeedsDb.MySeeds.Table.seedId] = attrSeedId
                 it[SeedsDb.MySeeds.Table.description] = attrDescription
-                it[SeedsDb.MySeeds.Table.germination_test] = attrGerminationTest
+                it[SeedsDb.MySeeds.Table.germinationTest] = attrGerminationTest
             }.value
         }
         return id
@@ -67,15 +68,17 @@ object MySeedsDao {
      */
     fun update(
         id: Int,
-        attrSeedLabel: String,
+        attrCompanyId: String,
+        attrSeedId: String,
         attrDescription: String,
         attrGerminationTest: String
     ) {
        transaction {
             SeedsDb.Chore.Table.update({ SeedsDb.Chore.Table.id.eq(id) }) {
-                it[SeedsDb.MySeeds.Table.seed_label] = attrSeedLabel
+                it[SeedsDb.MySeeds.Table.companyId] = attrCompanyId
+                it[SeedsDb.MySeeds.Table.seedId] = attrSeedId
                 it[SeedsDb.MySeeds.Table.description] = attrDescription
-                it[SeedsDb.MySeeds.Table.germination_test] = attrGerminationTest
+                it[SeedsDb.MySeeds.Table.germinationTest] = attrGerminationTest
             }
         }
     }
