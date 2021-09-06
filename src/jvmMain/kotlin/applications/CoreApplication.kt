@@ -2,6 +2,7 @@ package applications
 
 import applications.routing.ChoreRouting
 import applications.routing.DetailedSeedsRouting
+import applications.routing.MySeedsRouting
 import applications.routing.SeedCategoryRouting
 import com.google.inject.AbstractModule
 import generated.model.SeedsDto
@@ -17,15 +18,16 @@ class CoreApplication @Inject constructor(
     val seedsService: SeedsService,
     val choreRouting: ChoreRouting,
     val detailedSeedsRouting: DetailedSeedsRouting,
-    val seedCategoryRouting: SeedCategoryRouting
+    val seedCategoryRouting: SeedCategoryRouting,
+    val mySeedsRouting: MySeedsRouting
     ) {
 
     fun routesFrom(routing: Routing) {
         choreRouting.routes(routing)
         detailedSeedsRouting.routes(routing)
         seedCategoryRouting.routes(routing)
-        //TODO - define routing for these
         routesFromMySeeds(routing)
+        //mySeedsRouting.routes(routing) //Todo - fix this
     }
 
     //https://ktor.io/docs/routing-in-ktor.html#define_route
@@ -50,5 +52,6 @@ class CoreApplication @Inject constructor(
         val Chore = ChoreDao
         val DetailedSeeds = DetailedSeedsDao
         val SeedCategory = SeedCategoryDao
+        val MySeeds = MySeedsDao
     }
 }
