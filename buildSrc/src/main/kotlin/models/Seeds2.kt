@@ -46,9 +46,9 @@ val manifest = Manifest {
             Element("completeBy", builtIn["string"]) {
                 minOccurs = 0
             }
-            Link("chore", seeds.complexTypes["Chore"]!!, JoinType.LEFT) { //Todo => ).left {
-                //Todo - id == Schedule.choreId
-            }
+            //Link("chore", seeds.complexTypes["Chore"]!!, JoinType.LEFT) { //Todo => ).left {
+            //    //Todo - id == Schedule.choreId
+            //}
         }
 
         ComplexType("Chore", isTable = true) { //Todo - once isTable flag is implemented replicate on other types
