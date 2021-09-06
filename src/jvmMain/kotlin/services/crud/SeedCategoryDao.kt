@@ -8,20 +8,16 @@ import utils.then
 
 object SeedCategoryDao {
 
-    fun index() = //transaction {
-        SeedsDb.SeedCategory.fetchAll()
-    //SeedsDb.SeedCategory.Table.selectAll().map {
-    //    SeedsDto.SeedCategory(
-    //        it[SeedsDb.SeedCategory.Table.id].value,
-    //        it[SeedsDb.SeedCategory.Table.name],
-    //        it[SeedsDb.SeedCategory.Table.maturity],
-    //        it[SeedsDb.SeedCategory.Table.secondary_name],
-    //        it[SeedsDb.SeedCategory.Table.description],
-    //        it[SeedsDb.SeedCategory.Table.image],
-    //        it[SeedsDb.SeedCategory.Table.link]
-    //    )
-    //}
-    //}
+    fun index() = transaction {
+        SeedsDb.SeedCategory.Table.selectAll().map {
+            SeedsDto.SeedCategory(
+                it[SeedsDb.SeedCategory.Table.id].value,
+                it[SeedsDb.SeedCategory.Table.name],
+                it[SeedsDb.SeedCategory.Table.image],
+                it[SeedsDb.SeedCategory.Table.link]
+            )
+        }
+    }
 
     fun create(attrName: String,
                attrImage: String,

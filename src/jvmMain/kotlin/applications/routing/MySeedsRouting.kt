@@ -14,9 +14,7 @@ class MySeedsRouting @Inject constructor(val dao: CoreApplication.Dao) {
     fun routes(routing: Routing) = routing.route(SeedsDto.MySeeds.path) {
 
         get {
-            //call.respond(collection.find().toList())
-            call.respond(SeedsDb.MySeeds.fetchAll())
-            //call.respond(dao.MySeedsy.index())
+            call.respond(dao.MySeeds.index())
         }
 
         //get("/new") {

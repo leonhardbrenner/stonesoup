@@ -13,7 +13,6 @@ class ChoreRouting @Inject constructor(val dao: CoreApplication.Dao) {
     fun routes(routing: Routing) = routing.route(SeedsDto.Chore.path) {
 
         get {
-            //call.respond(collection.find().toList())
             call.respond(dao.Chore.index())
         }
 
