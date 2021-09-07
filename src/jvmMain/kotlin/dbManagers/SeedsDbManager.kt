@@ -6,6 +6,8 @@ import generated.model.db.SeedsDb
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 import jsonLoaders.SeedsJsonLoaders
+import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.insertAndGetId
 import java.io.File
 
 fun resource(path: String) = File(ClassLoader.getSystemResource(path).file)
@@ -31,41 +33,28 @@ object SeedsDBManager {
     fun populate() = transaction {
         val jsonLoaders = SeedsJsonLoaders(kMapper)
         jsonLoaders.mySeeds.forEach { source ->
-            SeedsDb.MySeeds.Entity.new {
-                seed_label = source.seed_label
-                description = source.description
-                germination_test = source.germination_test
+            SeedsDb.MySeeds.Table.insertAndGetId {
+                SeedsDb.MySeeds.insert(it, source)
             }
         }
         jsonLoaders.detailedSeeds.forEach { source ->
-            SeedsDb.DetailedSeed.Entity.new {
-                name = source.name
-                maturity = source.maturity
-                secondary_name = source.secondary_name
-                description = source.description
-                image = source.image
-                link = source.link
+            SeedsDb.DetailedSeed.Table.insertAndGetId {
+                SeedsDb.DetailedSeed.insert(it, source)
             }
         }
         jsonLoaders.categories.forEach { source ->
-            SeedsDb.SeedCategory.Entity.new {
-                name = source.name
-                image = source.image
-                link = source.link
+            SeedsDb.SeedCategory.Table.insertAndGetId {
+                SeedsDb.SeedCategory.insert(it, source)
             }
         }
         jsonLoaders.chores.forEach { source ->
-            SeedsDb.Chore.Entity.new {
-                parentId = source.parentId
-                childrenIds = source.childrenIds
-                name = source.name
+            SeedsDb.Chore.Table.insertAndGetId {
+                SeedsDb.Chore.insert(it, source)
             }
         }
         jsonLoaders.schedules.forEach { source ->
-            SeedsDb.Schedule.Entity.new {
-                choreId = source.choreId
-                workHours = source.workHours
-                completeBy = source.completeBy
+            SeedsDb.Schedule.Table.insertAndGetId {
+                SeedsDb.Schedule.insert(it, source)
             }
         }
     }

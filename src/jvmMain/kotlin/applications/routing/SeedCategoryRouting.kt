@@ -13,9 +13,7 @@ class SeedCategoryRouting @Inject constructor(val dao: CoreApplication.Dao) {
     fun routes(routing: Routing) = routing.route(SeedsDto.SeedCategory.path) {
 
         get {
-            //call.respond(collection.find().toList())
-            call.respond(SeedsDb.SeedCategory.fetchAll())
-            //call.respond(dao.SeedCategoryy.index())
+            call.respond(dao.SeedCategory.index())
         }
 
         //get("/new") {
@@ -28,7 +26,9 @@ class SeedCategoryRouting @Inject constructor(val dao: CoreApplication.Dao) {
             val name = call.parameters["name"] ?: return@post call.respond(HttpStatusCode.BadRequest)
             val image = call.parameters["image"] ?: return@post call.respond(HttpStatusCode.BadRequest)
             val link = call.parameters["link"] ?: return@post call.respond(HttpStatusCode.BadRequest)
-            dao.SeedCategory.create(name, image, link)
+            dao.SeedCategory.create(
+                SeedsDto.SeedCategory(-1, name, image, link)
+            )
             call.respond(HttpStatusCode.OK)
         }
 
@@ -45,7 +45,9 @@ class SeedCategoryRouting @Inject constructor(val dao: CoreApplication.Dao) {
             val name = call.parameters["name"] ?: return@put call.respond(HttpStatusCode.BadRequest)
             val image = call.parameters["image"] ?: return@put call.respond(HttpStatusCode.BadRequest)
             val link = call.parameters["link"] ?: return@put call.respond(HttpStatusCode.BadRequest)
-            dao.SeedCategory.update(id, name, image, link)
+            dao.SeedCategory.update(
+                SeedsDto.SeedCategory(id, name, image, link)
+            )
             call.respond(HttpStatusCode.OK)
         }
 

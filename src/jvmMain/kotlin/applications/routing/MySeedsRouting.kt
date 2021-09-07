@@ -3,6 +3,7 @@ package applications.routing
 import applications.CoreApplication
 import generated.model.SeedsDto
 import generated.model.db.SeedsDb
+import generated.model.db.SeedsDb.MySeeds.Table.companyId
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.response.*
@@ -13,9 +14,7 @@ class MySeedsRouting @Inject constructor(val dao: CoreApplication.Dao) {
     fun routes(routing: Routing) = routing.route(SeedsDto.MySeeds.path) {
 
         get {
-            //call.respond(collection.find().toList())
-            call.respond(SeedsDb.MySeeds.fetchAll())
-            //call.respond(dao.MySeedsy.index())
+            call.respond(dao.MySeeds.index())
         }
 
         //get("/new") {
@@ -25,10 +24,13 @@ class MySeedsRouting @Inject constructor(val dao: CoreApplication.Dao) {
         //}
 
         post {
-            val secondary_name = call.parameters["secondary_name"] ?: return@post call.respond(HttpStatusCode.BadRequest)
+            val companyId = call.parameters["companyId"] ?: return@post call.respond(HttpStatusCode.BadRequest)
+            val seedId = call.parameters["seedId"] ?: return@post call.respond(HttpStatusCode.BadRequest)
             val description = call.parameters["description"] ?: return@post call.respond(HttpStatusCode.BadRequest)
-            val germination_test = call.parameters["germination_test"] ?: return@post call.respond(HttpStatusCode.BadRequest)
-            dao.MySeeds.create(secondary_name, description, germination_test)
+            val germinationTest = call.parameters["germinationTest"] ?: return@post call.respond(HttpStatusCode.BadRequest)
+            dao.MySeeds.create(
+                SeedsDto.MySeeds(-1, companyId, seedId, description, germinationTest)
+            )
             call.respond(HttpStatusCode.OK)
         }
 
@@ -42,10 +44,13 @@ class MySeedsRouting @Inject constructor(val dao: CoreApplication.Dao) {
 
         put("/{id}") {
             val id = call.parameters["id"]?.toInt() ?: return@put call.respond(HttpStatusCode.BadRequest)
-            val secondary_name = call.parameters["secondary_name"] ?: return@put call.respond(HttpStatusCode.BadRequest)
+            val companyId = call.parameters["companyId"] ?: return@put call.respond(HttpStatusCode.BadRequest)
+            val seedId = call.parameters["seedId"] ?: return@put call.respond(HttpStatusCode.BadRequest)
             val description = call.parameters["description"] ?: return@put call.respond(HttpStatusCode.BadRequest)
-            val germination_test = call.parameters["germination_test"] ?: return@put call.respond(HttpStatusCode.BadRequest)
-            dao.MySeeds.update(id, secondary_name, description, germination_test)
+            val germinationTest = call.parameters["germinationTest"] ?: return@put call.respond(HttpStatusCode.BadRequest)
+            dao.MySeeds.update(
+                SeedsDto.MySeeds(id, companyId, seedId, description, germinationTest)
+            )
             call.respond(HttpStatusCode.OK)
         }
 

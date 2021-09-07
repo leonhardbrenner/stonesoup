@@ -29,11 +29,15 @@ interface Seeds {
   interface DetailedSeed {
     val id: Int
 
+    val companyId: String
+
+    val seedId: String
+
     val name: String
 
     val maturity: String?
 
-    val secondary_name: String?
+    val secondaryName: String?
 
     val description: String?
 
@@ -45,11 +49,13 @@ interface Seeds {
   interface MySeeds {
     val id: Int
 
-    val seed_label: String
+    val companyId: String
+
+    val seedId: String
 
     val description: String
 
-    val germination_test: String
+    val germinationTest: String
   }
 
   interface SeedCategory {

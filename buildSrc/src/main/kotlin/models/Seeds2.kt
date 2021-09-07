@@ -2,6 +2,7 @@ package models
 
 import schema.*
 
+//Todo - Clean up names.
 val manifest = Manifest {
 
     val builtIn = Namespace("BuiltIn") {
@@ -65,11 +66,13 @@ val manifest = Manifest {
 
         ComplexType("DetailedSeed") {
             Element("id", builtIn["int"])
+            Element("companyId", builtIn["string"])
+            Element("seedId", builtIn["string"])
             Element("name", builtIn["string"])
             Element("maturity", builtIn["string"]) {
                 minOccurs = 0
             }
-            Element("secondary_name", builtIn["string"]) {
+            Element("secondaryName", builtIn["string"]) {
                 minOccurs = 0
             }
             Element("description", builtIn["string"]) {
@@ -85,9 +88,11 @@ val manifest = Manifest {
 
         ComplexType("MySeeds") {
             Element("id", builtIn["int"])
-            Element("seed_label", builtIn["string"])
+            //Todo - Split labelCompany and labelSeed then dao with something like DetailedSeeds.
+            Element("companyId", builtIn["string"])
+            Element("seedId", builtIn["string"])
             Element("description", builtIn["string"])
-            Element("germination_test", builtIn["string"])
+            Element("germinationTest", builtIn["string"])
         }
 
         ComplexType("SeedCategory") {

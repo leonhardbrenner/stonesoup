@@ -34,18 +34,22 @@ interface SeedsBuilder {
 
   class DetailedSeed(
     var id: Int?,
+    var companyId: String?,
+    var seedId: String?,
     var name: String?,
     var maturity: String?,
-    var secondary_name: String?,
+    var secondaryName: String?,
     var description: String?,
     var image: String?,
     var link: String?
   ) {
     fun build(): Seeds.DetailedSeed = SeedsDto.DetailedSeed(
     id ?: throw IllegalArgumentException("id is not nullable"),
+    companyId ?: throw IllegalArgumentException("companyId is not nullable"),
+    seedId ?: throw IllegalArgumentException("seedId is not nullable"),
     name ?: throw IllegalArgumentException("name is not nullable"),
     maturity,
-    secondary_name,
+    secondaryName,
     description,
     image,
     link
@@ -53,15 +57,17 @@ interface SeedsBuilder {
 
   class MySeeds(
     var id: Int?,
-    var seed_label: String?,
+    var companyId: String?,
+    var seedId: String?,
     var description: String?,
-    var germination_test: String?
+    var germinationTest: String?
   ) {
     fun build(): Seeds.MySeeds = SeedsDto.MySeeds(
     id ?: throw IllegalArgumentException("id is not nullable"),
-    seed_label ?: throw IllegalArgumentException("seed_label is not nullable"),
+    companyId ?: throw IllegalArgumentException("companyId is not nullable"),
+    seedId ?: throw IllegalArgumentException("seedId is not nullable"),
     description ?: throw IllegalArgumentException("description is not nullable"),
-    germination_test ?: throw IllegalArgumentException("germination_test is not nullable")
+    germinationTest ?: throw IllegalArgumentException("germinationTest is not nullable")
     )}
 
   class SeedCategory(

@@ -13,7 +13,6 @@ class ChoreRouting @Inject constructor(val dao: CoreApplication.Dao) {
     fun routes(routing: Routing) = routing.route(SeedsDto.Chore.path) {
 
         get {
-            //call.respond(collection.find().toList())
             call.respond(dao.Chore.index())
         }
 
@@ -25,8 +24,11 @@ class ChoreRouting @Inject constructor(val dao: CoreApplication.Dao) {
 
         post {
             val parentId = call.parameters["parentId"]?.toInt() ?: return@post call.respond(HttpStatusCode.BadRequest)
-            val name = call.parameters["name"] ?: return@post call.respond(HttpStatusCode.BadRequest)
-            dao.Chore.create(parentId, name)
+            val name = call.parameters["name"]?: return@post call.respond(HttpStatusCode.BadRequest)
+            //Todo - let's send a Chore to begin with.
+            dao.Chore.create(
+                SeedsDto.Chore(-1, parentId, "", name, null)
+            )
             call.respond(HttpStatusCode.OK)
         }
 
@@ -45,7 +47,7 @@ class ChoreRouting @Inject constructor(val dao: CoreApplication.Dao) {
         put("/{id}") {
             val id = call.parameters["id"]?.toInt() ?: return@put call.respond(HttpStatusCode.BadRequest)
             val parentId = call.parameters["parentId"]?.toInt() ?: return@put call.respond(HttpStatusCode.BadRequest)
-            val name = call.parameters["name"]// ?: return@put call.respond(HttpStatusCode.BadRequest)
+            val name = call.parameters["name"]
             dao.Chore.update(id, parentId, name)
             call.respond(HttpStatusCode.OK)
         }

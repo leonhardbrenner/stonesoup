@@ -1,11 +1,25 @@
 package services.crud
 
+import generated.model.Seeds
 import generated.model.SeedsDto
 import generated.model.db.SeedsDb
+import models.Resources
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import utils.then
 
+/*
+ Todo - generate the unique foreign key in SeedsDb.kt. It should look something like this:
+    object Table : IntIdTable("Schedule") {
+      val choreId: Column<Int> = integer("choreId")
+        .uniqueIndex()
+        .references(Chore.Table.id)
+      val workHours: Column<String?> = text("workHours").nullable()
+      val completeBy: Column<String?> = text("completeBy").nullable()
+    }
+  When complete we can remove additional constraints. Note the primary reason for proposed change
+  is to create our index.
+*/
 object ChoreDao {
 
     fun index() = transaction {
@@ -15,57 +29,33 @@ object ChoreDao {
             SeedsDb.Chore.Table.join(
                 SeedsDb.Schedule.Table,
                 JoinType.LEFT,
-                /*
-                 Todo - generate the unique foreign key in SeedsDb.kt. It should look something like this:
-                    object Table : IntIdTable("Schedule") {
-                      val choreId: Column<Int> = integer("choreId")
-                        .uniqueIndex()
-                        .references(Chore.Table.id)
-                      val workHours: Column<String?> = text("workHours").nullable()
-                      val completeBy: Column<String?> = text("completeBy").nullable()
-                    }
-                  When complete we can remove additional constraints. Note the primary reason for proposed change
-                  is to create our index.
-                */
-                additionalConstraint = { SeedsDb.Chore.Table.id eq SeedsDb.Schedule.Table.choreId }
+                additionalConstraint = {
+                    SeedsDb.Chore.Table.id eq SeedsDb.Schedule.Table.choreId
+                }
             )
         ) {
-            val x = selectAll().map {
-                println("${it[SeedsDb.Chore.Table.id].value} ${it[SeedsDb.Chore.Table.name]} ${it[SeedsDb.Schedule.Table.workHours]} ${it[SeedsDb.Schedule.Table.id] == null} ${it[SeedsDb.Schedule.Table.id]}")
+            selectAll().map {
                 val schedule = if (it[SeedsDb.Schedule.Table.id]!=null)
-                    SeedsDto.Schedule(
-                        it[SeedsDb.Schedule.Table.id].value,
-                        it[SeedsDb.Schedule.Table.choreId],
-                        it[SeedsDb.Schedule.Table.workHours],
-                        it[SeedsDb.Schedule.Table.completeBy]
-                    )
+                    SeedsDb.Schedule.create(it)
                 else
                     null
-                SeedsDto.Chore(
-                    it[SeedsDb.Chore.Table.id].value,
-                    it[SeedsDb.Chore.Table.parentId],
-                    it[SeedsDb.Chore.Table.childrenIds],
-                    it[SeedsDb.Chore.Table.name],
-                    //XXX - This needs to be made to work. Currently, I am getting data. Time to think about boundaries.
-                    schedule
-                )
+                SeedsDb.Chore.create(it).copy(schedule = schedule)
             }
-            x
         }
     }
 
-    fun create(attrParentId: Int, attrName: String): Int {
+    fun create(
+        source: Seeds.Chore
+    ): Int {
         var id = -1
         transaction {
             id = SeedsDb.Chore.Table.insertAndGetId {
-                it[parentId] = attrParentId
-                it[name] = attrName
-                it[childrenIds] = ""
+                SeedsDb.Chore.insert(it, source)
             }.value
             val childrenIds = SeedsDb.Chore.Table.select {
-                SeedsDb.Chore.Table.id.eq(attrParentId)
+                SeedsDb.Chore.Table.id.eq(source.parentId)
             }.single()[SeedsDb.Chore.Table.childrenIds]
-            SeedsDb.Chore.Table.update({ SeedsDb.Chore.Table.id.eq(attrParentId) }) {
+            SeedsDb.Chore.Table.update({ SeedsDb.Chore.Table.id.eq(source.parentId) }) {
                 it[SeedsDb.Chore.Table.childrenIds] = (childrenIds.split(",") + id.toString()).joinToString(",")
             }
         }
