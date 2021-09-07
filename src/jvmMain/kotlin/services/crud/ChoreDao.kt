@@ -7,6 +7,18 @@ import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import utils.then
 
+/*
+ Todo - generate the unique foreign key in SeedsDb.kt. It should look something like this:
+    object Table : IntIdTable("Schedule") {
+      val choreId: Column<Int> = integer("choreId")
+        .uniqueIndex()
+        .references(Chore.Table.id)
+      val workHours: Column<String?> = text("workHours").nullable()
+      val completeBy: Column<String?> = text("completeBy").nullable()
+    }
+  When complete we can remove additional constraints. Note the primary reason for proposed change
+  is to create our index.
+*/
 object ChoreDao {
 
     fun index() = transaction {
@@ -16,19 +28,9 @@ object ChoreDao {
             SeedsDb.Chore.Table.join(
                 SeedsDb.Schedule.Table,
                 JoinType.LEFT,
-                /*
-                 Todo - generate the unique foreign key in SeedsDb.kt. It should look something like this:
-                    object Table : IntIdTable("Schedule") {
-                      val choreId: Column<Int> = integer("choreId")
-                        .uniqueIndex()
-                        .references(Chore.Table.id)
-                      val workHours: Column<String?> = text("workHours").nullable()
-                      val completeBy: Column<String?> = text("completeBy").nullable()
-                    }
-                  When complete we can remove additional constraints. Note the primary reason for proposed change
-                  is to create our index.
-                */
-                additionalConstraint = { SeedsDb.Chore.Table.id eq SeedsDb.Schedule.Table.choreId }
+                additionalConstraint = {
+                    SeedsDb.Chore.Table.id eq SeedsDb.Schedule.Table.choreId
+                }
             )
         ) {
             val x = selectAll().map {
