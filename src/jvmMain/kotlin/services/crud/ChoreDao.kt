@@ -54,18 +54,22 @@ object ChoreDao {
         }
     }
 
-    fun create(attrParentId: Int, attrName: String): Int {
+    fun create(
+        parentId: Int,
+        name: String,
+        childrenIds: String = ""
+    ): Int {
         var id = -1
         transaction {
             id = SeedsDb.Chore.Table.insertAndGetId {
-                it[parentId] = attrParentId
-                it[name] = attrName
-                it[childrenIds] = ""
+                it[SeedsDb.Chore.Table.parentId] = parentId
+                it[SeedsDb.Chore.Table.name] = name
+                it[SeedsDb.Chore.Table.childrenIds] = childrenIds
             }.value
             val childrenIds = SeedsDb.Chore.Table.select {
-                SeedsDb.Chore.Table.id.eq(attrParentId)
+                SeedsDb.Chore.Table.id.eq(parentId)
             }.single()[SeedsDb.Chore.Table.childrenIds]
-            SeedsDb.Chore.Table.update({ SeedsDb.Chore.Table.id.eq(attrParentId) }) {
+            SeedsDb.Chore.Table.update({ SeedsDb.Chore.Table.id.eq(parentId) }) {
                 it[SeedsDb.Chore.Table.childrenIds] = (childrenIds.split(",") + id.toString()).joinToString(",")
             }
         }
