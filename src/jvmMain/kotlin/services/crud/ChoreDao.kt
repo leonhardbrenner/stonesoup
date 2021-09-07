@@ -2,6 +2,7 @@ package services.crud
 
 import generated.model.SeedsDto
 import generated.model.db.SeedsDb
+import models.Resources
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import utils.then
@@ -33,22 +34,10 @@ object ChoreDao {
             val x = selectAll().map {
                 println("${it[SeedsDb.Chore.Table.id].value} ${it[SeedsDb.Chore.Table.name]} ${it[SeedsDb.Schedule.Table.workHours]} ${it[SeedsDb.Schedule.Table.id] == null} ${it[SeedsDb.Schedule.Table.id]}")
                 val schedule = if (it[SeedsDb.Schedule.Table.id]!=null)
-                    SeedsDto.Schedule(
-                        it[SeedsDb.Schedule.Table.id].value,
-                        it[SeedsDb.Schedule.Table.choreId],
-                        it[SeedsDb.Schedule.Table.workHours],
-                        it[SeedsDb.Schedule.Table.completeBy]
-                    )
+                    SeedsDb.Schedule.create(it)
                 else
                     null
-                SeedsDto.Chore(
-                    it[SeedsDb.Chore.Table.id].value,
-                    it[SeedsDb.Chore.Table.parentId],
-                    it[SeedsDb.Chore.Table.childrenIds],
-                    it[SeedsDb.Chore.Table.name],
-                    //XXX - This needs to be made to work. Currently, I am getting data. Time to think about boundaries.
-                    schedule
-                )
+                SeedsDb.Chore.create(it).copy(schedule = schedule)
             }
             x
         }

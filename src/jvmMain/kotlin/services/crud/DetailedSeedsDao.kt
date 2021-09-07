@@ -9,17 +9,7 @@ object DetailedSeedsDao {
 
     fun index() = transaction {
         SeedsDb.DetailedSeed.Table.selectAll().map {
-            SeedsDto.DetailedSeed(
-                it[SeedsDb.DetailedSeed.Table.id].value,
-                it[SeedsDb.DetailedSeed.Table.companyId],
-                it[SeedsDb.DetailedSeed.Table.seedId],
-                it[SeedsDb.DetailedSeed.Table.name],
-                it[SeedsDb.DetailedSeed.Table.maturity],
-                it[SeedsDb.DetailedSeed.Table.secondaryName],
-                it[SeedsDb.DetailedSeed.Table.description],
-                it[SeedsDb.DetailedSeed.Table.image],
-                it[SeedsDb.DetailedSeed.Table.link]
-            )
+            SeedsDb.DetailedSeed.create(it)
         }
     }
 

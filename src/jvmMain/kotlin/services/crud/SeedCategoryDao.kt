@@ -10,12 +10,7 @@ object SeedCategoryDao {
 
     fun index() = transaction {
         SeedsDb.SeedCategory.Table.selectAll().map {
-            SeedsDto.SeedCategory(
-                it[SeedsDb.SeedCategory.Table.id].value,
-                it[SeedsDb.SeedCategory.Table.name],
-                it[SeedsDb.SeedCategory.Table.image],
-                it[SeedsDb.SeedCategory.Table.link]
-            )
+            SeedsDb.SeedCategory.create(it)
         }
     }
 

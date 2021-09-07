@@ -23,27 +23,11 @@ object MySeedsDao {
         ) {
             val x = selectAll().map {
                 val schedule = if (it[SeedsDb.DetailedSeed.Table.id] != null)
-                    SeedsDto.DetailedSeed(
-                        it[SeedsDb.DetailedSeed.Table.id].value,
-                        it[SeedsDb.DetailedSeed.Table.companyId],
-                        it[SeedsDb.DetailedSeed.Table.seedId],
-                        it[SeedsDb.DetailedSeed.Table.name],
-                        it[SeedsDb.DetailedSeed.Table.maturity],
-                        it[SeedsDb.DetailedSeed.Table.secondaryName],
-                        it[SeedsDb.DetailedSeed.Table.description],
-                        it[SeedsDb.DetailedSeed.Table.image],
-                        it[SeedsDb.DetailedSeed.Table.link],
-                    )
+                    SeedsDb.DetailedSeed.create(it)
                 else
                     null
                 Resources.MySeeds(
-                    SeedsDto.MySeeds(
-                        it[SeedsDb.MySeeds.Table.id].value,
-                        it[SeedsDb.MySeeds.Table.companyId],
-                        it[SeedsDb.MySeeds.Table.seedId],
-                        it[SeedsDb.MySeeds.Table.description],
-                        it[SeedsDb.MySeeds.Table.germinationTest]
-                    ),
+                    SeedsDb.MySeeds.create(it),
                     //XXX - This needs to be made to work. Currently, I am getting data. Time to think about boundaries.
                     schedule
                 )
