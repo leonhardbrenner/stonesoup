@@ -22,6 +22,18 @@ object SeedsDb {
       source[Table.workHours], source[Table.completeBy]
     )
 
+    fun insert(it: InsertStatement<EntityID<Int>>, source: Seeds.Schedule) = with (source) {
+      it[Table.choreId] = choreId
+      it[Table.workHours] = workHours
+      it[Table.completeBy] = completeBy
+    }
+
+    fun update(it: UpdateStatement, source: Seeds.Schedule) = with (source) {
+      it[Table.choreId] = choreId
+      it[Table.workHours] = workHours
+      it[Table.completeBy] = completeBy
+    }
+
     fun fetchAll() = transaction { with(Table) { selectAll().map { create(it) } } }
 
     object Table : IntIdTable("Schedule") {
@@ -50,6 +62,18 @@ object SeedsDb {
       source[Table.id].value, source[Table.parentId],
       source[Table.childrenIds], source[Table.name], null
     )
+
+    fun insert(it: InsertStatement<EntityID<Int>>, source: Seeds.Chore) = with (source) {
+      it[Table.parentId] = parentId
+      it[Table.childrenIds] = childrenIds
+      it[Table.name] = name
+    }
+
+    fun update(it: UpdateStatement, source: Seeds.Chore) = with (source) {
+      it[Table.parentId] = parentId
+      it[Table.childrenIds] = childrenIds
+      it[Table.name] = name
+    }
 
     fun fetchAll() = transaction { with(Table) { selectAll().map { create(it) } } }
 
@@ -84,15 +108,8 @@ object SeedsDb {
 
     fun insert(
       it: InsertStatement<EntityID<Int>>,
-      companyId: String,
-      seedId: String,
-      name: String,
-      maturity: String,
-      secondaryName: String,
-      description: String,
-      image: String,
-      link: String
-    ) {
+      source: Seeds.DetailedSeed
+    ) = with (source) {
       it[Table.companyId] = companyId
       it[Table.seedId] = seedId
       it[Table.name] = name
@@ -105,15 +122,8 @@ object SeedsDb {
 
     fun update(
       it: UpdateStatement,
-      companyId: String,
-      seedId: String,
-      name: String,
-      maturity: String?,
-      secondaryName: String?,
-      description: String?,
-      image: String?,
-      link: String?
-    ) {
+      source: Seeds.DetailedSeed
+    ) = with (source) {
       it[Table.companyId] = companyId
       it[Table.seedId] = seedId
       it[Table.name] = name
@@ -174,6 +184,20 @@ object SeedsDb {
       source[Table.germinationTest]
     )
 
+    fun insert(it: InsertStatement<EntityID<Int>>, source: Seeds.MySeeds) = with (source) {
+      it[Table.companyId] = companyId
+      it[Table.seedId] = seedId
+      it[Table.description] = description
+      it[Table.germinationTest] = germinationTest
+    }
+
+    fun update(it: UpdateStatement, source: Seeds.MySeeds) = with (source) {
+      it[Table.companyId] = companyId
+      it[Table.seedId] = seedId
+      it[Table.description] = description
+      it[Table.germinationTest] = germinationTest
+    }
+
     fun fetchAll() = transaction { with(Table) { selectAll().map { create(it) } } }
 
     object Table : IntIdTable("MySeeds") {
@@ -206,6 +230,18 @@ object SeedsDb {
       source[Table.id].value,
       source[Table.name], source[Table.image], source[Table.link]
     )
+
+    fun insert(it: InsertStatement<EntityID<Int>>, source: Seeds.SeedCategory) = with (source) {
+      it[Table.name] = name
+      it[Table.image] = image
+      it[Table.link] = link
+    }
+
+    fun update(it: UpdateStatement, source: Seeds.SeedCategory) = with (source) {
+      it[Table.name] = name
+      it[Table.image] = image
+      it[Table.link] = link
+    }
 
     fun fetchAll() = transaction { with(Table) { selectAll().map { create(it) } } }
 

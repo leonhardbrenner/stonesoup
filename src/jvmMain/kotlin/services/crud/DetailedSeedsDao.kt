@@ -1,5 +1,7 @@
 package services.crud
 
+import generated.model.Seeds
+import generated.model.SeedsDto
 import generated.model.db.SeedsDb
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -12,39 +14,20 @@ object DetailedSeedsDao {
         }
     }
 
-    fun create(companyId: String,
-               seedId: String,
-               name: String,
-               maturity: String,
-               secondaryName: String,
-               description: String,
-               image: String,
-               link: String
-
-    ): Int {
+    fun create(source: Seeds.DetailedSeed): Int {
         var id = -1
         transaction {
-            id = SeedsDb.Chore.Table.insertAndGetId {
-                SeedsDb.DetailedSeed.insert(
-                    it, companyId, seedId, name, maturity, secondaryName, description, image, link)
+            id = SeedsDb.DetailedSeed.Table.insertAndGetId {
+                SeedsDb.DetailedSeed.insert(it, source)
             }.value
         }
         return id
     }
 
-    fun update(id: Int, companyId: String,
-               seedId: String,
-               name: String,
-               maturity: String?,
-               secondaryName: String?,
-               description: String?,
-               image: String?,
-               link: String?) {
-
+    fun update(id: Int, source: Seeds.DetailedSeed) {
         transaction {
             SeedsDb.Chore.Table.update({ SeedsDb.Chore.Table.id.eq(id) }) {
-                SeedsDb.DetailedSeed.update(
-                    it, companyId, seedId, name, maturity, secondaryName, description, image, link)
+                SeedsDb.DetailedSeed.update(it, source)
             }
         }
     }

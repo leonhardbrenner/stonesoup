@@ -31,7 +31,8 @@ class DetailedSeedsRouting @Inject constructor(val dao: CoreApplication.Dao) {
             val description = call.parameters["description"] ?: return@post call.respond(HttpStatusCode.BadRequest)
             val image = call.parameters["image"] ?: return@post call.respond(HttpStatusCode.BadRequest)
             val link = call.parameters["link"] ?: return@post call.respond(HttpStatusCode.BadRequest)
-            dao.DetailedSeeds.create(companyId, seedId, name, maturity, secondaryName, description, image, link)
+            dao.DetailedSeeds.create(
+                SeedsDto.DetailedSeed(-1, companyId, seedId, name, maturity, secondaryName, description, image, link))
             call.respond(HttpStatusCode.OK)
         }
 
@@ -53,7 +54,8 @@ class DetailedSeedsRouting @Inject constructor(val dao: CoreApplication.Dao) {
             val description = call.parameters["description"] ?: return@put call.respond(HttpStatusCode.BadRequest)
             val image = call.parameters["image"] ?: return@put call.respond(HttpStatusCode.BadRequest)
             val link = call.parameters["link"] ?: return@put call.respond(HttpStatusCode.BadRequest)
-            dao.DetailedSeeds.update(id, companyId, seedId, name, maturity, secondaryName, description, image, link)
+            dao.DetailedSeeds.update(id,
+                SeedsDto.DetailedSeed(id, companyId, seedId, name, maturity, secondaryName, description, image, link))
             call.respond(HttpStatusCode.OK)
         }
 
