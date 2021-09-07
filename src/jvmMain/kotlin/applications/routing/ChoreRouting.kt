@@ -44,7 +44,7 @@ class ChoreRouting @Inject constructor(val dao: CoreApplication.Dao) {
         put("/{id}") {
             val id = call.parameters["id"]?.toInt() ?: return@put call.respond(HttpStatusCode.BadRequest)
             val parentId = call.parameters["parentId"]?.toInt() ?: return@put call.respond(HttpStatusCode.BadRequest)
-            val name = call.parameters["name"] ?: return@put call.respond(HttpStatusCode.BadRequest)
+            val name = call.parameters["name"]
             dao.Chore.update(id, parentId, name)
             call.respond(HttpStatusCode.OK)
         }
