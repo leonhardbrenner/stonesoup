@@ -1,6 +1,5 @@
 package services.crud
 
-import generated.model.SeedsDto
 import generated.model.db.SeedsDb
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -26,14 +25,8 @@ object DetailedSeedsDao {
         var id = -1
         transaction {
             id = SeedsDb.Chore.Table.insertAndGetId {
-                it[SeedsDb.DetailedSeed.Table.companyId] = companyId
-                it[SeedsDb.DetailedSeed.Table.seedId] = seedId
-                it[SeedsDb.DetailedSeed.Table.name] = name
-                it[SeedsDb.DetailedSeed.Table.maturity] = maturity
-                it[SeedsDb.DetailedSeed.Table.secondaryName] = secondaryName
-                it[SeedsDb.DetailedSeed.Table.description] = description
-                it[SeedsDb.DetailedSeed.Table.image] = image
-                it[SeedsDb.DetailedSeed.Table.link] = link
+                SeedsDb.DetailedSeed.insert(
+                    it, companyId, seedId, name, maturity, secondaryName, description, image, link)
             }.value
         }
         return id
@@ -43,21 +36,15 @@ object DetailedSeedsDao {
                seedId: String,
                name: String,
                maturity: String?,
-               secondary_name: String?,
+               secondaryName: String?,
                description: String?,
                image: String?,
                link: String?) {
 
         transaction {
             SeedsDb.Chore.Table.update({ SeedsDb.Chore.Table.id.eq(id) }) {
-                it[SeedsDb.DetailedSeed.Table.companyId] = companyId
-                it[SeedsDb.DetailedSeed.Table.seedId] = seedId
-                it[SeedsDb.DetailedSeed.Table.name] = name
-                it[SeedsDb.DetailedSeed.Table.maturity] = maturity
-                it[SeedsDb.DetailedSeed.Table.secondaryName] = secondary_name
-                it[SeedsDb.DetailedSeed.Table.description] = description
-                it[SeedsDb.DetailedSeed.Table.image] = image
-                it[SeedsDb.DetailedSeed.Table.link] = link
+                SeedsDb.DetailedSeed.update(
+                    it, companyId, seedId, name, maturity, secondaryName, description, image, link)
             }
         }
     }

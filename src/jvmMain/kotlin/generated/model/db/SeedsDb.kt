@@ -11,13 +11,19 @@ import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.statements.InsertStatement
+import org.jetbrains.exposed.sql.statements.UpdateStatement
 import org.jetbrains.exposed.sql.transactions.transaction
 
 object SeedsDb {
   object Schedule {
-    fun create(source: ResultRow) = SeedsDto.Schedule(source[Table.id].value, source[Table.choreId],
-        source[Table.workHours], source[Table.completeBy])
-    fun fetchAll() = transaction { with (Table) { selectAll().map { create(it) } } }
+    fun create(source: ResultRow) = SeedsDto.Schedule(
+      source[Table.id].value, source[Table.choreId],
+      source[Table.workHours], source[Table.completeBy]
+    )
+
+    fun fetchAll() = transaction { with(Table) { selectAll().map { create(it) } } }
+
     object Table : IntIdTable("Schedule") {
       val choreId: Column<Int> = integer("choreId")
 
@@ -40,9 +46,13 @@ object SeedsDb {
   }
 
   object Chore {
-    fun create(source: ResultRow) = SeedsDto.Chore(source[Table.id].value, source[Table.parentId],
-        source[Table.childrenIds], source[Table.name], null)
-    fun fetchAll() = transaction { with (Table) { selectAll().map { create(it) } } }
+    fun create(source: ResultRow) = SeedsDto.Chore(
+      source[Table.id].value, source[Table.parentId],
+      source[Table.childrenIds], source[Table.name], null
+    )
+
+    fun fetchAll() = transaction { with(Table) { selectAll().map { create(it) } } }
+
     object Table : IntIdTable("Chore") {
       val parentId: Column<Int> = integer("parentId")
 
@@ -65,11 +75,57 @@ object SeedsDb {
   }
 
   object DetailedSeed {
-    fun create(source: ResultRow) = SeedsDto.DetailedSeed(source[Table.id].value,
-        source[Table.companyId], source[Table.seedId], source[Table.name], source[Table.maturity],
-        source[Table.secondaryName], source[Table.description], source[Table.image],
-        source[Table.link])
-    fun fetchAll() = transaction { with (Table) { selectAll().map { create(it) } } }
+    fun create(source: ResultRow) = SeedsDto.DetailedSeed(
+      source[Table.id].value,
+      source[Table.companyId], source[Table.seedId], source[Table.name], source[Table.maturity],
+      source[Table.secondaryName], source[Table.description], source[Table.image],
+      source[Table.link]
+    )
+
+    fun insert(
+      it: InsertStatement<EntityID<Int>>,
+      companyId: String,
+      seedId: String,
+      name: String,
+      maturity: String,
+      secondaryName: String,
+      description: String,
+      image: String,
+      link: String
+    ) {
+      it[Table.companyId] = companyId
+      it[Table.seedId] = seedId
+      it[Table.name] = name
+      it[Table.maturity] = maturity
+      it[Table.secondaryName] = secondaryName
+      it[Table.description] = description
+      it[Table.image] = image
+      it[Table.link] = link
+    }
+
+    fun update(
+      it: UpdateStatement,
+      companyId: String,
+      seedId: String,
+      name: String,
+      maturity: String?,
+      secondaryName: String?,
+      description: String?,
+      image: String?,
+      link: String?
+    ) {
+      it[Table.companyId] = companyId
+      it[Table.seedId] = seedId
+      it[Table.name] = name
+      it[Table.maturity] = maturity
+      it[Table.secondaryName] = secondaryName
+      it[Table.description] = description
+      it[Table.image] = image
+      it[Table.link] = link
+    }
+
+    fun fetchAll() = transaction { with(Table) { selectAll().map { create(it) } } }
+
     object Table : IntIdTable("DetailedSeed") {
       val companyId: Column<String> = text("companyId")
 
@@ -112,10 +168,14 @@ object SeedsDb {
   }
 
   object MySeeds {
-    fun create(source: ResultRow) = SeedsDto.MySeeds(source[Table.id].value,
-        source[Table.companyId], source[Table.seedId], source[Table.description],
-        source[Table.germinationTest])
-    fun fetchAll() = transaction { with (Table) { selectAll().map { create(it) } } }
+    fun create(source: ResultRow) = SeedsDto.MySeeds(
+      source[Table.id].value,
+      source[Table.companyId], source[Table.seedId], source[Table.description],
+      source[Table.germinationTest]
+    )
+
+    fun fetchAll() = transaction { with(Table) { selectAll().map { create(it) } } }
+
     object Table : IntIdTable("MySeeds") {
       val companyId: Column<String> = text("companyId")
 
@@ -142,9 +202,13 @@ object SeedsDb {
   }
 
   object SeedCategory {
-    fun create(source: ResultRow) = SeedsDto.SeedCategory(source[Table.id].value,
-        source[Table.name], source[Table.image], source[Table.link])
-    fun fetchAll() = transaction { with (Table) { selectAll().map { create(it) } } }
+    fun create(source: ResultRow) = SeedsDto.SeedCategory(
+      source[Table.id].value,
+      source[Table.name], source[Table.image], source[Table.link]
+    )
+
+    fun fetchAll() = transaction { with(Table) { selectAll().map { create(it) } } }
+
     object Table : IntIdTable("SeedCategory") {
       val name: Column<String> = text("name")
 
