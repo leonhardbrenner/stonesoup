@@ -14,27 +14,20 @@ object DetailedSeedsDao {
         }
     }
 
-    fun create(source: Seeds.DetailedSeed): Int {
-        var id = -1
-        transaction {
-            id = SeedsDb.DetailedSeed.Table.insertAndGetId {
-                SeedsDb.DetailedSeed.insert(it, source)
-            }.value
-        }
-        return id
+    fun create(source: Seeds.DetailedSeed): Int = transaction {
+        SeedsDb.DetailedSeed.Table.insertAndGetId {
+            SeedsDb.DetailedSeed.insert(it, source)
+        }.value
     }
 
-    fun update(id: Int, source: Seeds.DetailedSeed) {
-        transaction {
-            SeedsDb.Chore.Table.update({ SeedsDb.Chore.Table.id.eq(id) }) {
-                SeedsDb.DetailedSeed.update(it, source)
-            }
+    fun update(id: Int, source: Seeds.DetailedSeed) = transaction {
+        SeedsDb.Chore.Table.update({ SeedsDb.Chore.Table.id.eq(id) }) {
+            SeedsDb.DetailedSeed.update(it, source)
         }
     }
 
-    fun destroy(id: Int) {
-        transaction {
-            SeedsDb.DetailedSeed.Table.deleteWhere { SeedsDb.Chore.Table.id eq id }
-        }
+    fun destroy(id: Int) = transaction {
+        SeedsDb.DetailedSeed.Table.deleteWhere { SeedsDb.Chore.Table.id eq id }
     }
+
 }

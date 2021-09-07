@@ -180,7 +180,9 @@ object SeedsDb {
   object MySeeds {
     fun create(source: ResultRow) = SeedsDto.MySeeds(
       source[Table.id].value,
-      source[Table.companyId], source[Table.seedId], source[Table.description],
+      source[Table.companyId],
+      source[Table.seedId],
+      source[Table.description],
       source[Table.germinationTest]
     )
 

@@ -28,7 +28,9 @@ class MySeedsRouting @Inject constructor(val dao: CoreApplication.Dao) {
             val seedId = call.parameters["seedId"] ?: return@post call.respond(HttpStatusCode.BadRequest)
             val description = call.parameters["description"] ?: return@post call.respond(HttpStatusCode.BadRequest)
             val germinationTest = call.parameters["germinationTest"] ?: return@post call.respond(HttpStatusCode.BadRequest)
-            dao.MySeeds.create(companyId, seedId, description, germinationTest)
+            dao.MySeeds.create(
+                SeedsDto.MySeeds(-1, companyId, seedId, description, germinationTest)
+            )
             call.respond(HttpStatusCode.OK)
         }
 
@@ -46,7 +48,9 @@ class MySeedsRouting @Inject constructor(val dao: CoreApplication.Dao) {
             val seedId = call.parameters["seedId"] ?: return@put call.respond(HttpStatusCode.BadRequest)
             val description = call.parameters["description"] ?: return@put call.respond(HttpStatusCode.BadRequest)
             val germinationTest = call.parameters["germinationTest"] ?: return@put call.respond(HttpStatusCode.BadRequest)
-            dao.MySeeds.update(id, companyId, seedId, description, germinationTest)
+            dao.MySeeds.update(
+                SeedsDto.MySeeds(id, companyId, seedId, description, germinationTest)
+            )
             call.respond(HttpStatusCode.OK)
         }
 

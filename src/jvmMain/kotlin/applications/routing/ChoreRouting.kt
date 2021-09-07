@@ -25,7 +25,10 @@ class ChoreRouting @Inject constructor(val dao: CoreApplication.Dao) {
         post {
             val parentId = call.parameters["parentId"]?.toInt() ?: return@post call.respond(HttpStatusCode.BadRequest)
             val name = call.parameters["name"]?: return@post call.respond(HttpStatusCode.BadRequest)
-            dao.Chore.create(parentId, name)
+            //Todo - let's send a Chore to begin with.
+            dao.Chore.create(
+                SeedsDto.Chore(-1, parentId, "", name, null)
+            )
             call.respond(HttpStatusCode.OK)
         }
 

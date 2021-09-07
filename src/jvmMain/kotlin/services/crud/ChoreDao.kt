@@ -1,5 +1,6 @@
 package services.crud
 
+import generated.model.Seeds
 import generated.model.SeedsDto
 import generated.model.db.SeedsDb
 import models.Resources
@@ -33,34 +34,28 @@ object ChoreDao {
                 }
             )
         ) {
-            val x = selectAll().map {
-                println("${it[SeedsDb.Chore.Table.id].value} ${it[SeedsDb.Chore.Table.name]} ${it[SeedsDb.Schedule.Table.workHours]} ${it[SeedsDb.Schedule.Table.id] == null} ${it[SeedsDb.Schedule.Table.id]}")
+            selectAll().map {
                 val schedule = if (it[SeedsDb.Schedule.Table.id]!=null)
                     SeedsDb.Schedule.create(it)
                 else
                     null
                 SeedsDb.Chore.create(it).copy(schedule = schedule)
             }
-            x
         }
     }
 
     fun create(
-        parentId: Int,
-        name: String,
-        childrenIds: String = ""
+        source: Seeds.Chore
     ): Int {
         var id = -1
         transaction {
             id = SeedsDb.Chore.Table.insertAndGetId {
-                it[SeedsDb.Chore.Table.parentId] = parentId
-                it[SeedsDb.Chore.Table.name] = name
-                it[SeedsDb.Chore.Table.childrenIds] = childrenIds
+                SeedsDb.Chore.insert(it, source)
             }.value
             val childrenIds = SeedsDb.Chore.Table.select {
-                SeedsDb.Chore.Table.id.eq(parentId)
+                SeedsDb.Chore.Table.id.eq(source.parentId)
             }.single()[SeedsDb.Chore.Table.childrenIds]
-            SeedsDb.Chore.Table.update({ SeedsDb.Chore.Table.id.eq(parentId) }) {
+            SeedsDb.Chore.Table.update({ SeedsDb.Chore.Table.id.eq(source.parentId) }) {
                 it[SeedsDb.Chore.Table.childrenIds] = (childrenIds.split(",") + id.toString()).joinToString(",")
             }
         }

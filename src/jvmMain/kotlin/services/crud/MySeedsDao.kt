@@ -1,5 +1,6 @@
 package services.crud
 
+import generated.model.Seeds
 import generated.model.SeedsDto
 import generated.model.db.SeedsDb
 import models.Resources
@@ -28,7 +29,6 @@ object MySeedsDao {
                     null
                 Resources.MySeeds(
                     SeedsDb.MySeeds.create(it),
-                    //XXX - This needs to be made to work. Currently, I am getting data. Time to think about boundaries.
                     schedule
                 )
             }
@@ -36,44 +36,19 @@ object MySeedsDao {
         }
     }
 
-    fun create(
-        companyId: String,
-        seedId: String,
-        description: String,
-        germinationTest: String
-    ): Int {
-        var id = -1
-        transaction {
-            id = SeedsDb.Chore.Table.insertAndGetId {
-                it[SeedsDb.MySeeds.Table.companyId] = companyId
-                it[SeedsDb.MySeeds.Table.seedId] = seedId
-                it[SeedsDb.MySeeds.Table.description] = description
-                it[SeedsDb.MySeeds.Table.germinationTest] = germinationTest
-            }.value
-        }
-        return id
+    fun create(source: Seeds.MySeeds): Int = transaction {
+        SeedsDb.Chore.Table.insertAndGetId {
+            SeedsDb.MySeeds.insert(it, source)
+        }.value
     }
 
-    fun update(
-        id: Int,
-        companyId: String,
-        seedId: String,
-        description: String,
-        germinationTest: String
-    ) {
-       transaction {
-            SeedsDb.Chore.Table.update({ SeedsDb.Chore.Table.id.eq(id) }) {
-                it[SeedsDb.MySeeds.Table.companyId] = companyId
-                it[SeedsDb.MySeeds.Table.seedId] = seedId
-                it[SeedsDb.MySeeds.Table.description] = description
-                it[SeedsDb.MySeeds.Table.germinationTest] = germinationTest
-            }
+    fun update(source: Seeds.MySeeds) = transaction {
+        SeedsDb.Chore.Table.update({ SeedsDb.Chore.Table.id.eq(source.id) }) {
+            SeedsDb.MySeeds.update(it, source)
         }
     }
 
-    fun destroy(id: Int) {
-        transaction {
-            SeedsDb.MySeeds.Table.deleteWhere { SeedsDb.Chore.Table.id eq id }
-        }
+    fun destroy(id: Int) = transaction {
+        SeedsDb.MySeeds.Table.deleteWhere { SeedsDb.Chore.Table.id eq id }
     }
 }
