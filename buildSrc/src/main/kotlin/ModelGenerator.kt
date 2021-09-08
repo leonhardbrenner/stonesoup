@@ -1,11 +1,14 @@
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
-import generators.BuilderGenerator
-import generators.DbGenerator
-import generators.DtoGenerator
 import generators.InterfaceGenerator
-import models.manifest
+import generators.DtoGenerator
+import generators.DbGenerator
+import generators.BuilderGenerator
+import models.*
 
+import schema.Manifest.Namespace
+
+//Todo - move back to this
 open class ModelGenerator : DefaultTask() {
 
     init {
@@ -15,8 +18,20 @@ open class ModelGenerator : DefaultTask() {
 
     @TaskAction
     fun generate() {
-        //TODO - manifest.namespaces.values.forEach { namespace ->
-        listOf(manifest.namespaces["Seeds"]!!).forEach { namespace ->
+        //val flat = Namespace(Flat::class)
+        //InterfaceGeneratorOld.generate(flat)
+        //DtoGeneratorOld.generate(flat)
+        //BuilderGeneratorOld.generate(flat)
+        //DbGeneratorOld.generate(flat)
+        //CsvLoaderGeneratorOld.generate(flat)
+        //
+        //val fancy = Namespace(Fancy::class)
+        //InterfaceGeneratorOld.generate(fancy)
+        //DtoGeneratorOld.generate(fancy)
+        //XXX - BuilderGenerator.generate(fancy)
+
+        val seeds = Namespace(Seeds::class)
+        listOf(seeds).forEach { namespace ->
             InterfaceGenerator.generate(namespace)
             DtoGenerator.generate(namespace)
             DbGenerator.generate(namespace)
