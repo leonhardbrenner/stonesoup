@@ -17,20 +17,20 @@ object DbGenerator: Generator {
             .addImport("generated.model", "${namespace.name}Dto")
             .addType(
                 TypeSpec.objectBuilder("${namespace.name}Db").apply {
-                    namespace.complexTypes.values.forEach { complexType ->
+                    namespace.types.forEach { complexType ->
                         addType(
                             TypeSpec.objectBuilder(complexType.name)
-                                .addType(complexType.table)
-                                .addType(complexType.entity)
-                                .addFunction(complexType.create)
+                            .addType(complexType.table)
+                            .addType(complexType.entity)
+                            .addFunction(complexType.create)
                                 .addFunction(complexType.insert)
                                 .addFunction(complexType.update)
-                                .addFunction(
-                                    FunSpec.builder("fetchAll")
-                                        .addCode(
-                                            "return transaction { with (Table) { selectAll().map { create(it) } } }"
-                                        ).build()
-                                ).build()
+                            .addFunction(
+                                FunSpec.builder("fetchAll")
+                                    .addCode(
+                                        "return transaction { with (Table) { selectAll().map { create(it) } } }"
+                                    ).build()
+                            ).build()
                         )
                     }
                 }.build()
@@ -39,17 +39,17 @@ object DbGenerator: Generator {
         file.writeTo(writer)
     }
 
-    val Manifest.Namespace.ComplexType.Element.propertySpec
-        get() = PropertySpec.builder(
+    val Manifest.Namespace.Element.propertySpec
+        get() = com.squareup.kotlinpoet.PropertySpec.builder(
             name,
             ClassName("org.jetbrains.exposed.sql", "Column")
-                .parameterizedBy(type.typeName.copy(nullable=nullable))
+                .parameterizedBy(type.typeName)
         )
             .apply {
                 type.name
             }
             .initializer("${
-                when (type.typeName.toString()) {
+                when (type.kType.toString()) {
                     "kotlin.String" -> "text"
                     "kotlin.Int" -> "integer"
                     "kotlin.Double" -> "double"
@@ -57,34 +57,30 @@ object DbGenerator: Generator {
                     "kotlin.Boolean" -> "bool"
                     else -> "text"
                 }
-            }(\"${dbName}\")${if (nullable) ".nullable()" else ""}")
+            }(\"${dbName}\")${if (type.nullable) ".nullable()" else ""}")
             .build()
 
-    val Manifest.Namespace.ComplexType.table
-        get() = TypeSpec.objectBuilder("Table")
+    val Manifest.Namespace.Type.table
+        get() = com.squareup.kotlinpoet.TypeSpec.objectBuilder("Table")
             .superclass(ClassName("org.jetbrains.exposed.dao.id", "IntIdTable"))
             .addSuperclassConstructorParameter("%S", name)
             .apply {
-                elements.values.forEach { element ->
+                elements.forEach { element ->
                     if (element.name != "id")
                         addProperty(element.propertySpec) //XXX - bring me back.
                 }
             }.build()
 
-    //Todo - move towards marshall and unmarshall for names.
-    val Manifest.Namespace.ComplexType.create
-        get() = FunSpec.builder("create")
+    val Manifest.Namespace.Type.create
+        get() = com.squareup.kotlinpoet.FunSpec.builder("create")
             .addParameter("source", ClassName("org.jetbrains.exposed.sql", "ResultRow"))
 
             .addCode("return %LDto.%L(%L)",
-                packageName, name,
-                (elements.values.map { "source[Table.${it.name}]${if (it.name == "id") ".value" else ""}" }
-                        + links.values.map { "null"})
-                    .joinToString(", "))
+                packageName, name, elements.map { "source[Table.${it.name}]${if (it.name == "id") ".value" else ""}" }.joinToString(", "))
             .build()
 
     //Todo - finish this and update.
-    val Manifest.Namespace.ComplexType.insert
+    val Manifest.Namespace.Type.insert
         get() = FunSpec.builder("insert")
             .addParameter("it",
                 ClassName("org.jetbrains.exposed.sql.statements",
@@ -92,36 +88,31 @@ object DbGenerator: Generator {
                     .parameterizedBy(
                         ClassName("org.jetbrains.exposed.dao.id", "EntityID")
                             .parameterizedBy(kotlin.Int::class.asTypeName())
-                )
+                    )
             ) //Todo - <EntityID<Int>>
             .addParameter("source", ClassName("generated.model", dotPath()))
             .apply {
-                elements.values.map {
+                elements.map {
                     if (it.name != "id")
                         addStatement("it[Table.${it.name}] = source.${it.name}")
                 }
             }
             .build()
 
-    val Manifest.Namespace.ComplexType.update
+    val Manifest.Namespace.Type.update
         get() = FunSpec.builder("update")
             .addParameter("it", ClassName("org.jetbrains.exposed.sql.statements", "UpdateStatement"))
             .addParameter("source", ClassName("generated.model", dotPath()))
             .apply {
-                elements.values.map {
+                elements.map {
                     if (it.name != "id")
                         addStatement("it[Table.${it.name}] = source.${it.name}")
                 }
             }
             .build()
 
-    fun Manifest.Namespace.ComplexType.Element.asPropertySpec(mutable: Boolean, vararg modifiers: KModifier) =
-        PropertySpec.builder(name, type.typeName.copy(nullable = nullable))
-            .addModifiers(modifiers.toList())
-            .mutable(mutable)
-
-    val Manifest.Namespace.ComplexType.entity
-        get() = TypeSpec.classBuilder("Entity")
+    val Manifest.Namespace.Type.entity
+        get() = com.squareup.kotlinpoet.TypeSpec.classBuilder("Entity")
             .superclass(ClassName("org.jetbrains.exposed.dao", "IntEntity"))
             .addSuperclassConstructorParameter("id")
             //TODO: Revisit this but I was clashing on column['id']. Remarkably this also deleted the override methods.
@@ -136,7 +127,7 @@ object DbGenerator: Generator {
                 }.build()
             )
             .addType(
-                TypeSpec.companionObjectBuilder()
+                com.squareup.kotlinpoet.TypeSpec.companionObjectBuilder()
                     .superclass(
                         ClassName("org.jetbrains.exposed.dao", "IntEntityClass")
                             .parameterizedBy(ClassName("", "Entity"))
@@ -156,7 +147,7 @@ object DbGenerator: Generator {
                     .build()
             )
             .apply {
-                elements.values.forEach { slot ->
+                elements.forEach { slot ->
                     if (slot.name != "id") {
                         //TODO: delete comment but currently my only reference.
                         val propertySpec = slot.asPropertySpec(true /*, com.squareup.kotlinpoet.KModifier.OVERRIDE*/)

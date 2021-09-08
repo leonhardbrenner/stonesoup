@@ -158,8 +158,8 @@ application {
     mainClassName = "ServerKt"
 }
 
-tasks.register<ModelGenerator>("generate")
-tasks.register<ModelGeneratorOld>("generateOld")
+tasks.register<ModelGeneratorDsl>("generate")
+tasks.register<ModelGenerator>("generateDsl")
 
 tasks.register<PlanPrioritize>("prioritize")
 

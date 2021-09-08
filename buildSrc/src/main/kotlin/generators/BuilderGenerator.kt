@@ -15,25 +15,17 @@ object BuilderGenerator: Generator {
         val file = FileSpec.builder("generated.model", "${namespace.name}Builder")
             .addType(
                 TypeSpec.interfaceBuilder("${namespace.name}Builder").apply {
-                    namespace.complexTypes.values.forEach { type ->
+                    namespace.types.forEach { type ->
                         val typeSpec = TypeSpec.classBuilder(type.name)
                             .primaryConstructor(
                                 FunSpec.constructorBuilder().apply {
-                                    type.elements.values.forEach { element ->
+                                    type.elements.forEach { element ->
                                         addParameter(element.name, element.type.typeName.copy(nullable = true)).build()
-                                    }
-                                    type.links.values.forEach { link ->
-                                        addParameter(
-                                            link.name,
-                                            link.type.typeName.copy(nullable = true)
-                                            //ClassName("generated.model", link.type.dotPath("Dto"))
-                                            //    .copy(nullable = true)
-                                        ).build()
                                     }
                                 }.build()
                             )
                             .apply {
-                                type.elements.values.forEach { element ->
+                                type.elements.forEach { element ->
                                     addProperty(
                                         //TODO - make extension function
                                         PropertySpec.builder(
@@ -43,26 +35,19 @@ object BuilderGenerator: Generator {
                                             .initializer(element.name).build()
                                     )
                                 }
-                                type.links.values.forEach { link ->
-                                    addProperty(
-                                        //TODO - make extension function
-                                        PropertySpec.builder(
-                                            link.name,
-                                            link.type.typeName.copy(nullable = true)
-                                        ).mutable(true)
-                                            .initializer(link.name).build()
-                                    )
-                                }
                             }
-                            .addFunction( //Make this a lambda receiver
+                            .addFunction(
                                 FunSpec.builder("build")
-                                    .returns(ClassName("generated.model", "${type.packageName}.${type.name}"))
+                                    .returns(ClassName("generated.model", "${type.namespace.name}.${type.name}"))
                                     .addCode(
                                         "return %L(\n%L\n)",
-                                        "${type.packageName}Dto.${type.name}",
-                                        (type.elements.values.map { if (it.nullable) it.name else "${it.name} ?: throw IllegalArgumentException(\"${it.name} is not nullable\")" }
-                                                + type.links.values.map { "${it.name}?.let { ${it.type.dotPath("Dto")}.create(it) }" })
-                                            .joinToString(",\n")
+                                        "${type.namespace.name}Dto.${type.name}",
+                                        type.elements.map {
+                                            if (it.type.nullable)
+                                                it.name
+                                            else
+                                                "${it.name} ?: throw IllegalArgumentException(\"${it.name} is not nullable\")"
+                                        }.joinToString(",\n")
                                     )
                                     .build()
                             )

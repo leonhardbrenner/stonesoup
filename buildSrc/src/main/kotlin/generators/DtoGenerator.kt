@@ -10,9 +10,6 @@ import com.squareup.kotlinpoet.TypeSpec
 import schema.Manifest
 import java.io.File
 
-//XXX - when you get back deal with this:
-//-  ) : Seeds.DetailedSeed {
-//+  ) : generated.model.DetailedSeed {
 object DtoGenerator: Generator {
 
     //TODO: Generate the top level elements as resources.
@@ -20,53 +17,33 @@ object DtoGenerator: Generator {
         val file = FileSpec.builder("generated.model", "${namespace.name}Dto")
             .addType(
                 TypeSpec.interfaceBuilder("${namespace.name}Dto").apply {
-                    namespace.complexTypes.values.forEach { generateComplexType(it) }
+                    namespace.types.forEach { generateType(it) }
                 }.build()
             ).build()
         val writer = File("$path/commonMain/kotlin")
         file.writeTo(writer)
     }
 
-    fun TypeSpec.Builder.generateComplexType(type: Manifest.Namespace.ComplexType): TypeSpec.Builder = addType(
+    fun TypeSpec.Builder.generateType(type: Manifest.Namespace.Type): TypeSpec.Builder = addType(
         TypeSpec.classBuilder(type.name)
             .addAnnotation(ClassName("kotlinx.serialization", "Serializable"))
             .addModifiers(KModifier.DATA)
             .addSuperinterface(type.typeName)
             .primaryConstructor(
                 FunSpec.constructorBuilder().apply {
-                    type.elements.values.forEach { element ->
-                        addParameter(element.name, element.type.typeName.copy(nullable = element.nullable))
+                    type.elements.forEach { element ->
+                        addParameter(element.name, element.type.typeName)
                             .build()
-                    }
-                    type.links.values.forEach { link ->
-                        addParameter(
-                            link.name,
-                            ClassName("generated.model", link.type.dotPath("Dto"))
-                                .copy(nullable = true)
-                        ).build()
                     }
                 }.build()
             )
             .apply {
-                type.elements.values.forEach { element ->
+                type.elements.forEach { element ->
                     addProperty(
-                        PropertySpec.builder(element.name, element.type.typeName.copy(nullable = element.nullable))
+                        PropertySpec.builder(element.name, element.type.typeName)
                             .addModifiers(listOf(KModifier.OVERRIDE))
                             .mutable(false)
                             .initializer(element.name)
-                            .build()
-                    )
-                }
-                type.links.values.forEach { link ->
-                    addProperty(
-                        PropertySpec.builder(
-                            link.name,
-                            ClassName("generated.model", link.type.dotPath("Dto"))
-                                .copy(nullable = true)
-                        )
-                            .addModifiers(listOf(KModifier.OVERRIDE))
-                            .mutable(false)
-                            .initializer(link.name)
                             .build()
                     )
                 }
@@ -86,18 +63,15 @@ object DtoGenerator: Generator {
                             .addCode(
                                 "return %T(%L)",
                                 ClassName("generated.model", type.dotPath("Dto")),
-                                (type.elements.values.map { "source.${it.name}" }
-                                        + type.links.values.map { "source.${it.name}?.let { ${it.type.dotPath("Dto")}.create(it) }" })
-                                    .joinToString(", ")
+                                type.elements.map { "source.${it.name}" }.joinToString(", ")
                             )
                             .build()
                     )
                 }.build()
             ).apply {
-                //XXX - needed for fancy types which 'add_schedule' PR introduces as an issue because we need nesting.
-                //type.types.values.forEach {
-                //    generateType(it)
-                //}
+                type.types.forEach {
+                    generateType(it)
+                }
             }.build()
     )
 }

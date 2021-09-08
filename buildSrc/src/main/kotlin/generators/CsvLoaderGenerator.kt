@@ -7,17 +7,16 @@ import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 
-import schema.ManifestOld
+import schema.Manifest
 import java.io.File
 
 /* This is will generate another Dto(data class) for what ever reason @Serializable polutes the data class with:
    seen1 and serializerConstructor:(
 */
 //TODO - try to just the DTO we may need to apply Serializable differently.
-@Deprecated("See ManifestOld for details.")
-object CsvLoaderGeneratorOld: GeneratorOld {
+object CsvLoaderGenerator: Generator {
 
-    override fun generate(namespace: ManifestOld.Namespace) {
+    override fun generate(namespace: Manifest.Namespace) {
         val file = FileSpec.builder("generated.model", "${namespace.name}CsvLoader")
             .addType(
                 TypeSpec.interfaceBuilder("${namespace.name}CsvLoader").apply {
@@ -30,7 +29,7 @@ object CsvLoaderGeneratorOld: GeneratorOld {
         file.writeTo(writer)
     }
 
-    fun TypeSpec.Builder.generateType(type: ManifestOld.Namespace.Type): TypeSpec.Builder
+    fun TypeSpec.Builder.generateType(type: Manifest.Namespace.Type): TypeSpec.Builder
     = addType(
         TypeSpec.classBuilder(type.name)
             .addModifiers(KModifier.DATA)

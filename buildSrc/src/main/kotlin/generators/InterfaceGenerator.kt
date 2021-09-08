@@ -10,7 +10,7 @@ object InterfaceGenerator: Generator {
 
     override fun generate(namespace: Manifest.Namespace) {
         val typeSpec = TypeSpec.interfaceBuilder("${namespace.name}").apply {
-            namespace.complexTypes.values.forEach { type ->
+            namespace.types.forEach { type ->
                 generateType(type)
             }
         }
@@ -21,30 +21,20 @@ object InterfaceGenerator: Generator {
         file.writeTo(writer)
     }
 
-    fun TypeSpec.Builder.generateType(type: Manifest.Namespace.ComplexType): TypeSpec.Builder
-            = addType(
+    fun TypeSpec.Builder.generateType(type: Manifest.Namespace.Type): TypeSpec.Builder
+    = addType(
         TypeSpec.interfaceBuilder(type.name).apply {
-            type.elements.values.forEach { element ->
+            type.elements.forEach { element ->
                 addProperty(
-                    //Note that I have moved toward elements defining nullability making it XMLSchema like. Reconsider.
-                    PropertySpec.builder(element.name, element.type.typeName.copy(nullable = element.nullable) )
-                        .mutable(false)
-                        .build()
-                )
-            }
-            type.links.values.forEach { link ->
-                addProperty(
-                    //Note that I have moved toward elements defining nullability making it XMLSchema like. Reconsider.
-                    PropertySpec.builder(link.name, link.type.typeName.copy(nullable = true) )
+                    PropertySpec.builder(element.name, with (element.type) { typeName.copy(nullable = nullable) })
                         .mutable(false)
                         .build()
                 )
             }
 
-            //XXX - Needed for fancy thi
-            //type.types.forEach { type ->
-            //    generateType(type)
-            //}
+            type.types.forEach { type ->
+                generateType(type)
+            }
         }.build()
     )
 }
