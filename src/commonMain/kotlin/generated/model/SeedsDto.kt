@@ -24,14 +24,13 @@ interface SeedsDto {
     override val id: Int,
     override val parentId: Int,
     override val childrenIds: String,
-    override val name: String,
-    override val schedule: SeedsDto.Schedule?
+    override val name: String
   ) : Seeds.Chore {
     companion object {
       const val path: String = "/Seeds/Chore"
 
       fun create(source: Seeds.Chore) = SeedsDto.Chore(source.id, source.parentId,
-          source.childrenIds, source.name, source.schedule?.let { SeedsDto.Schedule.create(it) })}
+          source.childrenIds, source.name)}
   }
 
   @Serializable

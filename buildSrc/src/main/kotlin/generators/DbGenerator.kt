@@ -23,6 +23,8 @@ object DbGenerator: Generator {
                                 .addType(complexType.table)
                                 .addType(complexType.entity)
                                 .addFunction(complexType.create)
+                                .addFunction(complexType.insert)
+                                .addFunction(complexType.update)
                                 .addFunction(
                                     FunSpec.builder("fetchAll")
                                         .addCode(
@@ -69,6 +71,7 @@ object DbGenerator: Generator {
                 }
             }.build()
 
+    //Todo - move towards marshall and unmarshall for names.
     val Manifest.Namespace.ComplexType.create
         get() = FunSpec.builder("create")
             .addParameter("source", ClassName("org.jetbrains.exposed.sql", "ResultRow"))
@@ -78,6 +81,38 @@ object DbGenerator: Generator {
                 (elements.values.map { "source[Table.${it.name}]${if (it.name == "id") ".value" else ""}" }
                         + links.values.map { "null"})
                     .joinToString(", "))
+            .build()
+
+    //Todo - finish this and update.
+    val Manifest.Namespace.ComplexType.insert
+        get() = FunSpec.builder("insert")
+            .addParameter("it",
+                ClassName("org.jetbrains.exposed.sql.statements",
+                    "InsertStatement")
+                    .parameterizedBy(
+                        ClassName("org.jetbrains.exposed.dao.id", "EntityID")
+                            .parameterizedBy(kotlin.Int::class.asTypeName())
+                )
+            ) //Todo - <EntityID<Int>>
+            .addParameter("source", ClassName("generated.model", dotPath()))
+            .apply {
+                elements.values.map {
+                    if (it.name != "id")
+                        addStatement("it[Table.${it.name}] = source.${it.name}")
+                }
+            }
+            .build()
+
+    val Manifest.Namespace.ComplexType.update
+        get() = FunSpec.builder("update")
+            .addParameter("it", ClassName("org.jetbrains.exposed.sql.statements", "UpdateStatement"))
+            .addParameter("source", ClassName("generated.model", dotPath()))
+            .apply {
+                elements.values.map {
+                    if (it.name != "id")
+                        addStatement("it[Table.${it.name}] = source.${it.name}")
+                }
+            }
             .build()
 
     fun Manifest.Namespace.ComplexType.Element.asPropertySpec(mutable: Boolean, vararg modifiers: KModifier) =

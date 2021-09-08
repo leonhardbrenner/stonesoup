@@ -59,9 +59,9 @@ val manifest = Manifest {
             }
             Element("childrenIds", builtIn["string"]) //Todo - make this a list of Ids
             Element("name", builtIn["string"])
-            Link("schedule", seeds.complexTypes["Schedule"]!!, JoinType.LEFT) { //Todo => ).left {
-                //Todo - id == Schedule.choreId
-            }
+            //Link("schedule", seeds.complexTypes["Schedule"]!!, JoinType.LEFT) { //Todo => ).left {
+            //    //Todo - id == Schedule.choreId
+            //}
         }
 
         ComplexType("DetailedSeed") {

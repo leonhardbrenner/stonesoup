@@ -22,8 +22,6 @@ interface Seeds {
     val childrenIds: String
 
     val name: String
-
-    val schedule: Seeds.Schedule?
   }
 
   interface DetailedSeed {

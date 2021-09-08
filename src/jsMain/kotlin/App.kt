@@ -4,6 +4,7 @@ import generated.model.SeedsDto
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlinx.css.*
+import models.Resources
 import react.*
 import styled.css
 import styled.styledDiv
@@ -30,7 +31,7 @@ external interface AppState : RState {
     var registerType: String
     var organizerThing: String
     var prioritizeThing: String
-    var chores: List<SeedsDto.Chore>
+    var chores: List<Resources.Chore>
     var selected: Int?
     var over: Int?
 }
