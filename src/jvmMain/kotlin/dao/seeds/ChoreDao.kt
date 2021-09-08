@@ -1,7 +1,6 @@
-package services.crud
+package dao.seeds
 
 import generated.model.Seeds
-import generated.model.SeedsDto
 import generated.model.db.SeedsDb
 import models.Resources
 import org.jetbrains.exposed.sql.*
@@ -35,7 +34,7 @@ object ChoreDao {
             )
         ) {
             selectAll().map {
-                val schedule = if (it[SeedsDb.Schedule.Table.id]!=null)
+                val schedule = if (it[SeedsDb.Schedule.Table.id] != null)
                     SeedsDb.Schedule.create(it)
                 else
                     null
@@ -99,11 +98,11 @@ object ChoreDao {
                     //Remove item from old list
                     SeedsDb.Chore.Table.update({ SeedsDb.Chore.Table.id.eq(oldParentId) }) {
                         val oldChildrenIdsRewritten = (oldChildrenIds.split(",") - id.toString()).joinToString(",")
-                        it[childrenIds] = oldChildrenIdsRewritten
+                        it[SeedsDb.Chore.Table.childrenIds] = oldChildrenIdsRewritten
                     }
 
                     SeedsDb.Chore.Table.update({ SeedsDb.Chore.Table.id.eq(newParentId) }) {
-                        it[childrenIds] =
+                        it[SeedsDb.Chore.Table.childrenIds] =
                             (newChildrenIds.split(",") + id.toString()).joinToString(",")
                     }
 

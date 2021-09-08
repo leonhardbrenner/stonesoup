@@ -1,7 +1,6 @@
-package services.crud
+package dao.seeds
 
 import generated.model.Seeds
-import generated.model.SeedsDto
 import generated.model.db.SeedsDb
 import models.Resources
 import org.jetbrains.exposed.sql.*

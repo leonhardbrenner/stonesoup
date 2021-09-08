@@ -5,7 +5,7 @@ import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.response.*
 import io.ktor.routing.*
-import services.SeedsDao
+import dao.SeedsDao
 import javax.inject.Inject
 
 class MySeedsRouting @Inject constructor(val dao: SeedsDao) {

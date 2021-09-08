@@ -10,7 +10,7 @@ import javax.inject.Inject
 import io.ktor.application.*
 import io.ktor.routing.*
 import io.ktor.response.*
-import services.SeedsDao
+import dao.SeedsDao
 import services.SeedsService
 
 class CoreApplication @Inject constructor(
@@ -27,15 +27,6 @@ class CoreApplication @Inject constructor(
         detailedSeedsRouting.routes(routing)
         seedCategoryRouting.routes(routing)
         mySeedsRouting.routes(routing)
-    }
-
-    //https://ktor.io/docs/routing-in-ktor.html#define_route
-    //https://medium.com/@shubhangirajagrawal/the-7-restful-routes-a8e84201f206
-    fun routesFromMySeeds(routing: Routing) = routing.route(SeedsDto.MySeeds.path) {
-        get {
-            //XXX - You will need an outbound route which creates a Dto for us. This would be a good use of extensions.
-            call.respond(seedsService.mySeeds)
-        }
     }
 
     object Module : AbstractModule() {

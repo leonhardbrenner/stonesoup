@@ -1,5 +1,6 @@
-package services
+package dao
 
+import dao.seeds.*
 import services.crud.*
 
 class SeedsDao {
