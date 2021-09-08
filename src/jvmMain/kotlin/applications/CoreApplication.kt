@@ -10,11 +10,11 @@ import javax.inject.Inject
 import io.ktor.application.*
 import io.ktor.routing.*
 import io.ktor.response.*
+import services.SeedsDao
 import services.SeedsService
-import services.crud.*
 
 class CoreApplication @Inject constructor(
-    val dao: Dao,
+    val dao: SeedsDao,
     val seedsService: SeedsService,
     val choreRouting: ChoreRouting,
     val detailedSeedsRouting: DetailedSeedsRouting,
@@ -47,11 +47,4 @@ class CoreApplication @Inject constructor(
 
     }
 
-    class Dao {
-        val Chore = ChoreDao
-        val Schedule = ScheduleDao
-        val DetailedSeeds = DetailedSeedsDao
-        val SeedCategory = SeedCategoryDao
-        val MySeeds = MySeedsDao
-    }
 }

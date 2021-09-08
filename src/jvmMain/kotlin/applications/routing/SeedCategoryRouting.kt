@@ -1,15 +1,14 @@
 package applications.routing
 
-import applications.CoreApplication
 import generated.model.SeedsDto
-import generated.model.db.SeedsDb
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.response.*
 import io.ktor.routing.*
+import services.SeedsDao
 import javax.inject.Inject
 
-class SeedCategoryRouting @Inject constructor(val dao: CoreApplication.Dao) {
+class SeedCategoryRouting @Inject constructor(val dao: SeedsDao) {
     fun routes(routing: Routing) = routing.route(SeedsDto.SeedCategory.path) {
 
         get {
