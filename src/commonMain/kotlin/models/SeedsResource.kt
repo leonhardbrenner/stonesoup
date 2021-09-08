@@ -7,6 +7,12 @@ import kotlinx.serialization.Serializable
 class Resources {
 
     @Serializable
+    data class Chore(
+        val source: SeedsDto.Chore,
+        val schedule: SeedsDto.Schedule?
+    ): Seeds.Chore by source
+
+    @Serializable
     data class MySeeds(
         val source: SeedsDto.MySeeds,
         val detailedSeed: SeedsDto.DetailedSeed?

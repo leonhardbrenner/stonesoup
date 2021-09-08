@@ -2,8 +2,6 @@ package applications.routing
 
 import applications.CoreApplication
 import generated.model.SeedsDto
-import generated.model.db.SeedsDb
-import generated.model.db.SeedsDb.MySeeds.Table.companyId
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.response.*
@@ -14,7 +12,7 @@ class MySeedsRouting @Inject constructor(val dao: CoreApplication.Dao) {
     fun routes(routing: Routing) = routing.route(SeedsDto.MySeeds.path) {
 
         get {
-            call.respond(dao.MySeeds.index())
+            call.respond(dao.MySeeds.expandedIndex())
         }
 
         //get("/new") {

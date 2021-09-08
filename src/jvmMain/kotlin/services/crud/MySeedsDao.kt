@@ -9,10 +9,8 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 object MySeedsDao {
 
-    //XXX - This is incomplete and needs to look like SeedsService
-    //fun index() = //transaction {
-    //    SeedsDb.MySeeds.fetchAll()
-    fun index() = transaction {
+    //Todo - move this to FE. I will make use of a result set and decorators objects which will pull the remaining xpath
+    fun expandedIndex() = transaction {
         //Nice exposed example:
         //https://github.com/JetBrains/Exposed/issues/566
         with(
@@ -33,6 +31,12 @@ object MySeedsDao {
                 )
             }
             x
+        }
+    }
+
+    fun index() = transaction {
+        SeedsDb.SeedCategory.Table.selectAll().map {
+            SeedsDb.MySeeds.create(it)
         }
     }
 

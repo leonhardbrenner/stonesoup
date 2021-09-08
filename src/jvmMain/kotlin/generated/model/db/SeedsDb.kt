@@ -60,7 +60,7 @@ object SeedsDb {
   object Chore {
     fun create(source: ResultRow) = SeedsDto.Chore(
       source[Table.id].value, source[Table.parentId],
-      source[Table.childrenIds], source[Table.name], null
+      source[Table.childrenIds], source[Table.name]
     )
 
     fun insert(it: InsertStatement<EntityID<Int>>, source: Seeds.Chore) = with (source) {

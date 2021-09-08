@@ -39,7 +39,7 @@ object ChoreDao {
                     SeedsDb.Schedule.create(it)
                 else
                     null
-                SeedsDb.Chore.create(it).copy(schedule = schedule)
+                Resources.Chore(SeedsDb.Chore.create(it), schedule)
             }
         }
     }

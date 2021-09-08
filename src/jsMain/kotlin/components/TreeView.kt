@@ -1,6 +1,7 @@
 package components
 
 import generated.model.Seeds
+import models.Resources
 
 /*
   Todo

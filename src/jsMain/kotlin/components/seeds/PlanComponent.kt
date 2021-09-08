@@ -8,6 +8,7 @@ import com.ccfraser.muirwik.components.list.*
 import generated.model.SeedsDto
 import inputComponent
 import kotlinx.css.*
+import models.Resources
 //import models.app.seeds.Chore
 import react.*
 import styled.StyleSheet
@@ -15,7 +16,7 @@ import styled.css
 import styled.styledDiv
 
 external interface PlanProps: RProps {
-    var chores: List<SeedsDto.Chore>
+    var chores: List<Resources.Chore>
     var deleteChore: (Int) -> Unit
     var handleInput: (String) -> Unit
     var onSelect: (Int) -> Unit
@@ -53,7 +54,7 @@ class PlanComponent : RComponent<PlanProps, RState>() {
                         }
 
                         if (props.isMouseIn(item.id))
-                            mListItemText("${item.schedule?.workHours?:""}")
+                            mListItemText(item.schedule?.workHours?:"")
 
                         if (props.isSelected(item.id)) {
                             mListItemSecondaryAction {
