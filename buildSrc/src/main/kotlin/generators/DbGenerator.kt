@@ -80,6 +80,19 @@ object DbGenerator: Generator {
                     .joinToString(", "))
             .build()
 
+    //Todo - finish this and update.
+    val Manifest.Namespace.ComplexType.insert
+        get() = FunSpec.builder("insert")
+            .addParameter("it", ClassName("org.jetbrains.exposed.sql.statements", "InsertStatement<EntityID<Int>>"))
+            .addParameter("source", ClassName("org.jetbrains.exposed.sql", "ResultRow"))
+
+            .addCode("return %LDto.%L(%L)",
+                packageName, name,
+                (elements.values.map { "source[Table.${it.name}]${if (it.name == "id") ".value" else ""}" }
+                        + links.values.map { "null"})
+                    .joinToString(", "))
+            .build()
+
     fun Manifest.Namespace.ComplexType.Element.asPropertySpec(mutable: Boolean, vararg modifiers: KModifier) =
         PropertySpec.builder(name, type.typeName.copy(nullable = nullable))
             .addModifiers(modifiers.toList())

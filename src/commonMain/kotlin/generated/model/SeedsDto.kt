@@ -15,11 +15,8 @@ interface SeedsDto {
     companion object {
       const val path: String = "/Seeds/Schedule"
 
-      fun create(source: Seeds.Schedule) = SeedsDto.Schedule(
-        source.id, source.choreId,
-        source.workHours, source.completeBy
-      )
-    }
+      fun create(source: Seeds.Schedule) = SeedsDto.Schedule(source.id, source.choreId,
+          source.workHours, source.completeBy)}
   }
 
   @Serializable
@@ -32,11 +29,8 @@ interface SeedsDto {
     companion object {
       const val path: String = "/Seeds/Chore"
 
-      fun create(source: Seeds.Chore) = SeedsDto.Chore(
-        source.id, source.parentId,
-        source.childrenIds, source.name
-      )
-    }
+      fun create(source: Seeds.Chore) = SeedsDto.Chore(source.id, source.parentId,
+          source.childrenIds, source.name)}
   }
 
   @Serializable
