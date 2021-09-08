@@ -9,6 +9,7 @@ import models.*
 
 import schema.ManifestOld.Namespace
 
+//Todo - move back to this
 open class ModelGeneratorOld : DefaultTask() {
 
     init {
