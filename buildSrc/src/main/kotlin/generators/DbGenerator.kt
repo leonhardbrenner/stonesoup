@@ -20,17 +20,12 @@ object DbGenerator: Generator {
                     namespace.types.forEach { complexType ->
                         addType(
                             TypeSpec.objectBuilder(complexType.name)
-                            .addType(complexType.table)
-                            .addType(complexType.entity)
-                            .addFunction(complexType.create)
+                                .addType(complexType.table)
+                                .addType(complexType.entity)
+                                .addFunction(complexType.select)
                                 .addFunction(complexType.insert)
                                 .addFunction(complexType.update)
-                            .addFunction(
-                                FunSpec.builder("fetchAll")
-                                    .addCode(
-                                        "return transaction { with (Table) { selectAll().map { create(it) } } }"
-                                    ).build()
-                            ).build()
+                                .build()
                         )
                     }
                 }.build()
@@ -71,8 +66,8 @@ object DbGenerator: Generator {
                 }
             }.build()
 
-    val Manifest.Namespace.Type.create
-        get() = com.squareup.kotlinpoet.FunSpec.builder("create")
+    val Manifest.Namespace.Type.select
+        get() = com.squareup.kotlinpoet.FunSpec.builder("select")
             .addParameter("source", ClassName("org.jetbrains.exposed.sql", "ResultRow"))
 
             .addCode("return %LDto.%L(%L)",

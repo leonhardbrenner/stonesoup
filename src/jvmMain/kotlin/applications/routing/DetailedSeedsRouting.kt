@@ -6,13 +6,14 @@ import io.ktor.http.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import dao.SeedsDao
+import org.jetbrains.exposed.sql.transactions.transaction
 import javax.inject.Inject
 
 class DetailedSeedsRouting @Inject constructor(val dao: SeedsDao) {
     fun routes(routing: Routing) = routing.route(SeedsDto.DetailedSeed.path) {
 
         get {
-            call.respond(dao.DetailedSeeds.index())
+            call.respond(transaction { dao.DetailedSeeds.index() } )
         }
 
         //get("/new") {
@@ -31,8 +32,10 @@ class DetailedSeedsRouting @Inject constructor(val dao: SeedsDao) {
             val description = call.parameters["description"] ?: return@post call.respond(HttpStatusCode.BadRequest)
             val image = call.parameters["image"] ?: return@post call.respond(HttpStatusCode.BadRequest)
             val link = call.parameters["link"] ?: return@post call.respond(HttpStatusCode.BadRequest)
-            dao.DetailedSeeds.create(
+            transaction {
+                dao.DetailedSeeds.create(
                 SeedsDto.DetailedSeed(-1, companyId, seedId, name, maturity, secondaryName, description, image, link))
+            }
             call.respond(HttpStatusCode.OK)
         }
 
@@ -54,14 +57,30 @@ class DetailedSeedsRouting @Inject constructor(val dao: SeedsDao) {
             val description = call.parameters["description"] ?: return@put call.respond(HttpStatusCode.BadRequest)
             val image = call.parameters["image"] ?: return@put call.respond(HttpStatusCode.BadRequest)
             val link = call.parameters["link"] ?: return@put call.respond(HttpStatusCode.BadRequest)
-            dao.DetailedSeeds.update(id,
-                SeedsDto.DetailedSeed(id, companyId, seedId, name, maturity, secondaryName, description, image, link))
+            transaction {
+                dao.DetailedSeeds.update(
+                    id,
+                    SeedsDto.DetailedSeed(
+                        id,
+                        companyId,
+                        seedId,
+                        name,
+                        maturity,
+                        secondaryName,
+                        description,
+                        image,
+                        link
+                    )
+                )
+            }
             call.respond(HttpStatusCode.OK)
         }
 
         delete("/{id}") {
             val id = call.parameters["id"]?.toInt() ?: error("Invalid delete request")
-            dao.DetailedSeeds.destroy(id)
+            transaction {
+                dao.DetailedSeeds.destroy(id)
+            }
             call.respond(HttpStatusCode.OK)
         }
     }

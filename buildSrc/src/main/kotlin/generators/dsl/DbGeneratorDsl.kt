@@ -22,15 +22,10 @@ object DbGeneratorDsl: GeneratorDsl {
                             TypeSpec.objectBuilder(complexType.name)
                                 .addType(complexType.table)
                                 .addType(complexType.entity)
-                                .addFunction(complexType.create)
+                                .addFunction(complexType.select)
                                 .addFunction(complexType.insert)
                                 .addFunction(complexType.update)
-                                .addFunction(
-                                    FunSpec.builder("fetchAll")
-                                        .addCode(
-                                            "return transaction { with (Table) { selectAll().map { create(it) } } }"
-                                        ).build()
-                                ).build()
+                                .build()
                         )
                     }
                 }.build()
@@ -72,8 +67,8 @@ object DbGeneratorDsl: GeneratorDsl {
             }.build()
 
     //Todo - move towards marshall and unmarshall for names.
-    val ManifestDsl.Namespace.ComplexType.create
-        get() = FunSpec.builder("create")
+    val ManifestDsl.Namespace.ComplexType.select
+        get() = FunSpec.builder("select")
             .addParameter("source", ClassName("org.jetbrains.exposed.sql", "ResultRow"))
 
             .addCode("return %LDto.%L(%L)",
