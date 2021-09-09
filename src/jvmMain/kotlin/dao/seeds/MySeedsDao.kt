@@ -2,7 +2,6 @@ package dao.seeds
 
 import generated.model.Seeds
 import generated.model.db.SeedsDb
-import models.SeedsResources
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 

@@ -3,8 +3,6 @@ package dao.seeds
 import generated.model.Seeds
 import generated.model.db.SeedsDb
 import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.transactions.transaction
 
 object DetailedSeedsDao {
 

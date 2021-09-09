@@ -6,8 +6,6 @@ import io.ktor.http.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import dao.SeedsDao
-import dao.seeds.ChoreDao
-import models.SeedsResources
 import org.jetbrains.exposed.sql.transactions.transaction
 import services.SeedsService
 import javax.inject.Inject
@@ -53,8 +51,9 @@ class ChoreRouting @Inject constructor(val dao: SeedsDao, val service: SeedsServ
         post {
             val parentId = call.parameters["parentId"]?.toInt() ?: return@post call.respond(HttpStatusCode.BadRequest)
             val name = call.parameters["name"]?: return@post call.respond(HttpStatusCode.BadRequest)
+            val dto = SeedsDto.Chore(-1, parentId, "", name)
             val response = transaction {
-                service.chore.create(SeedsDto.Chore(-1, parentId, "", name))
+                service.chore.create(dto)
             }
             call.respond(response)
         }
