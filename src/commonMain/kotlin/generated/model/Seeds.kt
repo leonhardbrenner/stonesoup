@@ -4,6 +4,16 @@ import kotlin.Int
 import kotlin.String
 
 interface Seeds {
+  interface Schedule {
+    val id: Int
+
+    val choreId: Int
+
+    val workHours: String?
+
+    val completeBy: String?
+  }
+
   interface Chore {
     val id: Int
 
@@ -44,16 +54,6 @@ interface Seeds {
     val description: String
 
     val germinationTest: String
-  }
-
-  interface Schedule {
-    val id: Int
-
-    val choreId: Int
-
-    val workHours: String?
-
-    val completeBy: String?
   }
 
   interface SeedCategory {

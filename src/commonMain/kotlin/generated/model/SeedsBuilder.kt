@@ -4,6 +4,19 @@ import kotlin.Int
 import kotlin.String
 
 interface SeedsBuilder {
+  class Schedule(
+    var id: Int?,
+    var choreId: Int?,
+    var workHours: String?,
+    var completeBy: String?
+  ) {
+    fun build(): Seeds.Schedule = SeedsDto.Schedule(
+    id ?: throw IllegalArgumentException("id is not nullable"),
+    choreId ?: throw IllegalArgumentException("choreId is not nullable"),
+    workHours,
+    completeBy
+    )}
+
   class Chore(
     var id: Int?,
     var parentId: Int?,
@@ -53,19 +66,6 @@ interface SeedsBuilder {
     seedId ?: throw IllegalArgumentException("seedId is not nullable"),
     description ?: throw IllegalArgumentException("description is not nullable"),
     germinationTest ?: throw IllegalArgumentException("germinationTest is not nullable")
-    )}
-
-  class Schedule(
-    var id: Int?,
-    var choreId: Int?,
-    var workHours: String?,
-    var completeBy: String?
-  ) {
-    fun build(): Seeds.Schedule = SeedsDto.Schedule(
-    id ?: throw IllegalArgumentException("id is not nullable"),
-    choreId ?: throw IllegalArgumentException("choreId is not nullable"),
-    workHours,
-    completeBy
     )}
 
   class SeedCategory(

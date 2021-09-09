@@ -21,6 +21,43 @@ import org.jetbrains.exposed.sql.statements.UpdateStatement
 import org.jetbrains.exposed.sql.transactions.transaction
 
 object SeedsDb {
+  object Schedule {
+    fun create(source: ResultRow) = SeedsDto.Schedule(source[Table.id].value, source[Table.choreId],
+        source[Table.workHours], source[Table.completeBy])
+    fun insert(it: InsertStatement<EntityID<Int>>, source: Seeds.Schedule) {
+      it[Table.choreId] = source.choreId
+      it[Table.workHours] = source.workHours
+      it[Table.completeBy] = source.completeBy
+    }
+
+    fun update(it: UpdateStatement, source: Seeds.Schedule) {
+      it[Table.choreId] = source.choreId
+      it[Table.workHours] = source.workHours
+      it[Table.completeBy] = source.completeBy
+    }
+
+    fun fetchAll() = transaction { with (Table) { selectAll().map { create(it) } } }
+    object Table : IntIdTable("Schedule") {
+      val choreId: Column<Int> = integer("choreId")
+
+      val workHours: Column<String?> = text("workHours").nullable()
+
+      val completeBy: Column<String?> = text("completeBy").nullable()
+    }
+
+    class Entity(
+      id: EntityID<Int>
+    ) : IntEntity(id) {
+      var choreId: Int by Table.choreId
+
+      var workHours: String? by Table.workHours
+
+      var completeBy: String? by Table.completeBy
+
+      companion object : IntEntityClass<Entity>(Table)
+    }
+  }
+
   object Chore {
     fun create(source: ResultRow) = SeedsDto.Chore(source[Table.id].value, source[Table.parentId],
         source[Table.childrenIds], source[Table.name])
@@ -166,43 +203,6 @@ object SeedsDb {
       var description: String by Table.description
 
       var germinationTest: String by Table.germinationTest
-
-      companion object : IntEntityClass<Entity>(Table)
-    }
-  }
-
-  object Schedule {
-    fun create(source: ResultRow) = SeedsDto.Schedule(source[Table.id].value, source[Table.choreId],
-        source[Table.workHours], source[Table.completeBy])
-    fun insert(it: InsertStatement<EntityID<Int>>, source: Seeds.Schedule) {
-      it[Table.choreId] = source.choreId
-      it[Table.workHours] = source.workHours
-      it[Table.completeBy] = source.completeBy
-    }
-
-    fun update(it: UpdateStatement, source: Seeds.Schedule) {
-      it[Table.choreId] = source.choreId
-      it[Table.workHours] = source.workHours
-      it[Table.completeBy] = source.completeBy
-    }
-
-    fun fetchAll() = transaction { with (Table) { selectAll().map { create(it) } } }
-    object Table : IntIdTable("Schedule") {
-      val choreId: Column<Int> = integer("choreId")
-
-      val workHours: Column<String?> = text("workHours").nullable()
-
-      val completeBy: Column<String?> = text("completeBy").nullable()
-    }
-
-    class Entity(
-      id: EntityID<Int>
-    ) : IntEntity(id) {
-      var choreId: Int by Table.choreId
-
-      var workHours: String? by Table.workHours
-
-      var completeBy: String? by Table.completeBy
 
       companion object : IntEntityClass<Entity>(Table)
     }
