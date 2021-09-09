@@ -21,6 +21,7 @@ import utils.then
 */
 object ChoreDao {
 
+    //Todo - make this indexExtended and index will now be the SeedsDto.Chore which we will reassemble elsewhere..
     fun index() = transaction {
         //Nice exposed example:
         //https://github.com/JetBrains/Exposed/issues/566
