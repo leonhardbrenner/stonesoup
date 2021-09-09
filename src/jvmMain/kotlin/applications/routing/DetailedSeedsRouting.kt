@@ -7,13 +7,17 @@ import io.ktor.response.*
 import io.ktor.routing.*
 import dao.SeedsDao
 import org.jetbrains.exposed.sql.transactions.transaction
+import services.SeedsService
 import javax.inject.Inject
 
-class DetailedSeedsRouting @Inject constructor(val dao: SeedsDao) {
+class DetailedSeedsRouting @Inject constructor(val dao: SeedsDao, val service: SeedsService) {
     fun routes(routing: Routing) = routing.route(SeedsDto.DetailedSeed.path) {
 
         get {
-            call.respond(transaction { dao.DetailedSeeds.index() } )
+            val response = transaction {
+                service.detailedSeeds.index()
+            }
+            call.respond(response)
         }
 
         //get("/new") {
@@ -32,11 +36,11 @@ class DetailedSeedsRouting @Inject constructor(val dao: SeedsDao) {
             val description = call.parameters["description"] ?: return@post call.respond(HttpStatusCode.BadRequest)
             val image = call.parameters["image"] ?: return@post call.respond(HttpStatusCode.BadRequest)
             val link = call.parameters["link"] ?: return@post call.respond(HttpStatusCode.BadRequest)
-            transaction {
-                dao.DetailedSeeds.create(
-                SeedsDto.DetailedSeed(-1, companyId, seedId, name, maturity, secondaryName, description, image, link))
+            val _dto = SeedsDto.DetailedSeed(-1, companyId, seedId, name, maturity, secondaryName, description, image, link)
+            val _response = transaction {
+                service.detailedSeeds.create(_dto)
             }
-            call.respond(HttpStatusCode.OK)
+            call.respond(_response)
         }
 
         //get("/{id}") {
@@ -57,21 +61,9 @@ class DetailedSeedsRouting @Inject constructor(val dao: SeedsDao) {
             val description = call.parameters["description"] ?: return@put call.respond(HttpStatusCode.BadRequest)
             val image = call.parameters["image"] ?: return@put call.respond(HttpStatusCode.BadRequest)
             val link = call.parameters["link"] ?: return@put call.respond(HttpStatusCode.BadRequest)
+            val _dto = SeedsDto.DetailedSeed(id, companyId, seedId, name, maturity, secondaryName, description, image, link)
             transaction {
-                dao.DetailedSeeds.update(
-                    id,
-                    SeedsDto.DetailedSeed(
-                        id,
-                        companyId,
-                        seedId,
-                        name,
-                        maturity,
-                        secondaryName,
-                        description,
-                        image,
-                        link
-                    )
-                )
+                service.detailedSeeds.update(_dto)
             }
             call.respond(HttpStatusCode.OK)
         }
@@ -79,7 +71,7 @@ class DetailedSeedsRouting @Inject constructor(val dao: SeedsDao) {
         delete("/{id}") {
             val id = call.parameters["id"]?.toInt() ?: error("Invalid delete request")
             transaction {
-                dao.DetailedSeeds.destroy(id)
+                service.detailedSeeds.destroy(id)
             }
             call.respond(HttpStatusCode.OK)
         }

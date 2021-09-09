@@ -7,9 +7,10 @@ import io.ktor.response.*
 import io.ktor.routing.*
 import dao.SeedsDao
 import org.jetbrains.exposed.sql.transactions.transaction
+import services.SeedsService
 import javax.inject.Inject
 
-class ScheduleRouting @Inject constructor(val dao: SeedsDao) {
+class ScheduleRouting @Inject constructor(val dao: SeedsDao, val service: SeedsService) {
     fun routes(routing: Routing) = routing.route(SeedsDto.Schedule.path) {
 
         get {
@@ -26,12 +27,11 @@ class ScheduleRouting @Inject constructor(val dao: SeedsDao) {
             val choreId = call.parameters["choreId"]?.toInt() ?: return@post call.respond(HttpStatusCode.BadRequest)
             val workHours = call.parameters["workHours"]
             val completeBy = call.parameters["completeBy"]
-            transaction {
-                dao.Schedule.create(
-                    SeedsDto.Schedule(-1, choreId, workHours, completeBy)
-                )
+            val _dto = SeedsDto.Schedule(-1, choreId, workHours, completeBy)
+            val _response = transaction {
+                service.schedule.create(_dto)
             }
-            call.respond(HttpStatusCode.OK)
+            call.respond(_response)
         }
 
         //get("/{id}") {
@@ -46,17 +46,18 @@ class ScheduleRouting @Inject constructor(val dao: SeedsDao) {
             val choreId = call.parameters["choreId"]?.toInt() ?: return@put call.respond(HttpStatusCode.BadRequest)
             val workHours = call.parameters["workHours"]
             val completeBy = call.parameters["completeBy"]
+            val _dto = SeedsDto.Schedule(id, choreId, workHours, completeBy)
             transaction {
-                dao.Schedule.update(
-                    SeedsDto.Schedule(id, choreId, workHours, completeBy)
-                )
+                service.schedule.update(_dto)
             }
             call.respond(HttpStatusCode.OK)
         }
 
         delete("/{id}") {
             val id = call.parameters["id"]?.toInt() ?: error("Invalid delete request")
-            transaction { dao.Schedule.destroy(id) }
+            transaction {
+                service.schedule.destroy(id)
+            }
             call.respond(HttpStatusCode.OK)
         }
     }

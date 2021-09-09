@@ -3,7 +3,6 @@ package dao.seeds
 import generated.model.Seeds
 import generated.model.db.SeedsDb
 import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.transactions.transaction
 
 object ChoreDao {
 
@@ -17,15 +16,18 @@ object ChoreDao {
             SeedsDb.Chore.select(it)
         }.last()
 
-    fun create(source: Seeds.Chore): Int = SeedsDb.Chore.Table.insertAndGetId {
-        SeedsDb.Chore.insert(it, source)
-    }.value
+    fun create(source: Seeds.Chore): Int =
+        SeedsDb.Chore.Table.insertAndGetId {
+            SeedsDb.Chore.insert(it, source)
+        }.value
 
 
-    fun update(source: Seeds.Chore) = SeedsDb.Chore.Table.update({ SeedsDb.Chore.Table.id.eq(source.id) }) {
-        SeedsDb.Chore.update(it, source)
-    }
+    fun update(source: Seeds.Chore) =
+        SeedsDb.Chore.Table.update({ SeedsDb.Chore.Table.id.eq(source.id) }) {
+            SeedsDb.Chore.update(it, source)
+        }
 
-    fun destroy(id: Int) = SeedsDb.Chore.Table.deleteWhere { SeedsDb.Chore.Table.id eq id }
+    fun destroy(id: Int) =
+        SeedsDb.Chore.Table.deleteWhere { SeedsDb.Chore.Table.id eq id }
 
 }
