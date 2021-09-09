@@ -67,30 +67,32 @@ object ChoreDao {
 
         transaction {
 
-            val node = get(id)
+            newParentId?.let {
+                val node = get(id)
 
-            if ((newParentId != null) and (newParentId != node.parentId)) {
-                //Remove item from old list
-                SeedsDb.Chore.Table.update({ SeedsDb.Chore.Table.id.eq(node.parentId) }) {
-                    SeedsDb.Chore.update(it, get(node.parentId).let {
-                        it.copy(
-                            childrenIds = (it.childrenIds.split(",") - id.toString())
-                                .joinToString(",")
-                        )
-                    })
-                }
+                if (newParentId != node.parentId) {
+                    //Remove item from old list
+                    SeedsDb.Chore.Table.update({ SeedsDb.Chore.Table.id.eq(node.parentId) }) {
+                        SeedsDb.Chore.update(it, get(node.parentId).let {
+                            it.copy(
+                                childrenIds = (it.childrenIds.split(",") - id.toString())
+                                    .joinToString(",")
+                            )
+                        })
+                    }
 
-                SeedsDb.Chore.Table.update({ SeedsDb.Chore.Table.id.eq(newParentId) }) {
-                    SeedsDb.Chore.update(it, get(newParentId!!).let {
-                        it.copy(
-                            childrenIds = (it.childrenIds.split(",") + id.toString())
-                                .joinToString(",")
-                        )
-                    })
-                }
+                    SeedsDb.Chore.Table.update({ SeedsDb.Chore.Table.id.eq(newParentId) }) {
+                        SeedsDb.Chore.update(it, get(newParentId).let {
+                            it.copy(
+                                childrenIds = (it.childrenIds.split(",") + id.toString())
+                                    .joinToString(",")
+                            )
+                        })
+                    }
 
-                SeedsDb.Chore.Table.update({ SeedsDb.Chore.Table.id.eq(id) }) {
-                    SeedsDb.Chore.update(it, node.copy(parentId = newParentId!!))
+                    SeedsDb.Chore.Table.update({ SeedsDb.Chore.Table.id.eq(id) }) {
+                        SeedsDb.Chore.update(it, node.copy(parentId = newParentId))
+                    }
                 }
             }
         }
