@@ -9,9 +9,10 @@ import dao.SeedsDao
 import dao.seeds.ChoreDao
 import models.SeedsResources
 import org.jetbrains.exposed.sql.transactions.transaction
+import services.SeedsService
 import javax.inject.Inject
 
-class ChoreRouting @Inject constructor(val dao: SeedsDao) {
+class ChoreRouting @Inject constructor(val dao: SeedsDao, val service: SeedsService) {
 
     fun routes(routing: Routing) = routing.route(SeedsDto.Chore.path) {
 
@@ -37,15 +38,7 @@ class ChoreRouting @Inject constructor(val dao: SeedsDao) {
         //        }
         //    }
         //}
-        get {
-            call.respond(
-                transaction {
-                    val chores = dao.Chore.index()
-                    val schedules = dao.Schedule.index().associateBy { it.choreId }
-                    chores.map { SeedsResources.Chore(it, schedules[it.id]) }
-                }
-            )
-        }
+        get { call.respond(transaction { service.chore.index() }) }
 
 
         //get("/new") {
@@ -57,20 +50,7 @@ class ChoreRouting @Inject constructor(val dao: SeedsDao) {
         post {
             val parentId = call.parameters["parentId"]?.toInt() ?: return@post call.respond(HttpStatusCode.BadRequest)
             val name = call.parameters["name"]?: return@post call.respond(HttpStatusCode.BadRequest)
-            //Todo - let's send a Chore to begin with.
-            transaction {
-                val id = dao.Chore.create(
-                    SeedsDto.Chore(-1, parentId, "", name)
-                )
-                ChoreDao.update(
-                    ChoreDao.get(parentId).let {
-                        val newChildrenIds = (it.childrenIds.split(",") + id.toString())
-                            .joinToString(",")
-                        it.copy(childrenIds = newChildrenIds)
-
-                    }
-                )
-            }
+            transaction { service.chore.create(SeedsDto.Chore(-1, parentId, "", name)) }
             call.respond(HttpStatusCode.OK)
         }
 
