@@ -8,7 +8,9 @@ import javax.inject.Inject
 class SeedsService @Inject constructor(
     val dao: SeedsDao,
     val chore: ChoreService,
-    val detailedSeeds: DetailedSeedsService
+    val detailedSeeds: DetailedSeedsService,
+    val schedule: ScheduleService,
+    val seedCategory: SeedCategoryService
 ) {
     fun getDetailedSeeds() = transaction { dao.DetailedSeeds.index() }
 }
