@@ -79,26 +79,7 @@ class ChoreRouting @Inject constructor(val dao: SeedsDao, val service: SeedsServ
             val id = call.parameters["id"]?.toInt() ?: return@put call.respond(HttpStatusCode.BadRequest)
             val parentId = call.parameters["parentId"]?.toInt() ?: return@put call.respond(HttpStatusCode.BadRequest)
             transaction {
-                val node = ChoreDao.get(id)
-
-                if (parentId != node.parentId) {
-                    //Remove item from old list
-                    dao.Chore.update(
-                        ChoreDao.get(node.parentId).let {
-                            val updatedChildrenIds = (it.childrenIds.split(",") - id.toString())
-                            it.copy(childrenIds = updatedChildrenIds.joinToString(","))
-                        }
-                    )
-
-                    dao.Chore.update(
-                        ChoreDao.get(parentId).let {
-                            val updatedChildrenIds = (it.childrenIds.split(",") + id.toString())
-                            it.copy(childrenIds = updatedChildrenIds.joinToString(","))
-                        }
-                    )
-
-                    ChoreDao.update(node.copy(parentId = parentId))
-                }
+                service.chore.move(id, parentId)
             }
             call.respond(HttpStatusCode.OK)
         }
