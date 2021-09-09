@@ -106,17 +106,10 @@ object ChoreDao {
 
     fun destroy(id: Int) {
         transaction {
-            val parentId = SeedsDb.Chore.Table.select {
-                SeedsDb.Chore.Table.id.eq(id)
-            }.single()[SeedsDb.Chore.Table.parentId]
-            val childrenIds = SeedsDb.Chore.Table.select {
-                SeedsDb.Chore.Table.id.eq(parentId)
-            }.single()[SeedsDb.Chore.Table.childrenIds]
-            SeedsDb.Chore.Table.update({ SeedsDb.Chore.Table.id.eq(parentId) }) {
-                val newChildrenId = (childrenIds.split(",") - id.toString()).joinToString(",")
-                it[SeedsDb.Chore.Table.childrenIds] = newChildrenId
-            }
-            SeedsDb.Chore.Table.deleteWhere { SeedsDb.Chore.Table.id eq id }
+            val parentId = get(id).parentId
+            val node = get(parentId)
+            update(node.copy(childrenIds = (node.childrenIds.split(",") - id.toString()).joinToString(",")))
+            SeedsDb.Chore.Table.deleteWhere { SeedsDb.Chore.Table.id eq id } //Todo - this should be available as entity
         }
     }
 }
