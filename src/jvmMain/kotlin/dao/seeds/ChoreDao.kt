@@ -96,48 +96,6 @@ object ChoreDao {
         }
     }
 
-    /**
-     * Todo
-     *   the node id should then be used for our update
-     *   let's start with move then do link
-     *   display on the front end more like a graph
-     *   create a link routine something as simple as little x(es) that connect
-     *   make a priority widget something like a +/-
-     *   make a box for real description
-     *   we need a field for time estimates
-     *   move to tornadoFx
-     */
-    fun update2(id: Int, newParentId: Int?, name: String?) {
-
-        transaction {
-
-            //Remove node from old parent children list
-            val node = get(id)
-            val oldParentId = node.parentId
-
-            if ((newParentId != null) and (newParentId != oldParentId)) {
-                val oldChildrenIds = node.childrenIds
-                val newParent = get(newParentId!!)
-                val newChildrenIds = newParent.childrenIds
-
-                //Remove item from old list
-                SeedsDb.Chore.Table.update({ SeedsDb.Chore.Table.id.eq(oldParentId) }) {
-                    val oldChildrenIdsRewritten = (oldChildrenIds.split(",") - id.toString()).joinToString(",")
-                    it[SeedsDb.Chore.Table.childrenIds] = oldChildrenIdsRewritten
-                }
-
-                SeedsDb.Chore.Table.update({ SeedsDb.Chore.Table.id.eq(newParentId) }) {
-                    it[SeedsDb.Chore.Table.childrenIds] =
-                        (newChildrenIds.split(",") + id.toString()).joinToString(",")
-                }
-
-                SeedsDb.Chore.Table.update({ SeedsDb.Chore.Table.id.eq(id) }) {
-                    it[SeedsDb.Chore.Table.parentId] = newParentId
-                }
-            }
-        }
-    }
-
     fun destroy(id: Int) {
         transaction {
             val parentId = SeedsDb.Chore.Table.select {
