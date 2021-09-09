@@ -1,7 +1,7 @@
 package components
 
 import generated.model.Seeds
-import models.Resources
+import models.SeedsResources
 
 /*
   Todo
@@ -15,7 +15,7 @@ import models.Resources
     Implement a walker for Infix and Postfix.
     Implement path which is just a walk back up the tree.
  */
-class TreeView<T: Seeds.Chore>(val rootId: Int, val collection: List<T>) {
+class TreeView<T: SeedsResources.Chore>(val rootId: Int, val collection: List<T>) {
 
     fun walk(id: Int = rootId, block: (T) -> Unit) {
         val node = collection.find { it.id == id }

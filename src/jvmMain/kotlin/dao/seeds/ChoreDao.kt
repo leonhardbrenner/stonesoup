@@ -2,7 +2,7 @@ package dao.seeds
 
 import generated.model.Seeds
 import generated.model.db.SeedsDb
-import models.Resources
+import models.SeedsResources
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import utils.then
@@ -38,7 +38,7 @@ object ChoreDao {
                     SeedsDb.Schedule.create(it)
                 else
                     null
-                Resources.Chore(SeedsDb.Chore.create(it), schedule)
+                SeedsResources.Chore(SeedsDb.Chore.create(it), schedule)
             }
         }
     }

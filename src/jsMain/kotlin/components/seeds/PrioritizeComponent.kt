@@ -7,6 +7,7 @@ import com.ccfraser.muirwik.components.menu.mMenuItem
 import com.ccfraser.muirwik.components.table.*
 import generated.model.Seeds
 import kotlinext.js.jsObject
+import models.SeedsResources
 import react.*
 import styled.StyledElementBuilder
 
@@ -48,7 +49,7 @@ class PrioritizeComponent : RComponent<PrioritizeProps, RState>() {
 fun RBuilder.chores(handler: TreeTable.Props<Chores.ColumnId>.() -> Unit) =
     child(Chores::class) { attrs { handler() } }
 
-class Chores(props: Props<ColumnId>): TreeTable<Seeds.Chore, Chores.ColumnId>(props) {
+class Chores(props: Props<ColumnId>): TreeTable<SeedsResources.Chore, Chores.ColumnId>(props) {
 
     companion object {
         val path = Chores::class.simpleName.toString()
@@ -56,13 +57,13 @@ class Chores(props: Props<ColumnId>): TreeTable<Seeds.Chore, Chores.ColumnId>(pr
 
     override suspend fun get() = SeedsApi.ChoreApi.index()
 
-    override fun Seeds.Chore.label() = name
+    override fun SeedsResources.Chore.label() = name
 
     enum class ColumnId { Id, Description/*, Priority*/, RequiredBy }
 
     override var orderByColumn: ColumnId = ColumnId.Description
 
-    override fun StyledElementBuilder<*>.buildRow(source: Seeds.Chore, isSelected: Boolean) {
+    override fun StyledElementBuilder<*>.buildRow(source: SeedsResources.Chore, isSelected: Boolean) {
         mTableCell(padding = MTableCellPadding.checkbox) {
             mCheckbox(isSelected)
         }
@@ -72,14 +73,14 @@ class Chores(props: Props<ColumnId>): TreeTable<Seeds.Chore, Chores.ColumnId>(pr
         mTableCell(align = MTableCellAlign.left) { +(if (source.parentId==0) "" else treeView[source.parentId].name) }
     }
 
-    override fun ColumnId.comparator(a: Seeds.Chore, b: Seeds.Chore) = when (this) {
+    override fun ColumnId.comparator(a: SeedsResources.Chore, b: SeedsResources.Chore) = when (this) {
         ColumnId.Id -> (a.id).compareTo(b.id)
         ColumnId.Description -> (a.name).compareTo(b.name)
         //ColumnId.Priority -> a.priority!!.compareTo(b.priority!!)
         ColumnId.RequiredBy -> treeView[a.parentId].name.compareTo(treeView[b.parentId].name)
     }
 
-    override val Seeds.Chore._id get() = id
+    override val SeedsResources.Chore._id get() = id
 
     override val columnData = listOf(
         ColumnData(ColumnId.Id, false, false, "Id"),

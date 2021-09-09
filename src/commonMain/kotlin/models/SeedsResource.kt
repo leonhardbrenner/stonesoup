@@ -4,7 +4,7 @@ import generated.model.Seeds
 import generated.model.SeedsDto
 import kotlinx.serialization.Serializable
 
-class Resources {
+class SeedsResources {
 
     @Serializable
     data class Chore(

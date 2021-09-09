@@ -2,7 +2,7 @@ package dao.seeds
 
 import generated.model.Seeds
 import generated.model.db.SeedsDb
-import models.Resources
+import models.SeedsResources
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 
@@ -24,7 +24,7 @@ object MySeedsDao {
                     SeedsDb.DetailedSeed.create(it)
                 else
                     null
-                Resources.MySeeds(
+                SeedsResources.MySeeds(
                     SeedsDb.MySeeds.create(it),
                     schedule
                 )

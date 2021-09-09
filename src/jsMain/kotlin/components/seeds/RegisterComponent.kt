@@ -13,7 +13,7 @@ import react.*
 import react.dom.*
 import kotlinx.coroutines.*
 import kotlinx.css.*
-import models.Resources
+import models.SeedsResources
 import styled.StyleSheet
 import styled.css
 import styled.styledDiv
@@ -56,10 +56,10 @@ class RegisterComponent : RComponent<RegisterProps, RState>() {
     }
 }
 
-private class MySeeds(props: DisplayProps): DisplayComponent<Resources.MySeeds>(props) {
+private class MySeeds(props: DisplayProps): DisplayComponent<SeedsResources.MySeeds>(props) {
     override suspend fun get() = SeedsApi.MySeedsApi.index()
-    override fun Resources.MySeeds.label() = description //I don't think extension function is a good choice
-    override fun Resources.MySeeds.transform() = "$id ${detailedSeed?.image?:"No image found"}"
+    override fun SeedsResources.MySeeds.label() = description //I don't think extension function is a good choice
+    override fun SeedsResources.MySeeds.transform() = "$id ${detailedSeed?.image?:"No image found"}"
 }
 fun RBuilder.mySeeds(handler: DisplayProps.() -> Unit) = child(MySeeds::class) { attrs { handler() } }
 

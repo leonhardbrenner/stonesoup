@@ -4,11 +4,11 @@ import endpoint
 import jsonClient
 import generated.model.SeedsDto
 import io.ktor.client.request.*
-import models.Resources
+import models.SeedsResources
 
 open class ChoreApi {
 
-    suspend fun index(): List<Resources.Chore> {
+    suspend fun index(): List<SeedsResources.Chore> {
         return jsonClient.get(endpoint + SeedsDto.Chore.path)
     }
 
