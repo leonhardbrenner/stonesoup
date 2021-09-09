@@ -6,6 +6,7 @@ import io.ktor.http.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import dao.SeedsDao
+import models.SeedsResources
 import javax.inject.Inject
 
 class ChoreRouting @Inject constructor(val dao: SeedsDao) {
@@ -13,8 +14,34 @@ class ChoreRouting @Inject constructor(val dao: SeedsDao) {
     fun routes(routing: Routing) = routing.route(SeedsDto.Chore.path) {
 
         get {
-            call.respond(dao.Chore.index())
+            //Todo - Should be wrapped in a transaction.
+            val chores = dao.Chore.index()
+            val schedules = dao.Schedule.index().associateBy { it.choreId }
+            call.respond(chores.map { SeedsResources.Chore(it, schedules[it.id]) })
         }
+        //Todo - The implementation above is not transactional. We should move back to this by extending ChoreDao.
+        //fun indexExtended() = transaction {
+        //    //Nice exposed example:
+        //    //https://github.com/JetBrains/Exposed/issues/566
+        //    with(
+        //        SeedsDb.Chore.Table.join(
+        //            SeedsDb.Schedule.Table,
+        //            JoinType.LEFT,
+        //            additionalConstraint = {
+        //                SeedsDb.Chore.Table.id eq SeedsDb.Schedule.Table.choreId
+        //            }
+        //        )
+        //    ) {
+        //        selectAll().map {
+        //            val schedule = if (it[SeedsDb.Schedule.Table.id] != null)
+        //                SeedsDb.Schedule.create(it)
+        //            else
+        //                null
+        //            SeedsResources.Chore(SeedsDb.Chore.create(it), schedule)
+        //        }
+        //    }
+        //}
+
 
         //get("/new") {
         //    TODO("Show form to make new Chore")
