@@ -71,11 +71,19 @@ class ChoreRouting @Inject constructor(val dao: SeedsDao) {
         //    //call.respond(dao.Chore.index())
         //}
 
+        //XXX - Fix this
+        //put("/{id}") {
+        //    val id = call.parameters["id"]?.toInt() ?: return@put call.respond(HttpStatusCode.BadRequest)
+        //    val parentId = call.parameters["parentId"]?.toInt() ?: return@put call.respond(HttpStatusCode.BadRequest)
+        //    val name = call.parameters["name"]
+        //    dao.Chore.update(id, SeedsDto.Chore(id, parentId, name))
+        //    call.respond(HttpStatusCode.OK)
+        //}
+
         put("/{id}") {
             val id = call.parameters["id"]?.toInt() ?: return@put call.respond(HttpStatusCode.BadRequest)
             val parentId = call.parameters["parentId"]?.toInt() ?: return@put call.respond(HttpStatusCode.BadRequest)
-            val name = call.parameters["name"]
-            dao.Chore.update(id, parentId, name)
+            dao.Chore.move(id, parentId)
             call.respond(HttpStatusCode.OK)
         }
 

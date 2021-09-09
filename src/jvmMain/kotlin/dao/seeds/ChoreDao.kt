@@ -52,6 +52,12 @@ object ChoreDao {
         return id
     }
 
+    fun update(source: Seeds.Chore) = transaction {
+        SeedsDb.Chore.Table.update({ SeedsDb.Chore.Table.id.eq(source.id) }) {
+            SeedsDb.Chore.update(it, source)
+        }
+    }
+
     /**
      * Todo
      *   the node id should then be used for our update
@@ -63,7 +69,13 @@ object ChoreDao {
      *   we need a field for time estimates
      *   move to tornadoFx
      */
-    fun update(id: Int, newParentId: Int?, name: String?) {
+    /*
+    Todo
+        x rename this as move
+        x make a new update which takes the Chore instead
+        - have the front end send item
+    */
+    fun move(id: Int, newParentId: Int?) {
 
         transaction {
 
@@ -72,27 +84,21 @@ object ChoreDao {
 
                 if (newParentId != node.parentId) {
                     //Remove item from old list
-                    SeedsDb.Chore.Table.update({ SeedsDb.Chore.Table.id.eq(node.parentId) }) {
-                        SeedsDb.Chore.update(it, get(node.parentId).let {
-                            it.copy(
-                                childrenIds = (it.childrenIds.split(",") - id.toString())
-                                    .joinToString(",")
-                            )
-                        })
-                    }
+                    update(
+                        get(node.parentId).let {
+                            val updatedChildrenIds = (it.childrenIds.split(",") - id.toString())
+                            it.copy(childrenIds = updatedChildrenIds.joinToString(","))
+                        }
+                    )
 
-                    SeedsDb.Chore.Table.update({ SeedsDb.Chore.Table.id.eq(newParentId) }) {
-                        SeedsDb.Chore.update(it, get(newParentId).let {
-                            it.copy(
-                                childrenIds = (it.childrenIds.split(",") + id.toString())
-                                    .joinToString(",")
-                            )
-                        })
-                    }
+                    update(
+                        get(newParentId).let {
+                            val updatedChildrenIds = (it.childrenIds.split(",") + id.toString())
+                            it.copy(childrenIds = updatedChildrenIds.joinToString(","))
+                        }
+                    )
 
-                    SeedsDb.Chore.Table.update({ SeedsDb.Chore.Table.id.eq(id) }) {
-                        SeedsDb.Chore.update(it, node.copy(parentId = newParentId))
-                    }
+                    update(node.copy(parentId = newParentId))
                 }
             }
         }
