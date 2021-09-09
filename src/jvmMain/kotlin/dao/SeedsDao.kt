@@ -1,7 +1,6 @@
 package dao
 
 import dao.seeds.*
-import services.crud.*
 
 class SeedsDao {
     val Chore = ChoreDao
