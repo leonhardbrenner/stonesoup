@@ -1,9 +1,11 @@
 package services
 
-import generated.model.db.SeedsDb
+import dao.SeedsDao
+import org.jetbrains.exposed.sql.transactions.transaction
+import javax.inject.Inject
 
-class SeedsService {
+class SeedsService @Inject constructor(val dao: SeedsDao) {
 
-    fun getDetailedSeeds() = SeedsDb.DetailedSeed.fetchAll()
+    fun getDetailedSeeds() = transaction { dao.DetailedSeeds.index() }
 
 }

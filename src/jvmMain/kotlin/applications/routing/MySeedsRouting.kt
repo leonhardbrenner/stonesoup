@@ -6,14 +6,29 @@ import io.ktor.http.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import dao.SeedsDao
+import models.SeedsResources
+import org.jetbrains.exposed.sql.transactions.transaction
+import utils.then
 import javax.inject.Inject
 
 class MySeedsRouting @Inject constructor(val dao: SeedsDao) {
     fun routes(routing: Routing) = routing.route(SeedsDto.MySeeds.path) {
 
         get {
-            call.respond(dao.MySeeds.expandedIndex())
+            val (detailedSeeds, mySeeds) = transaction {
+                val detailedSeeds = dao.DetailedSeeds.index().associateBy { it.id }
+                val mySeeds = dao.MySeeds.index()
+                detailedSeeds then mySeeds
+            }
+            val resources = mySeeds.map { mySeed ->
+                SeedsResources.MySeeds(mySeed, detailedSeeds.get(mySeed.id))
+            }
+            call.respond(resources)
         }
+
+        //get {
+        //    call.respond(dao.MySeeds.expandedIndex())
+        //}
 
         //get("/new") {
         //    TODO("Show form to make new")
@@ -26,9 +41,11 @@ class MySeedsRouting @Inject constructor(val dao: SeedsDao) {
             val seedId = call.parameters["seedId"] ?: return@post call.respond(HttpStatusCode.BadRequest)
             val description = call.parameters["description"] ?: return@post call.respond(HttpStatusCode.BadRequest)
             val germinationTest = call.parameters["germinationTest"] ?: return@post call.respond(HttpStatusCode.BadRequest)
-            dao.MySeeds.create(
-                SeedsDto.MySeeds(-1, companyId, seedId, description, germinationTest)
-            )
+            transaction {
+                dao.MySeeds.create(
+                    SeedsDto.MySeeds(-1, companyId, seedId, description, germinationTest)
+                )
+            }
             call.respond(HttpStatusCode.OK)
         }
 
@@ -46,15 +63,19 @@ class MySeedsRouting @Inject constructor(val dao: SeedsDao) {
             val seedId = call.parameters["seedId"] ?: return@put call.respond(HttpStatusCode.BadRequest)
             val description = call.parameters["description"] ?: return@put call.respond(HttpStatusCode.BadRequest)
             val germinationTest = call.parameters["germinationTest"] ?: return@put call.respond(HttpStatusCode.BadRequest)
-            dao.MySeeds.update(
-                SeedsDto.MySeeds(id, companyId, seedId, description, germinationTest)
-            )
+            transaction {
+                dao.MySeeds.update(
+                    SeedsDto.MySeeds(id, companyId, seedId, description, germinationTest)
+                )
+            }
             call.respond(HttpStatusCode.OK)
         }
 
         delete("/{id}") {
             val id = call.parameters["id"]?.toInt() ?: error("Invalid delete request")
-            dao.MySeeds.destroy(id)
+            transaction {
+                dao.MySeeds.destroy(id)
+            }
             call.respond(HttpStatusCode.OK)
         }
     }

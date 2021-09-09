@@ -6,6 +6,7 @@ import io.ktor.http.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import dao.SeedsDao
+import org.jetbrains.exposed.sql.transactions.transaction
 import javax.inject.Inject
 
 class ScheduleRouting @Inject constructor(val dao: SeedsDao) {
@@ -25,9 +26,11 @@ class ScheduleRouting @Inject constructor(val dao: SeedsDao) {
             val choreId = call.parameters["choreId"]?.toInt() ?: return@post call.respond(HttpStatusCode.BadRequest)
             val workHours = call.parameters["workHours"]
             val completeBy = call.parameters["completeBy"]
-            dao.Schedule.create(
-                SeedsDto.Schedule(-1, choreId, workHours, completeBy)
-            )
+            transaction {
+                dao.Schedule.create(
+                    SeedsDto.Schedule(-1, choreId, workHours, completeBy)
+                )
+            }
             call.respond(HttpStatusCode.OK)
         }
 
@@ -43,15 +46,17 @@ class ScheduleRouting @Inject constructor(val dao: SeedsDao) {
             val choreId = call.parameters["choreId"]?.toInt() ?: return@put call.respond(HttpStatusCode.BadRequest)
             val workHours = call.parameters["workHours"]
             val completeBy = call.parameters["completeBy"]
-            dao.Schedule.update(
-                SeedsDto.Schedule(id, choreId, workHours, completeBy)
-            )
+            transaction {
+                dao.Schedule.update(
+                    SeedsDto.Schedule(id, choreId, workHours, completeBy)
+                )
+            }
             call.respond(HttpStatusCode.OK)
         }
 
         delete("/{id}") {
             val id = call.parameters["id"]?.toInt() ?: error("Invalid delete request")
-            dao.Schedule.destroy(id)
+            transaction { dao.Schedule.destroy(id) }
             call.respond(HttpStatusCode.OK)
         }
     }

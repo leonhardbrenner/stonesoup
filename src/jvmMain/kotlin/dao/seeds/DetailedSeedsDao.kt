@@ -2,34 +2,33 @@ package dao.seeds
 
 import generated.model.Seeds
 import generated.model.db.SeedsDb
-import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.insertAndGetId
-import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.jetbrains.exposed.sql.update
 
 object DetailedSeedsDao {
 
-    fun index() = transaction {
+    fun index() =
         SeedsDb.DetailedSeed.Table.selectAll().map {
-            SeedsDb.DetailedSeed.create(it)
+            SeedsDb.DetailedSeed.select(it)
         }
-    }
 
-    fun create(source: Seeds.DetailedSeed): Int = transaction {
+    fun get(id: Int) =
+        SeedsDb.DetailedSeed.Table.select { SeedsDb.DetailedSeed.Table.id.eq(id) }.map {
+            SeedsDb.DetailedSeed.select(it)
+        }.last()
+
+    fun create(source: Seeds.DetailedSeed): Int =
         SeedsDb.DetailedSeed.Table.insertAndGetId {
             SeedsDb.DetailedSeed.insert(it, source)
         }.value
-    }
 
-    fun update(id: Int, source: Seeds.DetailedSeed) = transaction {
+    fun update(id: Int, source: Seeds.DetailedSeed) =
         SeedsDb.Chore.Table.update({ SeedsDb.Chore.Table.id.eq(id) }) {
             SeedsDb.DetailedSeed.update(it, source)
         }
-    }
 
-    fun destroy(id: Int) = transaction {
+    fun destroy(id: Int) =
         SeedsDb.DetailedSeed.Table.deleteWhere { SeedsDb.Chore.Table.id eq id }
-    }
 
 }

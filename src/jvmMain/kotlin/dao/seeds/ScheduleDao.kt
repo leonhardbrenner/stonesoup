@@ -10,34 +10,23 @@ import org.jetbrains.exposed.sql.update
 
 object ScheduleDao {
 
-    fun index() = transaction {
+    fun index() =
         SeedsDb.Schedule.Table.selectAll().map {
-            SeedsDb.Schedule.create(it)
+            SeedsDb.Schedule.select(it)
         }
-    }
 
-    fun create(source: Seeds.Schedule): Int {
-        var id = -1
-        transaction {
-            id = SeedsDb.Schedule.Table.insertAndGetId {
-                SeedsDb.Schedule.insert(it, source)
-            }.value
-        }
-        return id
-    }
+    fun create(source: Seeds.Schedule) =
+        SeedsDb.Schedule.Table.insertAndGetId {
+            SeedsDb.Schedule.insert(it, source)
+        }.value
 
     fun update(source: Seeds.Schedule) {
-
-        transaction {
-            SeedsDb.Schedule.Table.update({ SeedsDb.Chore.Table.id.eq(source.id) }) {
-                SeedsDb.Schedule.update(it, source)
-            }
+        SeedsDb.Schedule.Table.update({ SeedsDb.Chore.Table.id.eq(source.id) }) {
+            SeedsDb.Schedule.update(it, source)
         }
     }
 
     fun destroy(id: Int) {
-        transaction {
-            SeedsDb.Schedule.Table.deleteWhere { SeedsDb.Chore.Table.id eq id }
-        }
+        SeedsDb.Schedule.Table.deleteWhere { SeedsDb.Chore.Table.id eq id }
     }
 }

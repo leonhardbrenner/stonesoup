@@ -6,20 +6,16 @@ import io.ktor.http.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import dao.SeedsDao
+import dao.seeds.ChoreDao
 import models.SeedsResources
+import org.jetbrains.exposed.sql.transactions.transaction
 import javax.inject.Inject
 
 class ChoreRouting @Inject constructor(val dao: SeedsDao) {
 
     fun routes(routing: Routing) = routing.route(SeedsDto.Chore.path) {
 
-        get {
-            //Todo - Should be wrapped in a transaction.
-            val chores = dao.Chore.index()
-            val schedules = dao.Schedule.index().associateBy { it.choreId }
-            call.respond(chores.map { SeedsResources.Chore(it, schedules[it.id]) })
-        }
-        //Todo - The implementation above is not transactional. We should move back to this by extending ChoreDao.
+        //Todo - Consider doing the work in the db like this.
         //fun indexExtended() = transaction {
         //    //Nice exposed example:
         //    //https://github.com/JetBrains/Exposed/issues/566
@@ -41,6 +37,15 @@ class ChoreRouting @Inject constructor(val dao: SeedsDao) {
         //        }
         //    }
         //}
+        get {
+            call.respond(
+                transaction {
+                    val chores = dao.Chore.index()
+                    val schedules = dao.Schedule.index().associateBy { it.choreId }
+                    chores.map { SeedsResources.Chore(it, schedules[it.id]) }
+                }
+            )
+        }
 
 
         //get("/new") {
@@ -53,9 +58,19 @@ class ChoreRouting @Inject constructor(val dao: SeedsDao) {
             val parentId = call.parameters["parentId"]?.toInt() ?: return@post call.respond(HttpStatusCode.BadRequest)
             val name = call.parameters["name"]?: return@post call.respond(HttpStatusCode.BadRequest)
             //Todo - let's send a Chore to begin with.
-            dao.Chore.create(
-                SeedsDto.Chore(-1, parentId, "", name)
-            )
+            transaction {
+                val id = dao.Chore.create(
+                    SeedsDto.Chore(-1, parentId, "", name)
+                )
+                ChoreDao.update(
+                    ChoreDao.get(parentId).let {
+                        val newChildrenIds = (it.childrenIds.split(",") + id.toString())
+                            .joinToString(",")
+                        it.copy(childrenIds = newChildrenIds)
+
+                    }
+                )
+            }
             call.respond(HttpStatusCode.OK)
         }
 
@@ -83,13 +98,39 @@ class ChoreRouting @Inject constructor(val dao: SeedsDao) {
         put("/{id}") {
             val id = call.parameters["id"]?.toInt() ?: return@put call.respond(HttpStatusCode.BadRequest)
             val parentId = call.parameters["parentId"]?.toInt() ?: return@put call.respond(HttpStatusCode.BadRequest)
-            dao.Chore.move(id, parentId)
+            transaction {
+                val node = ChoreDao.get(id)
+
+                if (parentId != node.parentId) {
+                    //Remove item from old list
+                    dao.Chore.update(
+                        ChoreDao.get(node.parentId).let {
+                            val updatedChildrenIds = (it.childrenIds.split(",") - id.toString())
+                            it.copy(childrenIds = updatedChildrenIds.joinToString(","))
+                        }
+                    )
+
+                    dao.Chore.update(
+                        ChoreDao.get(parentId).let {
+                            val updatedChildrenIds = (it.childrenIds.split(",") + id.toString())
+                            it.copy(childrenIds = updatedChildrenIds.joinToString(","))
+                        }
+                    )
+
+                    ChoreDao.update(node.copy(parentId = parentId))
+                }
+            }
             call.respond(HttpStatusCode.OK)
         }
 
         delete("/{id}") {
             val id = call.parameters["id"]?.toInt() ?: error("Invalid delete request")
-            dao.Chore.destroy(id)
+            transaction {
+                val parentId = ChoreDao.get(id).parentId
+                val parent = ChoreDao.get(parentId)
+                ChoreDao.update(parent.copy(childrenIds = (parent.childrenIds.split(",") - id.toString()).joinToString(",")))
+                dao.Chore.destroy(id)
+            }
             call.respond(HttpStatusCode.OK)
         }
     }
