@@ -38,7 +38,10 @@ class ChoreRouting @Inject constructor(val dao: SeedsDao, val service: SeedsServ
         //        }
         //    }
         //}
-        get { call.respond(transaction { service.chore.index() }) }
+        get {
+            val response = transaction { service.chore.index() }
+            call.respond(response)
+        }
 
 
         //get("/new") {
@@ -50,8 +53,10 @@ class ChoreRouting @Inject constructor(val dao: SeedsDao, val service: SeedsServ
         post {
             val parentId = call.parameters["parentId"]?.toInt() ?: return@post call.respond(HttpStatusCode.BadRequest)
             val name = call.parameters["name"]?: return@post call.respond(HttpStatusCode.BadRequest)
-            transaction { service.chore.create(SeedsDto.Chore(-1, parentId, "", name)) }
-            call.respond(HttpStatusCode.OK)
+            val response = transaction {
+                service.chore.create(SeedsDto.Chore(-1, parentId, "", name))
+            }
+            call.respond(response)
         }
 
         //get("/{id}") {
@@ -87,10 +92,7 @@ class ChoreRouting @Inject constructor(val dao: SeedsDao, val service: SeedsServ
         delete("/{id}") {
             val id = call.parameters["id"]?.toInt() ?: error("Invalid delete request")
             transaction {
-                val parentId = ChoreDao.get(id).parentId
-                val parent = ChoreDao.get(parentId)
-                ChoreDao.update(parent.copy(childrenIds = (parent.childrenIds.split(",") - id.toString()).joinToString(",")))
-                dao.Chore.destroy(id)
+                service.chore.destroy(id)
             }
             call.respond(HttpStatusCode.OK)
         }

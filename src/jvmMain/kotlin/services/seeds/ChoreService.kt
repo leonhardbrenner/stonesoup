@@ -20,11 +20,13 @@ class ChoreService @Inject constructor(val dao: SeedsDao) {
             SeedsDto.Chore(-1, source.parentId, "", source.name)
         )
         dao.Chore.update(
-            dao.Chore.get(source.parentId).let {
-                val newChildrenIds = (it.childrenIds.split(",") + id.toString())
-                    .joinToString(",")
-                it.copy(childrenIds = newChildrenIds)
+            with (dao.Chore) {
+                get(source.parentId).let {
+                    val newChildrenIds = (it.childrenIds.split(",") + id.toString())
+                        .joinToString(",")
+                    it.copy(childrenIds = newChildrenIds)
 
+                }
             }
         )
     }
@@ -33,22 +35,32 @@ class ChoreService @Inject constructor(val dao: SeedsDao) {
         val node = ChoreDao.get(id)
         if (parentId != node.parentId) {
             //Remove item from old list
-            dao.Chore.update(
-                ChoreDao.get(node.parentId).let {
-                    val updatedChildrenIds = (it.childrenIds.split(",") - id.toString())
-                    it.copy(childrenIds = updatedChildrenIds.joinToString(","))
-                }
-            )
+            with (dao.Chore) {
+                update(
+                    get(node.parentId).let {
+                        val updatedChildrenIds = (it.childrenIds.split(",") - id.toString())
+                        it.copy(childrenIds = updatedChildrenIds.joinToString(","))
+                    }
+                )
 
-            dao.Chore.update(
-                ChoreDao.get(parentId).let {
-                    val updatedChildrenIds = (it.childrenIds.split(",") + id.toString())
-                    it.copy(childrenIds = updatedChildrenIds.joinToString(","))
-                }
-            )
+                update(
+                    get(parentId).let {
+                        val updatedChildrenIds = (it.childrenIds.split(",") + id.toString())
+                        it.copy(childrenIds = updatedChildrenIds.joinToString(","))
+                    }
+                )
 
-            dao.Chore.update(node.copy(parentId = parentId))
+                update(node.copy(parentId = parentId))
+            }
         }
     }
 
+    fun destroy(id: Int) {
+        val parentId = ChoreDao.get(id).parentId
+        val parent = ChoreDao.get(parentId)
+        with (dao.Chore) {
+            update(parent.copy(childrenIds = (parent.childrenIds.split(",") - id.toString()).joinToString(",")))
+            destroy(id)
+        }
+    }
 }
