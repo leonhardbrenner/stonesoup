@@ -14,7 +14,7 @@ class ScheduleRouting @Inject constructor(val dao: SeedsDao, val service: SeedsS
     fun routes(routing: Routing) = routing.route(SeedsDto.Schedule.path) {
 
         get {
-            call.respond(dao.Schedule.index())
+            call.respond(transaction { dao.schedule.index() })
         }
 
         //get("/new") {

@@ -10,17 +10,17 @@ import javax.inject.Inject
 class ChoreService @Inject constructor(val dao: SeedsDao) {
 
     fun index() = let {
-        val chores = dao.Chore.index()
-        val schedules = dao.Schedule.index().associateBy { it.choreId }
+        val chores = dao.chore.index()
+        val schedules = dao.schedule.index().associateBy { it.choreId }
         chores.map { SeedsResources.Chore(it, schedules[it.id]) }
     }
 
     fun create(source: Seeds.Chore) {
-        val id = dao.Chore.create(
+        val id = dao.chore.create(
             SeedsDto.Chore(-1, source.parentId, "", source.name)
         )
-        dao.Chore.update(
-            with (dao.Chore) {
+        dao.chore.update(
+            with (dao.chore) {
                 get(source.parentId).let {
                     val newChildrenIds = (it.childrenIds.split(",") + id.toString())
                         .joinToString(",")
@@ -35,7 +35,7 @@ class ChoreService @Inject constructor(val dao: SeedsDao) {
         val node = ChoreDao.get(id)
         if (parentId != node.parentId) {
             //Remove item from old list
-            with (dao.Chore) {
+            with (dao.chore) {
                 update(
                     get(node.parentId).let {
                         val updatedChildrenIds = (it.childrenIds.split(",") - id.toString())
@@ -58,7 +58,7 @@ class ChoreService @Inject constructor(val dao: SeedsDao) {
     fun destroy(id: Int) {
         val parentId = ChoreDao.get(id).parentId
         val parent = ChoreDao.get(parentId)
-        with (dao.Chore) {
+        with (dao.chore) {
             update(parent.copy(childrenIds = (parent.childrenIds.split(",") - id.toString()).joinToString(",")))
             destroy(id)
         }
