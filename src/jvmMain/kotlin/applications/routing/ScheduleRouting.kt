@@ -1,14 +1,14 @@
 package applications.routing
 
-import applications.CoreApplication
 import generated.model.SeedsDto
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.response.*
 import io.ktor.routing.*
+import dao.SeedsDao
 import javax.inject.Inject
 
-class ScheduleRouting @Inject constructor(val dao: CoreApplication.Dao) {
+class ScheduleRouting @Inject constructor(val dao: SeedsDao) {
     fun routes(routing: Routing) = routing.route(SeedsDto.Schedule.path) {
 
         get {

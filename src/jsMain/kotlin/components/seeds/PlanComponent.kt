@@ -5,10 +5,9 @@ import components.seeds.PlanComponent.ComponentStyles.listDiv
 import com.ccfraser.muirwik.components.*
 import com.ccfraser.muirwik.components.button.mIconButton
 import com.ccfraser.muirwik.components.list.*
-import generated.model.SeedsDto
 import inputComponent
 import kotlinx.css.*
-import models.Resources
+import models.SeedsResources
 //import models.app.seeds.Chore
 import react.*
 import styled.StyleSheet
@@ -16,7 +15,7 @@ import styled.css
 import styled.styledDiv
 
 external interface PlanProps: RProps {
-    var chores: List<Resources.Chore>
+    var chores: List<SeedsResources.Chore>
     var deleteChore: (Int) -> Unit
     var handleInput: (String) -> Unit
     var onSelect: (Int) -> Unit
