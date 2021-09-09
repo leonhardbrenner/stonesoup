@@ -13,10 +13,11 @@ import utils.then
 import javax.inject.Inject
 
 class MySeedsRouting @Inject constructor(val dao: SeedsDao, val service: SeedsService) {
+
     fun routes(routing: Routing) = routing.route(SeedsDto.MySeeds.path) {
 
         get {
-            call.respond(service.mySeeds.index())
+            call.respond(transaction { service.mySeeds.index() })
         }
 
         //get {

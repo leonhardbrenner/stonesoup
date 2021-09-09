@@ -6,12 +6,12 @@ import javax.inject.Inject
 
 class ScheduleService @Inject constructor(val dao: SeedsDao) {
 
-    fun index() = dao.Schedule.index()
+    fun index() = dao.schedule.index()
 
-    fun create(source: Seeds.Schedule) = dao.Schedule.create(source)
+    fun create(source: Seeds.Schedule) = dao.schedule.create(source)
 
-    fun update(source: Seeds.Schedule) = dao.Schedule.update(source)
+    fun update(source: Seeds.Schedule) = dao.schedule.update(source)
 
-    fun destroy(id: Int) = dao.Schedule.destroy(id)
+    fun destroy(id: Int) = dao.schedule.destroy(id)
 
 }

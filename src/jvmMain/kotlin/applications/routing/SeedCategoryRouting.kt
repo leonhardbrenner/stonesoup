@@ -13,7 +13,7 @@ class SeedCategoryRouting @Inject constructor(val dao: SeedsDao) {
     fun routes(routing: Routing) = routing.route(SeedsDto.SeedCategory.path) {
 
         get {
-            call.respond(transaction { dao.SeedCategory.index() } )
+            call.respond(transaction { dao.seedCategory.index() } )
         }
 
         //get("/new") {
@@ -27,7 +27,7 @@ class SeedCategoryRouting @Inject constructor(val dao: SeedsDao) {
             val image = call.parameters["image"] ?: return@post call.respond(HttpStatusCode.BadRequest)
             val link = call.parameters["link"] ?: return@post call.respond(HttpStatusCode.BadRequest)
             transaction {
-                dao.SeedCategory.create(
+                dao.seedCategory.create(
                     SeedsDto.SeedCategory(-1, name, image, link)
                 )
             }
@@ -48,7 +48,7 @@ class SeedCategoryRouting @Inject constructor(val dao: SeedsDao) {
             val image = call.parameters["image"] ?: return@put call.respond(HttpStatusCode.BadRequest)
             val link = call.parameters["link"] ?: return@put call.respond(HttpStatusCode.BadRequest)
             transaction {
-                dao.SeedCategory.update(SeedsDto.SeedCategory(id, name, image, link))
+                dao.seedCategory.update(SeedsDto.SeedCategory(id, name, image, link))
             }
             call.respond(HttpStatusCode.OK)
         }
@@ -56,7 +56,7 @@ class SeedCategoryRouting @Inject constructor(val dao: SeedsDao) {
         delete("/{id}") {
             val id = call.parameters["id"]?.toInt() ?: error("Invalid delete request")
             transaction {
-                dao.SeedCategory.destroy(id)
+                dao.seedCategory.destroy(id)
             }
             call.respond(HttpStatusCode.OK)
         }

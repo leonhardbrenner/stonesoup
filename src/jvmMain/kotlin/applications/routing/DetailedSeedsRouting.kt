@@ -14,10 +14,7 @@ class DetailedSeedsRouting @Inject constructor(val dao: SeedsDao, val service: S
     fun routes(routing: Routing) = routing.route(SeedsDto.DetailedSeed.path) {
 
         get {
-            val response = transaction {
-                service.detailedSeeds.index()
-            }
-            call.respond(response)
+            call.respond(transaction { service.detailedSeeds.index() })
         }
 
         //get("/new") {

@@ -37,8 +37,7 @@ class ChoreRouting @Inject constructor(val dao: SeedsDao, val service: SeedsServ
         //    }
         //}
         get {
-            val response = transaction { service.chore.index() }
-            call.respond(response)
+            call.respond(transaction { service.chore.index() })
         }
 
 
