@@ -23,7 +23,6 @@ class ChoreService @Inject constructor(val dao: SeedsDao) {
     fun update(source: Seeds.Chore) = dao.Chore.update(source)
 
     fun move(id: Int, parentId: Int) = update(dao.Chore.get(id).copy(parentId = parentId))
-    
-    fun destroy(id: Int) = dao.Chore.destroy(id)
 
+    fun destroy(id: Int) = dao.Chore.destroy(id)
 }
