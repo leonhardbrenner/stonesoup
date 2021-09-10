@@ -4,22 +4,10 @@ import kotlin.Int
 import kotlin.String
 
 interface Seeds {
-  interface Schedule {
-    val id: Int
-
-    val choreId: Int
-
-    val workHours: String?
-
-    val completeBy: String?
-  }
-
   interface Chore {
     val id: Int
 
     val parentId: Int
-
-    val childrenIds: String
 
     val name: String
   }
@@ -54,6 +42,16 @@ interface Seeds {
     val description: String
 
     val germinationTest: String
+  }
+
+  interface Schedule {
+    val id: Int
+
+    val choreId: Int
+
+    val workHours: String?
+
+    val completeBy: String?
   }
 
   interface SeedCategory {

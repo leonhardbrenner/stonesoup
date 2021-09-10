@@ -19,7 +19,6 @@ interface Seeds {
     class Chore( //Make this Node
         val id: Int,
         val parentId: Int = 0,
-        val childrenIds: String, //Todo - delete this it can be derived by relationship nodeId
         val name: String
     )
 
