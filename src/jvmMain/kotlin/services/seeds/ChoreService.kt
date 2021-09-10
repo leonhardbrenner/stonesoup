@@ -13,7 +13,11 @@ class ChoreService @Inject constructor(val dao: SeedsDao) {
             .map { it.parentId to it.id }
             .groupBy({ it.first }, { it.second })
         val schedules = dao.schedule.index().associateBy { it.choreId }
-        chores.map { SeedsResources.Chore(it, childrenIds[it.id]?: emptyList(), schedules[it.id]) }
+        chores.map {
+            SeedsResources.Chore(
+                it,
+                childIds = childrenIds[it.id]?: emptyList(),
+                schedule = schedules[it.id]) }
     }
 
     fun create(source: Seeds.Chore) = dao.chore.create(source)
