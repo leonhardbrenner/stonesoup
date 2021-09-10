@@ -16,10 +16,10 @@ interface Seeds {
         val completeBy: String?
     )
 
-    class Chore(
+    class Chore( //Make this Node
         val id: Int,
         val parentId: Int = 0,
-        val childrenIds: String,
+        val childrenIds: String, //Todo - delete this it can be derived by relationship nodeId
         val name: String
     )
 
