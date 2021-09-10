@@ -50,7 +50,7 @@ class ChoreRouting @Inject constructor(val dao: SeedsDao, val service: SeedsServ
         post {
             val parentId = call.parameters["parentId"]?.toInt() ?: return@post call.respond(HttpStatusCode.BadRequest)
             val name = call.parameters["name"]?: return@post call.respond(HttpStatusCode.BadRequest)
-            val dto = SeedsDto.Chore(-1, parentId, "", name)
+            val dto = SeedsDto.Chore(-1, parentId, name)
             val response = transaction {
                 service.chore.create(dto)
             }

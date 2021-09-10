@@ -21,10 +21,9 @@ class TreeView<T: SeedsResources.Chore>(val rootId: Int, val collection: List<T>
         val node = collection.find { it.id == id }
         console.log("ID of node was ${id}")
         if (node != null) {
-            block(node!!)
-            node!!.childrenIds.split(",").map {
-                if (it != "")
-                    walk(it.toInt(), block)
+            block(node)
+            node.childrenId.map {
+                walk(it, block)
             }
         }
     }
@@ -34,11 +33,10 @@ class TreeView<T: SeedsResources.Chore>(val rootId: Int, val collection: List<T>
         val node = collection.find { it.id == id }
         console.log("ID2 of node was ${id}")
         if (node != null) {
-            node!!.childrenIds.split(",").map {
-                if (it != "")
-                    depthFirstWalk(it.toInt(), block)
+            node.childrenId.map {
+                depthFirstWalk(it, block)
             }
-            block(node!!)
+            block(node)
         }
     }
 
@@ -47,11 +45,10 @@ class TreeView<T: SeedsResources.Chore>(val rootId: Int, val collection: List<T>
         val node = collection.find { it.id == id }
         console.log("ID3 of node was ${id}")
         if (node != null) {
-            node!!.childrenIds.split(",").map {
-                if (it != "")
-                    dependencyWalk(it.toInt(), block)
+            node.childrenId.map {
+                dependencyWalk(it, block)
             }
-            block(node!!)
+            block(node)
         }
     }
 
