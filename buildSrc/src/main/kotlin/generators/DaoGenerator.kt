@@ -72,7 +72,7 @@ object DaoGenerator: Generator {
 
     val Manifest.Namespace.Type.create get() = FunSpec
         .builder("create")
-        .addParameter("source", typeName)
+        .addParameter("source", ClassName("${namespace.name}", name))
         .addCode(
             """
             return ${dotPath("Db")}.Table.insertAndGetId {
@@ -84,7 +84,7 @@ object DaoGenerator: Generator {
 
     val Manifest.Namespace.Type.update get() = FunSpec
         .builder("update")
-        .addParameter("source", typeName)
+        .addParameter("source", ClassName("${namespace.name}", name))
         .addCode(
             """
             return ${dotPath("Db")}.Table.update({ ${dotPath("Db")}.Table.id.eq(source.id) }) {
