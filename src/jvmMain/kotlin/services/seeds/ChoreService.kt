@@ -1,6 +1,6 @@
 package services.seeds
 
-import dao.SeedsDao
+import generated.dao.SeedsDao
 import generated.model.Seeds
 import models.SeedsResources
 import javax.inject.Inject

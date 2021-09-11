@@ -1,9 +1,6 @@
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
-import generators.InterfaceGenerator
-import generators.DtoGenerator
-import generators.DbGenerator
-import generators.BuilderGenerator
+import generators.*
 import models.*
 
 import schema.Manifest.Namespace
@@ -35,8 +32,11 @@ open class ModelGenerator : DefaultTask() {
             println("Generating ${namespace.name}")
             InterfaceGenerator.generate(namespace)
             DtoGenerator.generate(namespace)
-            DbGenerator.generate(namespace)
             BuilderGenerator.generate(namespace)
+            DbGenerator.generate(namespace)
+            DaoGenerator.generate(namespace)
+            //RouteGenerator.generate(namespace)
+            //ApiGenerator.generate(namespace)
         }
 
     }

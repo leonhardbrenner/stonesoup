@@ -1,6 +1,6 @@
 package services
 
-import dao.SeedsDao
+import generated.dao.SeedsDao
 import services.seeds.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import javax.inject.Inject
@@ -13,5 +13,5 @@ class SeedsService @Inject constructor(
     val seedCategory: SeedCategoryService,
     val mySeeds: MySeedsService
 ) {
-    fun getDetailedSeeds() = transaction { dao.detailedSeeds.index() }
+    fun getDetailedSeeds() = transaction { dao.detailedSeed.index() }
 }

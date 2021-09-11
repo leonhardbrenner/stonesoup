@@ -5,7 +5,7 @@ import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.response.*
 import io.ktor.routing.*
-import dao.SeedsDao
+import generated.dao.SeedsDao
 import org.jetbrains.exposed.sql.transactions.transaction
 import services.SeedsService
 import javax.inject.Inject

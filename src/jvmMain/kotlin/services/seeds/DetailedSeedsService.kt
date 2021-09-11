@@ -1,17 +1,17 @@
 package services.seeds
 
-import dao.SeedsDao
+import generated.dao.SeedsDao
 import generated.model.Seeds
 import javax.inject.Inject
 
 class DetailedSeedsService @Inject constructor(val dao: SeedsDao) {
 
-    fun index() = dao.detailedSeeds.index()
+    fun index() = dao.detailedSeed.index()
 
-    fun create(source: Seeds.DetailedSeed) = dao.detailedSeeds.create(source)
+    fun create(source: Seeds.DetailedSeed) = dao.detailedSeed.create(source)
 
-    fun update(source: Seeds.DetailedSeed) = dao.detailedSeeds.update(source.id, source)
+    fun update(source: Seeds.DetailedSeed) = dao.detailedSeed.update(source)
 
-    fun destroy(id: Int) = dao.detailedSeeds.destroy(id)
+    fun destroy(id: Int) = dao.detailedSeed.destroy(id)
 
 }
