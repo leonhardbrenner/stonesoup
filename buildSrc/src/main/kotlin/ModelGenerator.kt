@@ -4,6 +4,8 @@ import generators.*
 import models.*
 import schema.Manifest.Namespace
 
+//Interesting similar project for go:
+//    https://awesomeopensource.com/project/Shpota/goxygen
 //Todo - move back to this
 /*
   Todo - Use ktfmt to pretty print the output of kotlinPoet:(
@@ -39,7 +41,7 @@ open class ModelGenerator : DefaultTask() {
             BuilderGenerator.generate(namespace)
             DbGenerator.generate(namespace)
             DaoGenerator.generate(namespace)
-            //RouteGenerator.generate(namespace)
+            RouteGenerator.generate(namespace)
             //ApiGenerator.generate(namespace)
         }
 
