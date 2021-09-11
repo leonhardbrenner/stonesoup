@@ -1,23 +1,24 @@
 package services.seeds
 
-import dao.SeedsDao
+import generated.dao.SeedsDao
 import generated.model.Seeds
 import models.SeedsResources
 import javax.inject.Inject
 
-class MySeedsService @Inject constructor(val dao: SeedsDao) {
+class MySeedsService @Inject constructor(
+    val mySeedsDao: SeedsDao.MySeeds, val detailedSeedDao: SeedsDao.DetailedSeed) {
 
     fun index() = let {
-        val detailedSeeds = dao.detailedSeeds.index().associateBy { it.id }
-        dao.mySeeds.index().map {
+        val detailedSeeds = detailedSeedDao.index().associateBy { it.id }
+        mySeedsDao.index().map {
             SeedsResources.MySeeds(it, detailedSeeds.get(it.id))
         }
     }
 
-    fun create(source: Seeds.MySeeds) = dao.mySeeds.create(source)
+    fun create(source: Seeds.MySeeds) = mySeedsDao.create(source)
 
-    fun update(source: Seeds.MySeeds) = dao.mySeeds.update(source)
+    fun update(source: Seeds.MySeeds) = mySeedsDao.update(source)
 
-    fun destroy(id: Int) = dao.mySeeds.destroy(id)
+    fun destroy(id: Int) = mySeedsDao.destroy(id)
 
 }

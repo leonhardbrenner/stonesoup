@@ -65,7 +65,6 @@ object Manifest {
             else
                 (kClass.simpleName?:"UNKNOWN2").replace("?", "")
 
-
             private val memberProperties get() = kClass?.declaredMemberProperties?:emptyList()
             val elements by lazy {
                 //TODO - Revisit! This is done so properties are generated in the order they were declared.

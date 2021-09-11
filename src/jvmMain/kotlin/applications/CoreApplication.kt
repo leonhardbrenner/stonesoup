@@ -10,7 +10,7 @@ import javax.inject.Inject
 import io.ktor.application.*
 import io.ktor.routing.*
 import io.ktor.response.*
-import dao.SeedsDao
+import generated.dao.SeedsDao
 import services.SeedsService
 
 class CoreApplication @Inject constructor(

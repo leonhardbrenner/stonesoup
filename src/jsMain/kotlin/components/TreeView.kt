@@ -1,6 +1,5 @@
 package components
 
-import generated.model.Seeds
 import models.SeedsResources
 
 /*
@@ -22,7 +21,7 @@ class TreeView<T: SeedsResources.Chore>(val rootId: Int, val collection: List<T>
         console.log("ID of node was ${id}")
         if (node != null) {
             block(node)
-            node.childrenId.map {
+            node.childIds.map {
                 walk(it, block)
             }
         }
@@ -33,7 +32,7 @@ class TreeView<T: SeedsResources.Chore>(val rootId: Int, val collection: List<T>
         val node = collection.find { it.id == id }
         console.log("ID2 of node was ${id}")
         if (node != null) {
-            node.childrenId.map {
+            node.childIds.map {
                 depthFirstWalk(it, block)
             }
             block(node)
@@ -45,7 +44,7 @@ class TreeView<T: SeedsResources.Chore>(val rootId: Int, val collection: List<T>
         val node = collection.find { it.id == id }
         console.log("ID3 of node was ${id}")
         if (node != null) {
-            node.childrenId.map {
+            node.childIds.map {
                 dependencyWalk(it, block)
             }
             block(node)

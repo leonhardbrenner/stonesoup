@@ -9,7 +9,7 @@ class SeedsResources {
     @Serializable
     data class Chore(
         val source: SeedsDto.Chore,
-        val childrenId: List<Int>,
+        val childIds: List<Int>,
         val schedule: SeedsDto.Schedule?
     ): Seeds.Chore by source
 
