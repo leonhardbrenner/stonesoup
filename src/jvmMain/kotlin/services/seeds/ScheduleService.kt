@@ -4,14 +4,14 @@ import generated.dao.SeedsDao
 import generated.model.Seeds
 import javax.inject.Inject
 
-class ScheduleService @Inject constructor(val dao: SeedsDao) {
+class ScheduleService @Inject constructor(val scheduleDao: SeedsDao.Schedule) {
 
-    fun index() = dao.schedule.index()
+    fun index() = scheduleDao.index()
 
-    fun create(source: Seeds.Schedule) = dao.schedule.create(source)
+    fun create(source: Seeds.Schedule) = scheduleDao.create(source)
 
-    fun update(source: Seeds.Schedule) = dao.schedule.update(source)
+    fun update(source: Seeds.Schedule) = scheduleDao.update(source)
 
-    fun destroy(id: Int) = dao.schedule.destroy(id)
+    fun destroy(id: Int) = scheduleDao.destroy(id)
 
 }

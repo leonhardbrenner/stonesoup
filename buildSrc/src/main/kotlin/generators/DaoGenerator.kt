@@ -15,13 +15,13 @@ object DaoGenerator: Generator {
         val typeSpec = TypeSpec.classBuilder("${namespace.name}Dao").apply {
             namespace.types.forEach { type ->
                 generateType(type)
-                addProperty(
-                    PropertySpec.builder(
-                        type.name.decapitalize(),
-                        ClassName("", type.dotPath("Dao"))
-                    )
-                        .build()
-                )
+                //addProperty(
+                //    PropertySpec.builder(
+                //        type.name.decapitalize(),
+                //        ClassName("", type.dotPath("Dao"))
+                //    )
+                //        .build()
+                //)
             }
         }
         val file = FileSpec.builder("generated.dao", "${namespace.name}Dao")
@@ -38,7 +38,7 @@ object DaoGenerator: Generator {
 
     fun TypeSpec.Builder.generateType(type: Manifest.Namespace.Type): TypeSpec.Builder
     = addType(
-        TypeSpec.objectBuilder(type.name).apply {
+        TypeSpec.classBuilder(type.name).apply {
             addFunction(type.index)
             addFunction(type.get)
             addFunction(type.create)

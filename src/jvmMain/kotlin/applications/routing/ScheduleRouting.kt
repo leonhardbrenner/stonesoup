@@ -10,11 +10,11 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import services.SeedsService
 import javax.inject.Inject
 
-class ScheduleRouting @Inject constructor(val dao: SeedsDao, val service: SeedsService) {
+class ScheduleRouting @Inject constructor(val dao: SeedsDao.Schedule, val service: SeedsService) {
     fun routes(routing: Routing) = routing.route(SeedsDto.Schedule.path) {
 
         get {
-            call.respond(transaction { dao.schedule.index() })
+            call.respond(transaction { dao.index() })
         }
 
         //get("/new") {
