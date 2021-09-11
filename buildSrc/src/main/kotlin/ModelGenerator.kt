@@ -2,10 +2,14 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 import generators.*
 import models.*
-
 import schema.Manifest.Namespace
 
 //Todo - move back to this
+/*
+  Todo - Use ktfmt to pretty print the output of kotlinPoet:(
+      java -jar ktfmt-0.28-jar-with-dependencies.jar `find .|grep -v generated|grep .kt$`
+      https://facebookincubator.github.io/ktfmt
+ */
 open class ModelGenerator : DefaultTask() {
 
     init {
