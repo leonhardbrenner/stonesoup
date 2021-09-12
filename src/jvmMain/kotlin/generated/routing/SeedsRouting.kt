@@ -13,12 +13,16 @@ import io.ktor.routing.put
 import io.ktor.routing.route
 import javax.inject.Inject
 import org.jetbrains.exposed.sql.transactions.transaction
-import services.SeedsService
+import services.seeds.ChoreService
+import services.seeds.DetailedSeedService
+import services.seeds.MySeedsService
+import services.seeds.ScheduleService
+import services.seeds.SeedCategoryService
 
 class SeedsRouting {
   class Chore @Inject constructor(
     val dao: SeedsDao.Chore,
-    val service: SeedsService
+    val service: ChoreService
   ) {
     fun routes(routing: Routing) = routing.route(SeedsDto.Chore.path) {
 
@@ -37,9 +41,9 @@ class SeedsRouting {
         call.respond(HttpStatusCode.BadRequest)
             val workHours = call.parameters["workHours"]
             val completeBy = call.parameters["completeBy"]
-            val _dto = SeedsDto.Schedule(-1, choreId, workHours, completeBy)
+            val _dto = SeedsDto.Chore(-1, choreId, workHours, completeBy)
             val _response = transaction {
-                service.schedule.create(_dto)
+                service.create(_dto)
             }
             call.respond(_response)
         }
@@ -58,9 +62,9 @@ class SeedsRouting {
         call.respond(HttpStatusCode.BadRequest)
             val workHours = call.parameters["workHours"]
             val completeBy = call.parameters["completeBy"]
-            val _dto = SeedsDto.Schedule(id, choreId, workHours, completeBy)
+            val _dto = SeedsDto.Chore(id, choreId, workHours, completeBy)
             transaction {
-                service.schedule.update(_dto)
+                service.update(_dto)
             }
             call.respond(HttpStatusCode.OK)
         }
@@ -68,7 +72,7 @@ class SeedsRouting {
         delete("/{id}") {
             val id = call.parameters["id"]?.toInt() ?: error("Invalid delete request")
             transaction {
-                service.schedule.destroy(id)
+                service.destroy(id)
             }
             call.respond(HttpStatusCode.OK)
         }
@@ -78,7 +82,7 @@ class SeedsRouting {
 
   class DetailedSeed @Inject constructor(
     val dao: SeedsDao.DetailedSeed,
-    val service: SeedsService
+    val service: DetailedSeedService
   ) {
     fun routes(routing: Routing) = routing.route(SeedsDto.DetailedSeed.path) {
 
@@ -97,9 +101,9 @@ class SeedsRouting {
         call.respond(HttpStatusCode.BadRequest)
             val workHours = call.parameters["workHours"]
             val completeBy = call.parameters["completeBy"]
-            val _dto = SeedsDto.Schedule(-1, choreId, workHours, completeBy)
+            val _dto = SeedsDto.DetailedSeed(-1, choreId, workHours, completeBy)
             val _response = transaction {
-                service.schedule.create(_dto)
+                service.create(_dto)
             }
             call.respond(_response)
         }
@@ -118,9 +122,9 @@ class SeedsRouting {
         call.respond(HttpStatusCode.BadRequest)
             val workHours = call.parameters["workHours"]
             val completeBy = call.parameters["completeBy"]
-            val _dto = SeedsDto.Schedule(id, choreId, workHours, completeBy)
+            val _dto = SeedsDto.DetailedSeed(id, choreId, workHours, completeBy)
             transaction {
-                service.schedule.update(_dto)
+                service.update(_dto)
             }
             call.respond(HttpStatusCode.OK)
         }
@@ -128,7 +132,7 @@ class SeedsRouting {
         delete("/{id}") {
             val id = call.parameters["id"]?.toInt() ?: error("Invalid delete request")
             transaction {
-                service.schedule.destroy(id)
+                service.destroy(id)
             }
             call.respond(HttpStatusCode.OK)
         }
@@ -138,7 +142,7 @@ class SeedsRouting {
 
   class MySeeds @Inject constructor(
     val dao: SeedsDao.MySeeds,
-    val service: SeedsService
+    val service: MySeedsService
   ) {
     fun routes(routing: Routing) = routing.route(SeedsDto.MySeeds.path) {
 
@@ -157,9 +161,9 @@ class SeedsRouting {
         call.respond(HttpStatusCode.BadRequest)
             val workHours = call.parameters["workHours"]
             val completeBy = call.parameters["completeBy"]
-            val _dto = SeedsDto.Schedule(-1, choreId, workHours, completeBy)
+            val _dto = SeedsDto.MySeeds(-1, choreId, workHours, completeBy)
             val _response = transaction {
-                service.schedule.create(_dto)
+                service.create(_dto)
             }
             call.respond(_response)
         }
@@ -178,9 +182,9 @@ class SeedsRouting {
         call.respond(HttpStatusCode.BadRequest)
             val workHours = call.parameters["workHours"]
             val completeBy = call.parameters["completeBy"]
-            val _dto = SeedsDto.Schedule(id, choreId, workHours, completeBy)
+            val _dto = SeedsDto.MySeeds(id, choreId, workHours, completeBy)
             transaction {
-                service.schedule.update(_dto)
+                service.update(_dto)
             }
             call.respond(HttpStatusCode.OK)
         }
@@ -188,7 +192,7 @@ class SeedsRouting {
         delete("/{id}") {
             val id = call.parameters["id"]?.toInt() ?: error("Invalid delete request")
             transaction {
-                service.schedule.destroy(id)
+                service.destroy(id)
             }
             call.respond(HttpStatusCode.OK)
         }
@@ -198,7 +202,7 @@ class SeedsRouting {
 
   class Schedule @Inject constructor(
     val dao: SeedsDao.Schedule,
-    val service: SeedsService
+    val service: ScheduleService
   ) {
     fun routes(routing: Routing) = routing.route(SeedsDto.Schedule.path) {
 
@@ -219,7 +223,7 @@ class SeedsRouting {
             val completeBy = call.parameters["completeBy"]
             val _dto = SeedsDto.Schedule(-1, choreId, workHours, completeBy)
             val _response = transaction {
-                service.schedule.create(_dto)
+                service.create(_dto)
             }
             call.respond(_response)
         }
@@ -240,7 +244,7 @@ class SeedsRouting {
             val completeBy = call.parameters["completeBy"]
             val _dto = SeedsDto.Schedule(id, choreId, workHours, completeBy)
             transaction {
-                service.schedule.update(_dto)
+                service.update(_dto)
             }
             call.respond(HttpStatusCode.OK)
         }
@@ -248,7 +252,7 @@ class SeedsRouting {
         delete("/{id}") {
             val id = call.parameters["id"]?.toInt() ?: error("Invalid delete request")
             transaction {
-                service.schedule.destroy(id)
+                service.destroy(id)
             }
             call.respond(HttpStatusCode.OK)
         }
@@ -258,7 +262,7 @@ class SeedsRouting {
 
   class SeedCategory @Inject constructor(
     val dao: SeedsDao.SeedCategory,
-    val service: SeedsService
+    val service: SeedCategoryService
   ) {
     fun routes(routing: Routing) = routing.route(SeedsDto.SeedCategory.path) {
 
@@ -277,9 +281,9 @@ class SeedsRouting {
         call.respond(HttpStatusCode.BadRequest)
             val workHours = call.parameters["workHours"]
             val completeBy = call.parameters["completeBy"]
-            val _dto = SeedsDto.Schedule(-1, choreId, workHours, completeBy)
+            val _dto = SeedsDto.SeedCategory(-1, choreId, workHours, completeBy)
             val _response = transaction {
-                service.schedule.create(_dto)
+                service.create(_dto)
             }
             call.respond(_response)
         }
@@ -298,9 +302,9 @@ class SeedsRouting {
         call.respond(HttpStatusCode.BadRequest)
             val workHours = call.parameters["workHours"]
             val completeBy = call.parameters["completeBy"]
-            val _dto = SeedsDto.Schedule(id, choreId, workHours, completeBy)
+            val _dto = SeedsDto.SeedCategory(id, choreId, workHours, completeBy)
             transaction {
-                service.schedule.update(_dto)
+                service.update(_dto)
             }
             call.respond(HttpStatusCode.OK)
         }
@@ -308,7 +312,7 @@ class SeedsRouting {
         delete("/{id}") {
             val id = call.parameters["id"]?.toInt() ?: error("Invalid delete request")
             transaction {
-                service.schedule.destroy(id)
+                service.destroy(id)
             }
             call.respond(HttpStatusCode.OK)
         }

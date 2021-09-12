@@ -38,7 +38,7 @@ object RouteGenerator: Generator {
                 //https://github.com/square/kotlinpoet/issues/515
                 FunSpec.constructorBuilder().addAnnotation(ClassName("javax.inject", "Inject"))
                     .addParameter("dao", ClassName("generated.dao", "${type.namespace.name}Dao", type.name))
-                    .addParameter("service", ClassName("services", "${type.namespace.name}Service"))
+                    .addParameter("service", ClassName("services.${type.namespace.name.decapitalize()}", "${type.name}Service"))
                 .build()
             )
             addProperty(
@@ -49,10 +49,8 @@ object RouteGenerator: Generator {
             addProperty(
                 PropertySpec.builder(
                 "service",
-                ClassName("services", "${type.namespace.name}Service")
+                ClassName("services.${type.namespace.name.decapitalize()}", "${type.name}Service")
             ).initializer("service").build())
-            addProperty("dao", ClassName("generated.dao", "${type.namespace.name}Dao", type.name))
-            addProperty("service", ClassName("services", "${type.namespace.name}Service"))
             addFunction(type.index)
         }.build()
     )
@@ -83,9 +81,9 @@ object RouteGenerator: Generator {
             |        val choreId = call.parameters["choreId"]?.toInt() ?: return@post call.respond(HttpStatusCode.BadRequest)
             |        val workHours = call.parameters["workHours"]
             |        val completeBy = call.parameters["completeBy"]
-            |        val _dto = SeedsDto.Schedule(-1, choreId, workHours, completeBy)
+            |        val _dto = ${dotPath("Dto")}(-1, choreId, workHours, completeBy)
             |        val _response = transaction {
-            |            service.schedule.create(_dto)
+            |            service.create(_dto)
             |        }
             |        call.respond(_response)
             |    }
@@ -102,9 +100,9 @@ object RouteGenerator: Generator {
             |        val choreId = call.parameters["choreId"]?.toInt() ?: return@put call.respond(HttpStatusCode.BadRequest)
             |        val workHours = call.parameters["workHours"]
             |        val completeBy = call.parameters["completeBy"]
-            |        val _dto = SeedsDto.Schedule(id, choreId, workHours, completeBy)
+            |        val _dto = ${dotPath("Dto")}(id, choreId, workHours, completeBy)
             |        transaction {
-            |            service.schedule.update(_dto)
+            |            service.update(_dto)
             |        }
             |        call.respond(HttpStatusCode.OK)
             |    }
@@ -112,7 +110,7 @@ object RouteGenerator: Generator {
             |    delete("/{id}") {
             |        val id = call.parameters["id"]?.toInt() ?: error("Invalid delete request")
             |        transaction {
-            |            service.schedule.destroy(id)
+            |            service.destroy(id)
             |        }
             |        call.respond(HttpStatusCode.OK)
             |    }
