@@ -1,32 +1,28 @@
 package applications
 
-import applications.routing.ChoreRouting
-import applications.routing.DetailedSeedsRouting
-import applications.routing.MySeedsRouting
-import applications.routing.SeedCategoryRouting
+import applications.routing.*
 import com.google.inject.AbstractModule
-import generated.model.SeedsDto
 import javax.inject.Inject
-import io.ktor.application.*
 import io.ktor.routing.*
-import io.ktor.response.*
 import generated.dao.SeedsDao
 import services.SeedsService
 
 class CoreApplication @Inject constructor(
     val dao: SeedsDao,
     val seedsService: SeedsService,
-    val choreRouting: ChoreRouting,
-    val detailedSeedsRouting: DetailedSeedsRouting,
-    val seedCategoryRouting: SeedCategoryRouting,
-    val mySeedsRouting: MySeedsRouting
+    val chore: ChoreRouting,
+    val schedule: ScheduleRouting,
+    val detailedSeeds: DetailedSeedsRouting,
+    val seedCategory: SeedCategoryRouting,
+    val mySeeds: MySeedsRouting
     ) {
 
     fun routesFrom(routing: Routing) {
-        choreRouting.routes(routing)
-        detailedSeedsRouting.routes(routing)
-        seedCategoryRouting.routes(routing)
-        mySeedsRouting.routes(routing)
+        chore.routes(routing)
+        schedule.routes(routing)
+        detailedSeeds.routes(routing)
+        seedCategory.routes(routing)
+        mySeeds.routes(routing)
     }
 
     object Module : AbstractModule() {

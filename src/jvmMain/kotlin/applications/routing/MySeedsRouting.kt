@@ -6,13 +6,19 @@ import io.ktor.http.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import generated.dao.SeedsDao
-import models.SeedsResources
 import org.jetbrains.exposed.sql.transactions.transaction
 import services.SeedsService
-import utils.then
 import javax.inject.Inject
 
 class MySeedsRouting @Inject constructor(val dao: SeedsDao, val service: SeedsService) {
+
+    fun unmarshal(parameters: Parameters) = SeedsDto.MySeeds(
+        parameters["id"]?.toInt() ?: -1, //Todo - create flag needed
+        parameters["companyId"] ?: throw Exception("BadRequest"),
+    parameters["seedId"] ?: throw Exception("BadRequest"),
+    parameters["description"] ?: throw Exception("BadRequest"),
+    parameters["germinationTest"] ?: throw Exception("BadRequest")
+    )
 
     fun routes(routing: Routing) = routing.route(SeedsDto.MySeeds.path) {
 
@@ -20,47 +26,24 @@ class MySeedsRouting @Inject constructor(val dao: SeedsDao, val service: SeedsSe
             call.respond(transaction { service.mySeeds.index() })
         }
 
-        //get {
-        //    call.respond(dao.MySeeds.expandedIndex())
-        //}
-
-        //get("/new") {
-        //    TODO("Show form to make new")
-        //    //call.respond(collection.find().toList())
-        //    //call.respond(dao.MySeeds.index())
-        //}
-
         post {
-            val companyId = call.parameters["companyId"] ?: return@post call.respond(HttpStatusCode.BadRequest)
-            val seedId = call.parameters["seedId"] ?: return@post call.respond(HttpStatusCode.BadRequest)
-            val description = call.parameters["description"] ?: return@post call.respond(HttpStatusCode.BadRequest)
-            val germinationTest = call.parameters["germinationTest"] ?: return@post call.respond(HttpStatusCode.BadRequest)
-            val _dto = SeedsDto.MySeeds(-1, companyId, seedId, description, germinationTest)
-            val _response = transaction {
-                service.mySeeds.create(_dto)
-            }
-            call.respond(_response)
+            call.respond(
+                try {
+                    transaction { service.mySeeds.create(unmarshal(call.parameters)) }
+                } catch (ex: Exception) {
+                    return@post call.respond(HttpStatusCode.BadRequest)
+                }
+            )
         }
 
-        //get("/{id}") {
-        //    TODO("Lookup Chore by id")
-        //}
-
-        //get("/{id}/edit") {
-        //    TODO("Show form to update Chore")
-        //}
-
         put("/{id}") {
-            val id = call.parameters["id"]?.toInt() ?: return@put call.respond(HttpStatusCode.BadRequest)
-            val companyId = call.parameters["companyId"] ?: return@put call.respond(HttpStatusCode.BadRequest)
-            val seedId = call.parameters["seedId"] ?: return@put call.respond(HttpStatusCode.BadRequest)
-            val description = call.parameters["description"] ?: return@put call.respond(HttpStatusCode.BadRequest)
-            val germinationTest = call.parameters["germinationTest"] ?: return@put call.respond(HttpStatusCode.BadRequest)
-            val _dto = SeedsDto.MySeeds(id, companyId, seedId, description, germinationTest)
-            transaction {
-                service.mySeeds.update(_dto)
-            }
-            call.respond(HttpStatusCode.OK)
+            call.respond(
+                try {
+                    transaction { service.mySeeds.update(unmarshal(call.parameters)) }
+                } catch (ex: Exception) {
+                    return@put call.respond(HttpStatusCode.BadRequest)
+                }
+            )
         }
 
         delete("/{id}") {

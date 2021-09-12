@@ -12,6 +12,12 @@ import javax.inject.Inject
 
 class ChoreRouting @Inject constructor(val dao: SeedsDao, val service: SeedsService) {
 
+    fun unmarshal(parameters: Parameters, moveException: Boolean = false) = SeedsDto.Chore(
+        parameters["id"]?.toInt() ?: throw Exception("BadRequest"),
+        parameters["parentId"]?.toInt() ?: throw Exception("BadRequest"),
+        parameters["name"] ?: (if (moveException) "<UNDEFINED>" else throw Exception("BadRequest"))
+    )
+
     fun routes(routing: Routing) = routing.route(SeedsDto.Chore.path) {
 
         //Todo - Consider doing the work in the db like this.
@@ -40,51 +46,24 @@ class ChoreRouting @Inject constructor(val dao: SeedsDao, val service: SeedsServ
             call.respond(transaction { service.chore.index() })
         }
 
-
-        //get("/new") {
-        //    TODO("Show form to make new Chore")
-        //    //call.respond(collection.find().toList())
-        //    //call.respond(dao.Chore.index())
-        //}
-
         post {
-            val parentId = call.parameters["parentId"]?.toInt() ?: return@post call.respond(HttpStatusCode.BadRequest)
-            val name = call.parameters["name"]?: return@post call.respond(HttpStatusCode.BadRequest)
-            val dto = SeedsDto.Chore(-1, parentId, name)
-            val response = transaction {
-                service.chore.create(dto)
-            }
-            call.respond(response)
+            call.respond(
+                try {
+                    transaction { service.chore.create(unmarshal(call.parameters)) }
+                } catch (ex: Exception) {
+                    return@post call.respond(HttpStatusCode.BadRequest)
+                }
+            )
         }
 
-        //get("/{id}") {
-        //    TODO("Show form to make new Chore")
-        //    //call.respond(collection.find().toList())
-        //    //call.respond(dao.Chore.index())
-        //}
-
-        //get("/{id}/edit") {
-        //    TODO("Show form to make new Chore")
-        //    //call.respond(collection.find().toList())
-        //    //call.respond(dao.Chore.index())
-        //}
-
-        //XXX - Fix this
-        //put("/{id}") {
-        //    val id = call.parameters["id"]?.toInt() ?: return@put call.respond(HttpStatusCode.BadRequest)
-        //    val parentId = call.parameters["parentId"]?.toInt() ?: return@put call.respond(HttpStatusCode.BadRequest)
-        //    val name = call.parameters["name"]
-        //    dao.Chore.update(id, SeedsDto.Chore(id, parentId, name))
-        //    call.respond(HttpStatusCode.OK)
-        //}
-
         put("/{id}") {
-            val id = call.parameters["id"]?.toInt() ?: return@put call.respond(HttpStatusCode.BadRequest)
-            val parentId = call.parameters["parentId"]?.toInt() ?: return@put call.respond(HttpStatusCode.BadRequest)
-            transaction {
-                service.chore.move(id, parentId)
-            }
-            call.respond(HttpStatusCode.OK)
+            call.respond(
+                try {
+                    transaction { unmarshal(call.parameters, true).apply { service.chore.move(id, parentId) } }
+                } catch (ex: Exception) {
+                    return@put call.respond(HttpStatusCode.BadRequest)
+                }
+            )
         }
 
         delete("/{id}") {

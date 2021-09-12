@@ -11,46 +11,38 @@ import services.SeedsService
 import javax.inject.Inject
 
 class ScheduleRouting @Inject constructor(val dao: SeedsDao.Schedule, val service: SeedsService) {
+
+    fun unmarshal(parameters: Parameters) = SeedsDto.Schedule(
+        parameters["id"]?.toInt() ?: throw Exception("BadRequest"),
+        parameters["choreId"]?.toInt() ?: throw Exception("BadRequest"),
+        parameters["workHours"],
+        parameters["completedBy"]
+    )
+
     fun routes(routing: Routing) = routing.route(SeedsDto.Schedule.path) {
 
         get {
             call.respond(transaction { dao.index() })
         }
 
-        //get("/new") {
-        //    TODO("Show form to make new")
-        //    //call.respond(collection.find().toList())
-        //    //call.respond(dao.Schedule.index())
-        //}
-
         post {
-            val choreId = call.parameters["choreId"]?.toInt() ?: return@post call.respond(HttpStatusCode.BadRequest)
-            val workHours = call.parameters["workHours"]
-            val completeBy = call.parameters["completeBy"]
-            val _dto = SeedsDto.Schedule(-1, choreId, workHours, completeBy)
-            val _response = transaction {
-                service.schedule.create(_dto)
-            }
-            call.respond(_response)
+            call.respond(
+                try {
+                    transaction { service.schedule.create(unmarshal(call.parameters)) }
+                } catch (ex: Exception) {
+                    return@post call.respond(HttpStatusCode.BadRequest)
+                }
+            )
         }
 
-        //get("/{id}") {
-        //    TODO("Lookup Schedule by id")
-        //}
-
-        //get("/{id}/edit") {
-        //}
-
         put("/{id}") {
-            val id = call.parameters["id"]?.toInt() ?: return@put call.respond(HttpStatusCode.BadRequest)
-            val choreId = call.parameters["choreId"]?.toInt() ?: return@put call.respond(HttpStatusCode.BadRequest)
-            val workHours = call.parameters["workHours"]
-            val completeBy = call.parameters["completeBy"]
-            val _dto = SeedsDto.Schedule(id, choreId, workHours, completeBy)
-            transaction {
-                service.schedule.update(_dto)
-            }
-            call.respond(HttpStatusCode.OK)
+            call.respond(
+                try {
+                    transaction { service.schedule.update(unmarshal(call.parameters)) }
+                } catch (ex: Exception) {
+                    return@put call.respond(HttpStatusCode.BadRequest)
+                }
+            )
         }
 
         delete("/{id}") {
