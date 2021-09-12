@@ -14,8 +14,17 @@ object RouteGenerator: Generator {
             }
         }
         val file = FileSpec.builder("generated.routing", "${namespace.name}Routing").apply {
+            addImport("generated.dao", "${namespace.name}Dao")
             addImport("generated.model", "${namespace.name}Dto")
-            addImport("io.ktor.routing", "Routing", "route")
+            addImport("org.jetbrains.exposed.sql.transactions", "transaction")
+            addImport("io.ktor.application",
+                "call")
+            addImport("io.ktor.response",
+                "respond")
+            addImport("io.ktor.http",
+                "HttpStatusCode")
+            addImport("io.ktor.routing",
+                "Routing", "route", "get", "post", "put", "delete")
             addType(typeSpec.build())
         }.build()
         val writer = File("$path/jvmMain/kotlin")
@@ -25,6 +34,25 @@ object RouteGenerator: Generator {
     fun TypeSpec.Builder.generateRouting(type: Manifest.Namespace.Type): TypeSpec.Builder = addType(
         //Todo - generate: class ScheduleRouting @Inject constructor(val dao: SeedsDao.Schedule, val service: SeedsService) {
         TypeSpec.classBuilder(type.name).apply {
+            primaryConstructor(
+                //https://github.com/square/kotlinpoet/issues/515
+                FunSpec.constructorBuilder().addAnnotation(ClassName("javax.inject", "Inject"))
+                    .addParameter("dao", ClassName("generated.dao", "${type.namespace.name}Dao", type.name))
+                    .addParameter("service", ClassName("services", "${type.namespace.name}Service"))
+                .build()
+            )
+            addProperty(
+                PropertySpec.builder(
+                "dao",
+                ClassName("generated.dao", "${type.namespace.name}Dao", type.name)
+            ).initializer("dao").build())
+            addProperty(
+                PropertySpec.builder(
+                "service",
+                ClassName("services", "${type.namespace.name}Service")
+            ).initializer("service").build())
+            addProperty("dao", ClassName("generated.dao", "${type.namespace.name}Dao", type.name))
+            addProperty("service", ClassName("services", "${type.namespace.name}Service"))
             addFunction(type.index)
         }.build()
     )
@@ -39,9 +67,57 @@ object RouteGenerator: Generator {
                 ).build()
             )
             .addCode("""
-                |return routing.route(${dotPath("Dto")}.path) {
-                |   TODO("Generate routes but first consider refactoring API so create and update pass entity.")
-                |}
+            |return routing.route(${dotPath("Dto")}.path) {
+            |
+            |    get {
+            |        call.respond(transaction { dao.index() })
+            |    }
+            |
+            |    //get("/new") {
+            |    //    TODO("Show form to make new")
+            |    //    //call.respond(collection.find().toList())
+            |    //    //call.respond(dao.Schedule.index())
+            |    //}
+            |
+            |    post {
+            |        val choreId = call.parameters["choreId"]?.toInt() ?: return@post call.respond(HttpStatusCode.BadRequest)
+            |        val workHours = call.parameters["workHours"]
+            |        val completeBy = call.parameters["completeBy"]
+            |        val _dto = SeedsDto.Schedule(-1, choreId, workHours, completeBy)
+            |        val _response = transaction {
+            |            service.schedule.create(_dto)
+            |        }
+            |        call.respond(_response)
+            |    }
+            |
+            |    //get("/{id}") {
+            |    //    TODO("Lookup Schedule by id")
+            |    //}
+            |
+            |    //get("/{id}/edit") {
+            |    //}
+            |
+            |    put("/{id}") {
+            |        val id = call.parameters["id"]?.toInt() ?: return@put call.respond(HttpStatusCode.BadRequest)
+            |        val choreId = call.parameters["choreId"]?.toInt() ?: return@put call.respond(HttpStatusCode.BadRequest)
+            |        val workHours = call.parameters["workHours"]
+            |        val completeBy = call.parameters["completeBy"]
+            |        val _dto = SeedsDto.Schedule(id, choreId, workHours, completeBy)
+            |        transaction {
+            |            service.schedule.update(_dto)
+            |        }
+            |        call.respond(HttpStatusCode.OK)
+            |    }
+            |
+            |    delete("/{id}") {
+            |        val id = call.parameters["id"]?.toInt() ?: error("Invalid delete request")
+            |        transaction {
+            |            service.schedule.destroy(id)
+            |        }
+            |        call.respond(HttpStatusCode.OK)
+            |    }
+            |
+            |}
             """.trimMargin() + "\n") //Todo - short form this and use it where formatting is Icky.
             .build()
 
