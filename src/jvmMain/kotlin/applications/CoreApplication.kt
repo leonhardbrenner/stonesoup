@@ -1,6 +1,7 @@
 package applications
 
-import applications.routing.*
+//import applications.routing.*
+import generated.routing.SeedsRouting
 import com.google.inject.AbstractModule
 import javax.inject.Inject
 import io.ktor.routing.*
@@ -9,18 +10,17 @@ import services.SeedsService
 
 class CoreApplication @Inject constructor(
     val dao: SeedsDao,
-    val seedsService: SeedsService,
-    val chore: ChoreRouting,
-    val schedule: ScheduleRouting,
-    val detailedSeeds: DetailedSeedsRouting,
-    val seedCategory: SeedCategoryRouting,
-    val mySeeds: MySeedsRouting
+    val chore: SeedsRouting.Chore,
+    val schedule: SeedsRouting.Schedule,
+    val detailedSeed: SeedsRouting.DetailedSeed,
+    val seedCategory: SeedsRouting.SeedCategory,
+    val mySeeds: SeedsRouting.MySeeds
     ) {
 
     fun routesFrom(routing: Routing) {
         chore.routes(routing)
         schedule.routes(routing)
-        detailedSeeds.routes(routing)
+        detailedSeed.routes(routing)
         seedCategory.routes(routing)
         mySeeds.routes(routing)
     }

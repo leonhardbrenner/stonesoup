@@ -38,7 +38,7 @@ class SeedsRouting {
     fun routes(routing: Routing) = routing.route(SeedsDto.Chore.path) {
      
         get {
-            call.respond(transaction { dao.index() })
+            call.respond(transaction { service.index() })
         }
         
         post {
@@ -52,14 +52,12 @@ class SeedsRouting {
         }
 
         put("/{id}/move") {
-            call.respond(
-                try {
-                    transaction { unmarshal(call.parameters, true)
-                        .apply { service.move(id, parentId) } }
-                } catch (ex: Exception) {
-                    return@put call.respond(HttpStatusCode.BadRequest)
-                }
-            )
+            val id = call.parameters["id"]?.toInt()
+                ?: return@put call.respond(HttpStatusCode.BadRequest)
+            val parentId = call.parameters["parentId"]?.toInt()
+                ?: return@put call.respond(HttpStatusCode.BadRequest)
+            val response = transaction { service.move(id, parentId) }
+            call.respond(response)
         }
         
         put("/{id}") {
@@ -100,7 +98,7 @@ class SeedsRouting {
     fun routes(routing: Routing) = routing.route(SeedsDto.DetailedSeed.path) {
      
         get {
-            call.respond(transaction { dao.index() })
+            call.respond(transaction { service.index() })
         }
         
         post {
@@ -149,7 +147,7 @@ class SeedsRouting {
     fun routes(routing: Routing) = routing.route(SeedsDto.MySeeds.path) {
      
         get {
-            call.respond(transaction { dao.index() })
+            call.respond(transaction { service.index() })
         }
         
         post {
@@ -197,7 +195,7 @@ class SeedsRouting {
     fun routes(routing: Routing) = routing.route(SeedsDto.Schedule.path) {
      
         get {
-            call.respond(transaction { dao.index() })
+            call.respond(transaction { service.index() })
         }
         
         post {
@@ -245,7 +243,7 @@ class SeedsRouting {
     fun routes(routing: Routing) = routing.route(SeedsDto.SeedCategory.path) {
      
         get {
-            call.respond(transaction { dao.index() })
+            call.respond(transaction { service.index() })
         }
         
         post {
