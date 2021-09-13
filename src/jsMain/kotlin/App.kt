@@ -110,7 +110,7 @@ class App : RComponent<RProps, AppState>() {
                                             selected = null
                                         else {
                                             MainScope().launch {
-                                                SeedsApi.ChoreApi.update(selected!!, parentId = id, name = null)
+                                                SeedsApi.ChoreApi.move(selected!!, parentId = id)
                                                 val prioritizedChores = SeedsApi.ChoreApi.index()
                                                 setState {
                                                     chores = prioritizedChores

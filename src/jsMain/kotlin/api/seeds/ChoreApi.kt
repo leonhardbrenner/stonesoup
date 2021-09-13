@@ -25,14 +25,13 @@ open class ChoreApi {
 
     //Todo - implement edit which has loads existing values
 
-    suspend fun update(id: Int, parentId: Int?, name: String?) {
-        jsonClient.put<Unit>(endpoint + SeedsDto.Chore.path + "/$id") {
+    suspend fun move(id: Int, parentId: Int) {
+        jsonClient.put<Unit>(endpoint + SeedsDto.Chore.path + "/$id/move") {
             //Example of how to send a complexType
             //data class Node(val id: Int, val name: String)
             //contentType(ContentType.Application.Json)
             //body = Node(1, "Y")
             parameter("parentId", parentId)
-            parameter("name", name)
         }
     }
 
