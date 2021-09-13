@@ -127,15 +127,6 @@ kotlin {
                 //implementation(npm("@material-ui/icons", "4.9.1"))
                 implementation(npm("react-hot-loader", "^4.12.20"))
 
-                //implementation(npm("react-hot-loader", "^4.12.20"))
-                //implementation("org.jetbrains:kotlin-react:17.0.2-pre.204-kotlin-1.5.0")
-                //implementation("org.jetbrains:kotlin-react-dom:17.0.2-pre.204-kotlin-1.5.0")
-                //implementation(npm("react", "16.13.1"))
-                //implementation(npm("react-dom", "16.13.1"))
-
-                //implementation(npm("styled-components", "~5.1.1"))
-                //implementation(npm("inline-style-prefixer", "~6.0.0"))
-
                 /**
                  * Material UI support:
                  *     https://github.com/cfnz/muirwik
@@ -159,7 +150,6 @@ application {
 }
 
 tasks.register<ModelGenerator>("generate")
-tasks.register<ModelGeneratorDsl>("generateDsl")
 
 tasks.register<PlanPrioritize>("prioritize")
 

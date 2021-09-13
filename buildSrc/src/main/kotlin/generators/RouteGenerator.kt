@@ -97,39 +97,39 @@ object RouteGenerator: Generator {
             .addCode("""
             |return routing.route(${dotPath("Dto")}.path) {
             | 
-            |    get {
-            |        call.respond(transaction { service.index() })
-            |    }
-            |    
-            |    post {
-            |        call.respond(
-            |            try {
-            |                transaction { service.create(unmarshal(call.parameters)) }
-            |            } catch (ex: Exception) {
-            |                return@post call.respond(HttpStatusCode.BadRequest)
-            |            }
-            |        )
-            |    }
-            |
+            |//    get {
+            |//        call.respond(transaction { service.index() })
+            |//    }
+            |//    
+            |//    post {
+            |//        call.respond(
+            |//            try {
+            |//                transaction { service.create(unmarshal(call.parameters)) }
+            |//            } catch (ex: Exception) {
+            |//                return@post call.respond(HttpStatusCode.BadRequest)
+            |//            }
+            |//        )
+            |//    }
+            |//
 ${if (name == "Chore") generators.RouteGenerator.moveString else ""}
-            |    
-            |    put("/{id}") {
-            |        call.respond(
-            |            try {
-            |                transaction { service.update(unmarshal(call.parameters)) }
-            |            } catch (ex: Exception) {
-            |                return@put call.respond(HttpStatusCode.BadRequest)
-            |            }
-            |        )
-            |    }
-            |    
-            |    delete("/{id}") {
-            |        val id = call.parameters["id"]?.toInt() ?: error("Invalid delete request")
-            |        transaction {
-            |            service.destroy(id)
-            |        }
-            |        call.respond(HttpStatusCode.OK)
-            |    }
+            |//    
+            |//    put("/{id}") {
+            |//        call.respond(
+            |//            try {
+            |//                transaction { service.update(unmarshal(call.parameters)) }
+            |//            } catch (ex: Exception) {
+            |//                return@put call.respond(HttpStatusCode.BadRequest)
+            |//            }
+            |//        )
+            |//    }
+            |//    
+            |//    delete("/{id}") {
+            |//        val id = call.parameters["id"]?.toInt() ?: error("Invalid delete request")
+            |//        transaction {
+            |//            service.destroy(id)
+            |//        }
+            |//        call.respond(HttpStatusCode.OK)
+            |//    }
             |}
             """.trimMargin() + "\n") //Todo - short form this and use it where formatting is Icky.
             .build()
