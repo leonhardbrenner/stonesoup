@@ -1,226 +1,282 @@
-//package genera//import generated.d//import generated.mod//import io.ktor.appli//import io.ktor.http.Htt//import io.ktor.respo//import io.ktor.rout//import io.ktor.rou//import io.ktor.//import io.ktor.r//import io.ktor.//import io.ktor.ro//import javax.in//import org.jetbrains.exposed.sql.transactions.//import services.seeds.C//import services.seeds.Detailed//import services.seeds.MyS//import services.seeds.Sche//import services.seeds.SeedCate//class See//  class Chore @Inject c//    val dao: Seed//    val service: C//    fun routes(routing: Routing) = routing.route(SeedsDto.Ch//  //            call.respond(transaction { dao.index() })
-//        }
-//
-//        //get("/new") {
-//        //    TODO("Show form to make new")
-//        //    //call.respond(collection.find().toList())
-//        //    //call.respond(dao.Schedule.index())
-//        //}
-//
-//   //            val choreId = call.parameters["choreId"]?.toInt() ?: return@post
-//        call.respond(HttpStatusCode.BadRequest)
-//            val workHours = call.parameters["workHours"]
-//            val completeBy = call.parameters["completeBy"]
-//            val _dto = SeedsDto.Chore(-1, choreId, workHours, completeBy)
-//            val _response = tr//                service.create(_dto)
-//            }
-//            call.respond(_response)
-//        }
-//
-//        //get("/{id}") {
-//        //    TODO("Lookup Schedule by id")
-//        //}
-//
-//        //get("/{id}/edit") {
-//        //}
-//
-//        put//            val id = call.parameters["id"]?.toInt() ?: return@put
-//        call.respond(HttpStatusCode.BadRequest)
-//            val choreId = call.parameters["choreId"]?.toInt() ?: return@put
-//        call.respond(HttpStatusCode.BadRequest)
-//            val workHours = call.parameters["workHours"]
-//            val completeBy = call.parameters["completeBy"]
-//            val _dto = SeedsDto.Chore(id, choreId, workHours, completeBy)
-//            tr//                service.update(_dto)
-//            }
-//            call.respond(HttpStatusCode.OK)
-//        }
-//
-//        delete//            val id = call.parameters["id"]?.toInt() ?: error("Invalid delete request")
-//            tr//                service.destroy(id)
-//            }
-//            call.respond(HttpStatusCode.OK)
-//        }
-//
-//    }
-//  class DetailedSeed @Inject c//    val dao: SeedsDao.De//    val service: Detailed//    fun routes(routing: Routing) = routing.route(SeedsDto.DetailedS//  //            call.respond(transaction { dao.index() })
-//        }
-//
-//        //get("/new") {
-//        //    TODO("Show form to make new")
-//        //    //call.respond(collection.find().toList())
-//        //    //call.respond(dao.Schedule.index())
-//        //}
-//
-//   //            val choreId = call.parameters["choreId"]?.toInt() ?: return@post
-//        call.respond(HttpStatusCode.BadRequest)
-//            val workHours = call.parameters["workHours"]
-//            val completeBy = call.parameters["completeBy"]
-//            val _dto = SeedsDto.DetailedSeed(-1, choreId, workHours, completeBy)
-//            val _response = tr//                service.create(_dto)
-//            }
-//            call.respond(_response)
-//        }
-//
-//        //get("/{id}") {
-//        //    TODO("Lookup Schedule by id")
-//        //}
-//
-//        //get("/{id}/edit") {
-//        //}
-//
-//        put//            val id = call.parameters["id"]?.toInt() ?: return@put
-//        call.respond(HttpStatusCode.BadRequest)
-//            val choreId = call.parameters["choreId"]?.toInt() ?: return@put
-//        call.respond(HttpStatusCode.BadRequest)
-//            val workHours = call.parameters["workHours"]
-//            val completeBy = call.parameters["completeBy"]
-//            val _dto = SeedsDto.DetailedSeed(id, choreId, workHours, completeBy)
-//            tr//                service.update(_dto)
-//            }
-//            call.respond(HttpStatusCode.OK)
-//        }
-//
-//        delete//            val id = call.parameters["id"]?.toInt() ?: error("Invalid delete request")
-//            tr//                service.destroy(id)
-//            }
-//            call.respond(HttpStatusCode.OK)
-//        }
-//
-//    }
-//  class MySeeds @Inject c//    val dao: SeedsD//    val service: MyS//    fun routes(routing: Routing) = routing.route(SeedsDto.MySe//  //            call.respond(transaction { dao.index() })
-//        }
-//
-//        //get("/new") {
-//        //    TODO("Show form to make new")
-//        //    //call.respond(collection.find().toList())
-//        //    //call.respond(dao.Schedule.index())
-//        //}
-//
-//   //            val choreId = call.parameters["choreId"]?.toInt() ?: return@post
-//        call.respond(HttpStatusCode.BadRequest)
-//            val workHours = call.parameters["workHours"]
-//            val completeBy = call.parameters["completeBy"]
-//            val _dto = SeedsDto.MySeeds(-1, choreId, workHours, completeBy)
-//            val _response = tr//                service.create(_dto)
-//            }
-//            call.respond(_response)
-//        }
-//
-//        //get("/{id}") {
-//        //    TODO("Lookup Schedule by id")
-//        //}
-//
-//        //get("/{id}/edit") {
-//        //}
-//
-//        put//            val id = call.parameters["id"]?.toInt() ?: return@put
-//        call.respond(HttpStatusCode.BadRequest)
-//            val choreId = call.parameters["choreId"]?.toInt() ?: return@put
-//        call.respond(HttpStatusCode.BadRequest)
-//            val workHours = call.parameters["workHours"]
-//            val completeBy = call.parameters["completeBy"]
-//            val _dto = SeedsDto.MySeeds(id, choreId, workHours, completeBy)
-//            tr//                service.update(_dto)
-//            }
-//            call.respond(HttpStatusCode.OK)
-//        }
-//
-//        delete//            val id = call.parameters["id"]?.toInt() ?: error("Invalid delete request")
-//            tr//                service.destroy(id)
-//            }
-//            call.respond(HttpStatusCode.OK)
-//        }
-//
-//    }
-//  class Schedule @Inject c//    val dao: SeedsDa//    val service: Sche//    fun routes(routing: Routing) = routing.route(SeedsDto.Sched//  //            call.respond(transaction { dao.index() })
-//        }
-//
-//        //get("/new") {
-//        //    TODO("Show form to make new")
-//        //    //call.respond(collection.find().toList())
-//        //    //call.respond(dao.Schedule.index())
-//        //}
-//
-//   //            val choreId = call.parameters["choreId"]?.toInt() ?: return@post
-//        call.respond(HttpStatusCode.BadRequest)
-//            val workHours = call.parameters["workHours"]
-//            val completeBy = call.parameters["completeBy"]
-//            val _dto = SeedsDto.Schedule(-1, choreId, workHours, completeBy)
-//            val _response = tr//                service.create(_dto)
-//            }
-//            call.respond(_response)
-//        }
-//
-//        //get("/{id}") {
-//        //    TODO("Lookup Schedule by id")
-//        //}
-//
-//        //get("/{id}/edit") {
-//        //}
-//
-//        put//            val id = call.parameters["id"]?.toInt() ?: return@put
-//        call.respond(HttpStatusCode.BadRequest)
-//            val choreId = call.parameters["choreId"]?.toInt() ?: return@put
-//        call.respond(HttpStatusCode.BadRequest)
-//            val workHours = call.parameters["workHours"]
-//            val completeBy = call.parameters["completeBy"]
-//            val _dto = SeedsDto.Schedule(id, choreId, workHours, completeBy)
-//            tr//                service.update(_dto)
-//            }
-//            call.respond(HttpStatusCode.OK)
-//        }
-//
-//        delete//            val id = call.parameters["id"]?.toInt() ?: error("Invalid delete request")
-//            tr//                service.destroy(id)
-//            }
-//            call.respond(HttpStatusCode.OK)
-//        }
-//
-//    }
-//  class SeedCategory @Inject c//    val dao: SeedsDao.Se//    val service: SeedCate//    fun routes(routing: Routing) = routing.route(SeedsDto.SeedCateg//  //            call.respond(transaction { dao.index() })
-//        }
-//
-//        //get("/new") {
-//        //    TODO("Show form to make new")
-//        //    //call.respond(collection.find().toList())
-//        //    //call.respond(dao.Schedule.index())
-//        //}
-//
-//   //            val choreId = call.parameters["choreId"]?.toInt() ?: return@post
-//        call.respond(HttpStatusCode.BadRequest)
-//            val workHours = call.parameters["workHours"]
-//            val completeBy = call.parameters["completeBy"]
-//            val _dto = SeedsDto.SeedCategory(-1, choreId, workHours, completeBy)
-//            val _response = tr//                service.create(_dto)
-//            }
-//            call.respond(_response)
-//        }
-//
-//        //get("/{id}") {
-//        //    TODO("Lookup Schedule by id")
-//        //}
-//
-//        //get("/{id}/edit") {
-//        //}
-//
-//        put//            val id = call.parameters["id"]?.toInt() ?: return@put
-//        call.respond(HttpStatusCode.BadRequest)
-//            val choreId = call.parameters["choreId"]?.toInt() ?: return@put
-//        call.respond(HttpStatusCode.BadRequest)
-//            val workHours = call.parameters["workHours"]
-//            val completeBy = call.parameters["completeBy"]
-//            val _dto = SeedsDto.SeedCategory(id, choreId, workHours, completeBy)
-//            tr//                service.update(_dto)
-//            }
-//            call.respond(HttpStatusCode.OK)
-//        }
-//
-//        delete//            val id = call.parameters["id"]?.toInt() ?: error("Invalid delete request")
-//            tr//                service.destroy(id)
-//            }
-//            call.respond(HttpStatusCode.OK)
-//        }
-//
-//    }
-//}
+package generated.routing
+
+import generated.dao.SeedsDao
+import generated.model.SeedsDto
+import generated.model.SeedsDto.Chore
+import generated.model.SeedsDto.DetailedSeed
+import generated.model.SeedsDto.MySeeds
+import generated.model.SeedsDto.Schedule
+import generated.model.SeedsDto.SeedCategory
+import io.ktor.application.call
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.Parameters
+import io.ktor.response.respond
+import io.ktor.routing.Routing
+import io.ktor.routing.delete
+import io.ktor.routing.get
+import io.ktor.routing.post
+import io.ktor.routing.put
+import io.ktor.routing.route
+import javax.inject.Inject
+import org.jetbrains.exposed.sql.transactions.transaction
+import services.seeds.ChoreService
+import services.seeds.DetailedSeedService
+import services.seeds.MySeedsService
+import services.seeds.ScheduleService
+import services.seeds.SeedCategoryService
+
+class SeedsRouting {
+  class Chore @Inject constructor(
+    val dao: SeedsDao.Chore,
+    val service: ChoreService
+  ) {
+    fun unmarshal(parameters: Parameters) = SeedsDto.Chore(
+    parameters["id"]?.toInt()?: -1, 
+    parameters["parentId"]?.toInt() ?: throw Exception("BadRequest"), 
+    parameters["name"] ?: throw Exception("BadRequest"))
+
+    fun routes(routing: Routing) = routing.route(SeedsDto.Chore.path) {
+     
+        get {
+            call.respond(transaction { dao.index() })
+        }
+        
+        post {
+            call.respond(
+                try {
+                    transaction { service.create(unmarshal(call.parameters)) }
+                } catch (ex: Exception) {
+                    return@post call.respond(HttpStatusCode.BadRequest)
+                }
+            )
+        }
+
+        put("/{id}/move") {
+            call.respond(
+                try {
+                    transaction { unmarshal(call.parameters, true)
+                        .apply { service.move(id, parentId) } }
+                } catch (ex: Exception) {
+                    return@put call.respond(HttpStatusCode.BadRequest)
+                }
+            )
+        }
+        
+        put("/{id}") {
+            call.respond(
+                try {
+                    transaction { service.update(unmarshal(call.parameters)) }
+                } catch (ex: Exception) {
+                    return@put call.respond(HttpStatusCode.BadRequest)
+                }
+            )
+        }
+        
+        delete("/{id}") {
+            val id = call.parameters["id"]?.toInt() ?: error("Invalid delete request")
+            transaction {
+                service.destroy(id)
+            }
+            call.respond(HttpStatusCode.OK)
+        }
+    }
+  }
+
+  class DetailedSeed @Inject constructor(
+    val dao: SeedsDao.DetailedSeed,
+    val service: DetailedSeedService
+  ) {
+    fun unmarshal(parameters: Parameters) = SeedsDto.DetailedSeed(
+    parameters["id"]?.toInt()?: -1, 
+    parameters["companyId"] ?: throw Exception("BadRequest"), 
+    parameters["seedId"] ?: throw Exception("BadRequest"), 
+    parameters["name"] ?: throw Exception("BadRequest"), 
+    parameters["maturity"], 
+    parameters["secondaryName"], 
+    parameters["description"], 
+    parameters["image"], 
+    parameters["link"])
+
+    fun routes(routing: Routing) = routing.route(SeedsDto.DetailedSeed.path) {
+     
+        get {
+            call.respond(transaction { dao.index() })
+        }
+        
+        post {
+            call.respond(
+                try {
+                    transaction { service.create(unmarshal(call.parameters)) }
+                } catch (ex: Exception) {
+                    return@post call.respond(HttpStatusCode.BadRequest)
+                }
+            )
+        }
+
+
+        
+        put("/{id}") {
+            call.respond(
+                try {
+                    transaction { service.update(unmarshal(call.parameters)) }
+                } catch (ex: Exception) {
+                    return@put call.respond(HttpStatusCode.BadRequest)
+                }
+            )
+        }
+        
+        delete("/{id}") {
+            val id = call.parameters["id"]?.toInt() ?: error("Invalid delete request")
+            transaction {
+                service.destroy(id)
+            }
+            call.respond(HttpStatusCode.OK)
+        }
+    }
+  }
+
+  class MySeeds @Inject constructor(
+    val dao: SeedsDao.MySeeds,
+    val service: MySeedsService
+  ) {
+    fun unmarshal(parameters: Parameters) = SeedsDto.MySeeds(
+    parameters["id"]?.toInt()?: -1, 
+    parameters["companyId"] ?: throw Exception("BadRequest"), 
+    parameters["seedId"] ?: throw Exception("BadRequest"), 
+    parameters["description"] ?: throw Exception("BadRequest"), 
+    parameters["germinationTest"] ?: throw Exception("BadRequest"))
+
+    fun routes(routing: Routing) = routing.route(SeedsDto.MySeeds.path) {
+     
+        get {
+            call.respond(transaction { dao.index() })
+        }
+        
+        post {
+            call.respond(
+                try {
+                    transaction { service.create(unmarshal(call.parameters)) }
+                } catch (ex: Exception) {
+                    return@post call.respond(HttpStatusCode.BadRequest)
+                }
+            )
+        }
+
+
+        
+        put("/{id}") {
+            call.respond(
+                try {
+                    transaction { service.update(unmarshal(call.parameters)) }
+                } catch (ex: Exception) {
+                    return@put call.respond(HttpStatusCode.BadRequest)
+                }
+            )
+        }
+        
+        delete("/{id}") {
+            val id = call.parameters["id"]?.toInt() ?: error("Invalid delete request")
+            transaction {
+                service.destroy(id)
+            }
+            call.respond(HttpStatusCode.OK)
+        }
+    }
+  }
+
+  class Schedule @Inject constructor(
+    val dao: SeedsDao.Schedule,
+    val service: ScheduleService
+  ) {
+    fun unmarshal(parameters: Parameters) = SeedsDto.Schedule(
+    parameters["id"]?.toInt()?: -1, 
+    parameters["choreId"]?.toInt() ?: throw Exception("BadRequest"), 
+    parameters["workHours"], 
+    parameters["completeBy"])
+
+    fun routes(routing: Routing) = routing.route(SeedsDto.Schedule.path) {
+     
+        get {
+            call.respond(transaction { dao.index() })
+        }
+        
+        post {
+            call.respond(
+                try {
+                    transaction { service.create(unmarshal(call.parameters)) }
+                } catch (ex: Exception) {
+                    return@post call.respond(HttpStatusCode.BadRequest)
+                }
+            )
+        }
+
+
+        
+        put("/{id}") {
+            call.respond(
+                try {
+                    transaction { service.update(unmarshal(call.parameters)) }
+                } catch (ex: Exception) {
+                    return@put call.respond(HttpStatusCode.BadRequest)
+                }
+            )
+        }
+        
+        delete("/{id}") {
+            val id = call.parameters["id"]?.toInt() ?: error("Invalid delete request")
+            transaction {
+                service.destroy(id)
+            }
+            call.respond(HttpStatusCode.OK)
+        }
+    }
+  }
+
+  class SeedCategory @Inject constructor(
+    val dao: SeedsDao.SeedCategory,
+    val service: SeedCategoryService
+  ) {
+    fun unmarshal(parameters: Parameters) = SeedsDto.SeedCategory(
+    parameters["id"]?.toInt()?: -1, 
+    parameters["name"] ?: throw Exception("BadRequest"), 
+    parameters["image"] ?: throw Exception("BadRequest"), 
+    parameters["link"] ?: throw Exception("BadRequest"))
+
+    fun routes(routing: Routing) = routing.route(SeedsDto.SeedCategory.path) {
+     
+        get {
+            call.respond(transaction { dao.index() })
+        }
+        
+        post {
+            call.respond(
+                try {
+                    transaction { service.create(unmarshal(call.parameters)) }
+                } catch (ex: Exception) {
+                    return@post call.respond(HttpStatusCode.BadRequest)
+                }
+            )
+        }
+
+
+        
+        put("/{id}") {
+            call.respond(
+                try {
+                    transaction { service.update(unmarshal(call.parameters)) }
+                } catch (ex: Exception) {
+                    return@put call.respond(HttpStatusCode.BadRequest)
+                }
+            )
+        }
+        
+        delete("/{id}") {
+            val id = call.parameters["id"]?.toInt() ?: error("Invalid delete request")
+            transaction {
+                service.destroy(id)
+            }
+            call.respond(HttpStatusCode.OK)
+        }
+    }
+  }
+}

@@ -3,7 +3,6 @@ package generators
 import com.squareup.kotlinpoet.*
 import java.io.File
 import schema.Manifest
-import javax.inject.Inject
 
 object RouteGenerator: Generator {
 
@@ -22,7 +21,7 @@ object RouteGenerator: Generator {
             addImport("io.ktor.response",
                 "respond")
             addImport("io.ktor.http",
-                "HttpStatusCode")
+                "HttpStatusCode", "Parameters")
             addImport("io.ktor.routing",
                 "Routing", "route", "get", "post", "put", "delete")
             addType(typeSpec.build())
@@ -51,11 +50,44 @@ object RouteGenerator: Generator {
                 "service",
                 ClassName("services.${type.namespace.name.decapitalize()}", "${type.name}Service")
             ).initializer("service").build())
-            addFunction(type.index)
+            addFunction(type.unmarshal)
+            addFunction(type.routes)
         }.build()
     )
 
-    val Manifest.Namespace.Type.index
+    val Manifest.Namespace.Type.unmarshal
+        get() = FunSpec
+            .builder("unmarshal")
+            .addParameter(
+                ParameterSpec.builder(
+                    "parameters",
+                    ClassName("io.ktor.http", "Parameters")
+                ).build()
+            )
+            .addCode("return %T(%L)\n",
+                ClassName("generated.model", dotPath("Dto")), //${if (it.name == "id") "?: -1" else "
+                //XXX - you must rewrite this!!!
+                elements.map { "\nparameters[\"${it.name}\"]${
+                    if (it.type.kType.toString()=="kotlin.Int") "?.toInt()" else ""
+                }${if (it.type.nullable) "" else "${if (it.name == "id") "?: -1" else " ?: throw Exception(\"BadRequest\")"}"}" }.joinToString(", ")
+            )
+            .build()
+
+    //XXX - horrible hack
+    val moveString = """
+            |    put("/{id}/move") {
+            |        call.respond(
+            |            try {
+            |                transaction { unmarshal(call.parameters, true)
+            |                    .apply { service.move(id, parentId) } }
+            |            } catch (ex: Exception) {
+            |                return@put call.respond(HttpStatusCode.BadRequest)
+            |            }
+            |        )
+            |    }
+    """.trimIndent()
+
+    val Manifest.Namespace.Type.routes
         get() = FunSpec
             .builder("routes")
             .addParameter(
@@ -66,47 +98,33 @@ object RouteGenerator: Generator {
             )
             .addCode("""
             |return routing.route(${dotPath("Dto")}.path) {
-            |
+            | 
             |    get {
             |        call.respond(transaction { dao.index() })
             |    }
-            |
-            |    //get("/new") {
-            |    //    TODO("Show form to make new")
-            |    //    //call.respond(collection.find().toList())
-            |    //    //call.respond(dao.Schedule.index())
-            |    //}
-            |
+            |    
             |    post {
-            |        val choreId = call.parameters["choreId"]?.toInt() ?: return@post call.respond(HttpStatusCode.BadRequest)
-            |        val workHours = call.parameters["workHours"]
-            |        val completeBy = call.parameters["completeBy"]
-            |        val _dto = ${dotPath("Dto")}(-1, choreId, workHours, completeBy)
-            |        val _response = transaction {
-            |            service.create(_dto)
-            |        }
-            |        call.respond(_response)
+            |        call.respond(
+            |            try {
+            |                transaction { service.create(unmarshal(call.parameters)) }
+            |            } catch (ex: Exception) {
+            |                return@post call.respond(HttpStatusCode.BadRequest)
+            |            }
+            |        )
             |    }
             |
-            |    //get("/{id}") {
-            |    //    TODO("Lookup Schedule by id")
-            |    //}
-            |
-            |    //get("/{id}/edit") {
-            |    //}
-            |
+${if (name == "Chore") generators.RouteGenerator.moveString else ""}
+            |    
             |    put("/{id}") {
-            |        val id = call.parameters["id"]?.toInt() ?: return@put call.respond(HttpStatusCode.BadRequest)
-            |        val choreId = call.parameters["choreId"]?.toInt() ?: return@put call.respond(HttpStatusCode.BadRequest)
-            |        val workHours = call.parameters["workHours"]
-            |        val completeBy = call.parameters["completeBy"]
-            |        val _dto = ${dotPath("Dto")}(id, choreId, workHours, completeBy)
-            |        transaction {
-            |            service.update(_dto)
-            |        }
-            |        call.respond(HttpStatusCode.OK)
+            |        call.respond(
+            |            try {
+            |                transaction { service.update(unmarshal(call.parameters)) }
+            |            } catch (ex: Exception) {
+            |                return@put call.respond(HttpStatusCode.BadRequest)
+            |            }
+            |        )
             |    }
-            |
+            |    
             |    delete("/{id}") {
             |        val id = call.parameters["id"]?.toInt() ?: error("Invalid delete request")
             |        transaction {
@@ -114,7 +132,6 @@ object RouteGenerator: Generator {
             |        }
             |        call.respond(HttpStatusCode.OK)
             |    }
-            |
             |}
             """.trimMargin() + "\n") //Todo - short form this and use it where formatting is Icky.
             .build()
